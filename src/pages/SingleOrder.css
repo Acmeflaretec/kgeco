@@ -1,0 +1,48 @@
+.progress-container {
+  position: relative;
+  height: 4px;
+  background-color: #e9ecef;
+  margin: 2rem 0;
+}
+
+.progress-bar {
+  position: absolute;
+  height: 100%;
+  background-color: #28a745;
+  transition: width 0.5s ease;
+}
+
+.round-point {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.icon-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.round-point.completed .icon-container {
+  background-color: #28a745;
+  border-color: #28a745;
+  color: #fff;
+}
+
+.round-point p {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  white-space: nowrap;
+}
+
+.star-rating {
+  font-size: 1.2rem;
+}

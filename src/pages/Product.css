@@ -1,0 +1,55 @@
+.product-details-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .product-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .product-price {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .mrp {
+    text-decoration: line-through;
+    margin-right: 0.5rem;
+  }
+  
+  .discount {
+    font-size: 1rem;
+  }
+  
+  .product-benefits {
+    margin-bottom: 2rem;
+  }
+  
+  .product-description {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  
+  .carousel-image {
+    max-height: 500px; /* Adjust as per your design */
+    object-fit: contain;
+    width: 100%;
+  }
+  
+  @media (max-width: 992px) {
+    .product-name {
+      font-size: 1.5rem;
+    }
+    
+    .product-price {
+      font-size: 1rem;
+    }
+  
+    .product-description {
+      font-size: 1rem;
+    }
+  }
+  
