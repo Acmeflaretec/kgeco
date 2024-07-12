@@ -1,18 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react'
+import axiosInstance from '../axios'
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserDetails, clearUserDetails } from '../redux/actions/userActions';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './MiddleNav.css'; // Custom styles
 
-function MiddleNav() {
+function MiddleNav({notification}) {
   const cartItemCount = 3;
   const wishlistItemCount = 2;
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulate a logged-in user
+  const dispatch = useDispatch();
+  const userDetails = useSelector(state => state.userDetails);
+  const navigate = useNavigate();
+  const [wishListData,setWishListData] = useState()
+  const [cartData,setCartData] = useState([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get('/auth/user');
+       // console.log(response.data.data)
+        dispatch(setUserDetails(response.data.data));
+      } catch (error) {
+        console.log('errr', error);
+        dispatch(clearUserDetails());
+      }
+    };
+    fetchData();
+  }, []);
+
+let urlQuery = '';
+
+useEffect(()=>{
+
+  urlQuery=`/user/getcarts`
+
+  const fetchData = async()=>{
+
+    try {
+
+      const response = await axiosInstance.get(urlQuery);
+      setCartData(response?.data?.data?.item?.length)
+
+    }catch(error){
+      
+    }
+  }
+
+  fetchData()
+    },[notification])
+
+  useEffect(()=>{
+ 
+    
+ 
+     const fetchData = async()=>{
+ 
+       try {
+ 
+         const response = await axiosInstance.get(`/user/getwishlist`);
+         setWishListData(response.data.data.length)
+      //   console.log(response.data.data.length)
+         
+       } catch (error) {
+         console.log(error)
+       }
+ 
+     }
+ 
+ 
+     fetchData()
+ 
+ 
+   },[notification])
+
+  
+
+  const logoutUser = () => {
+    // Dispatch the clearUserDetails action to log out the user
+    dispatch(clearUserDetails());
+
+    localStorage.removeItem('Tokens');
+    window.location.reload();
+    navigate('/')
+  };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    // Add your logout logic here
+    
   };
 
   return (
@@ -40,22 +119,22 @@ function MiddleNav() {
             </li>
           </ul>
           <div className="nav-actions">
-            <Link to="/cart" className="nav-icon-link" title="Cart">
+            <Link to={userDetails? '/cart' :'/login'} className="nav-icon-link" title="Cart">
               <i className="fas fa-shopping-cart"></i>
-              {cartItemCount > 0 && <span className="badge">{cartItemCount}</span>}
+              { cartData > 0 && <span className="badge">{cartData}</span>}
             </Link>
-            <Link to="/wishlist" className="nav-icon-link" title="Wishlist">
+            <Link to={userDetails? '/wishlist' :'/login'} className="nav-icon-link" title="Wishlist">
               <i className="fas fa-heart"></i>
-              {wishlistItemCount > 0 && <span className="badge">{wishlistItemCount}</span>}
+              {wishListData > 0 && <span className="badge">{wishListData}</span>}
             </Link>
-            {isLoggedIn ? (
+            {userDetails ? (
               <div className="dropdown">
                 <button className=" profile-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                   <i className="fas fa-user text-white"></i>
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                  <li><Link className="dropdown-item" to="/profile">Profile</Link></li>
-                  <li><button className="dropdown-item" onClick={handleLogout}>Logout</button></li>
+                  <li><Link className="dropdown-item" to={userDetails? '/profile' :'/login'}>Profile</Link></li>
+                  <li><button className="dropdown-item" onClick={logoutUser}>Logout</button></li>
                 </ul>
               </div>
             ) : (

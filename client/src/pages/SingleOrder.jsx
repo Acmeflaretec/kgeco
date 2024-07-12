@@ -1,13 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../axios'
 import { Card, Col, Container, Row, Table } from 'react-bootstrap';
 import { FaBox, FaShippingFast, FaTruck, FaCheckCircle } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
+import { useParams } from 'react-router-dom';
 import './SingleOrder.css';
 
 function SingleOrder() {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('order_confirmed');
+
+  const { orderId } = useParams();
+  const [ordersData,setOrdersData] = useState({})
+  const [address,setAddress] = useState({})
+  const [productsData,setProductsData] = useState([])
+
+
+ // console.log('ord id :',orderId)
+  const fetchOrderData  = async()=>{
+
+    try {
+      const response = await axiosInstance.get(`/orders/getorderbyid/${orderId}`)
+      setOrdersData(response.data.data)
+      setAddress(response.data.data.address)
+      setProductsData(response.data.data.products.item)
+      console.log('order by id :',response.data.data)
+      //console.log('address :',response.data.data.address)
+    } catch (error) {
+      
+    }
+  }
+  
+  
+  useEffect(()=>{
+  fetchOrderData()
+  },[])
+
+
 
   // Sample data from backend (same as before)
   const dataFromBackend = {
@@ -36,14 +66,22 @@ function SingleOrder() {
   };
 
   useEffect(() => {
-    const backendStatus = dataFromBackend.status.toLowerCase().replace(/ /g, '_');
-    setStatus(backendStatus);
+    // const backendStatus = dataFromBackend.status.toLowerCase().replace(/ /g, '_');
+    // setStatus(backendStatus);
 
-    switch (backendStatus) {
-      case 'order_confirmed': setProgress(0); break;
-      case 'shipped': setProgress(33); break;
-      case 'out_for_delivery': setProgress(66); break;
-      case 'delivered': setProgress(100); break;
+    switch (ordersData.status) {
+      case 'Placed':
+        setProgress(0);
+        break;
+      case 'Shipped':
+        setProgress(33);
+        break;
+      case 'Out_of_delivery':
+        setProgress(66);
+        break;
+      case 'Delivered':
+        setProgress(100);
+        break;
       default: setProgress(0);
     }
   }, [dataFromBackend]);
@@ -72,36 +110,49 @@ function SingleOrder() {
       </div>
     );
   };
-
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
   return (
     <>
       <MiddleNav />
       <Container className="my-5">
         <h2 className="mb-4">Order Details</h2>
-        <Card className="shadow-sm mb-4">
-          <Card.Body>
-            <Row className="align-items-center">
-              <Col md={3} className="mb-3 mb-md-0">
+     
+{ordersData?.products?.item?.map((item,index)=>(
+     <Card className="shadow-sm mb-4">
+     <Card.Body>
+       <Row className="align-items-center">
+
+<Col md={3} className="mb-3 mb-md-0">
                 <div className="d-flex align-items-center">
                   <img
-                    src={dataFromBackend.orderDetails.items[0].imageUrl}
+                   src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.product_id.image[0]}`}
                     alt=""
                     className="img-fluid rounded me-3"
                     style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                   />
                   <div>
-                    <h5 className="mb-1">{dataFromBackend.orderDetails.items[0].name}</h5>
-                    <span className="text-muted small">{dataFromBackend.orderDetails.items[0].category}</span>
+                    <h5 className="mb-1"> {index+1}. {item.product_id.name}</h5>
                   </div>
                 </div>
               </Col>
-              <Col md={6} className="mb-3 mb-md-0">
-                {renderProgressBar()}
-              </Col>
-            
-            </Row>
-          </Card.Body>
-        </Card>
+{index == 0 &&
+<Col md={6} className="mb-3 mb-md-0">
+{ renderProgressBar()}
+</Col>
+}
+</Row>
+</Card.Body>
+</Card>
+
+))
+
+              
+}
+
+             
 
         <Row>
           <Col md={8}>
@@ -112,21 +163,21 @@ function SingleOrder() {
                   <tbody>
                     <tr>
                       <td>Order ID</td>
-                      <td className="text-end">{dataFromBackend.orderDetails.orderId}</td>
+                      <td className="text-end">{ordersData._id}</td>
                     </tr>
                     <tr>
                       <td>Order Date</td>
-                      <td className="text-end">{dataFromBackend.orderDetails.orderDate}</td>
+                      <td className="text-end">{formatDate(ordersData.createdAt)}</td>
                     </tr>
                     <tr>
                       <td>Status</td>
                       <td className="text-end">
-                        <span className="text-success fw-bold">{status.replace(/_/g, ' ')}</span>
+                        <span className="text-success fw-bold">{ordersData.status}</span>
                       </td>
                     </tr>
                     <tr>
                       <td>Total</td>
-                      <td className="text-end fw-bold">₹{dataFromBackend.orderDetails.total}</td>
+                      <td className="text-end fw-bold">₹{ordersData.amount}</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -137,12 +188,15 @@ function SingleOrder() {
             <Card className="shadow-sm">
               <Card.Body>
                 <h5 className="mb-3">Delivery Address</h5>
-                <p className="mb-1 fw-bold">{dataFromBackend.orderDetails.shippingAddress.name}</p>
-                <p className="mb-1">{dataFromBackend.orderDetails.shippingAddress.address}</p>
+                <p className="mb-1 fw-bold">{address.firstname} {address.lastname}</p>
+                <p className="mb-1">{address.address_line_1}</p>
+                <p className="mb-1">{address.address_line_2}</p>
+
                 <p className="mb-0">
-                  {dataFromBackend.orderDetails.shippingAddress.city},{' '}
-                  {dataFromBackend.orderDetails.shippingAddress.state}{' '}
-                  {dataFromBackend.orderDetails.shippingAddress.zip}
+                  {address.city},{' '}
+                  {address.state}{' '}
+                  {address.zip}{' '}
+                  {address.Country}
                 </p>
               </Card.Body>
             </Card>

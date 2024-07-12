@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams  } from 'react-router-dom';
+import axiosInstance from '../axios'
+import { useSelector } from 'react-redux';
 import { Button, Col, Container, Image, Row, Carousel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
@@ -8,6 +11,100 @@ import './Product.css';
 
 function Product() {
   const [selectedImage, setSelectedImage] = useState(0);
+  const [productData, setProductData] = useState([])
+  const navigate = useNavigate();
+  const { proId } = useParams();
+ 
+
+  const [cartItemsData, setCartItemsData] = useState([]);
+  const userDetails = useSelector(state => state.userDetails);
+  const [notif, setNotif] = useState(true)
+
+
+ 
+
+//  for specific product 
+  const fetchProductData = async () => {
+
+    try {
+      const urlQuery = `/products/${proId}`
+      const response = await axiosInstance.get(urlQuery);
+      setProductData(response.data.data)
+      console.log(response.data.data)
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  useEffect(() => {
+
+    fetchProductData()
+    fetchCartData()
+
+  }, [proId])
+
+  const fetchCartData = async () => {
+    console.log('reached fetch cart 2')
+    try {
+      const cartResponse = await axiosInstance.get('/user/getcarts');
+      setCartItemsData(cartResponse.data.data.item);
+      //  console.log('reached fetch cart 3',cartResponse.data.data.item)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addCartData = async (proId1) => {
+    if (!userDetails) {
+      navigate('/login')
+
+    } else {
+      try {
+        const urlQuery = `/user/addToCart/${proId1}`
+        const response = await axiosInstance.patch(urlQuery);
+        await fetchCartData()
+        setNotif(prev => !prev);
+        //console.log(response)
+      } catch (error) {
+        console.log(error)
+
+      }
+    }
+
+
+  }
+
+  const removeCartData = async (proId1) => {
+    if (!userDetails) {
+      navigate('/login')
+
+    } else {
+      console.log('reached rem cart', proId1)
+
+      try {
+        const ItemId = cartItemsData.filter((item) => item.productId._id == proId1)
+        console.log(' item id', ItemId)
+
+
+        const urlQuery = `/user/removeFromCart/${ItemId[0]._id}`
+        const response = await axiosInstance.patch(urlQuery);
+        await fetchCartData()
+        setNotif(prev => !prev);
+        //console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+
+
+  }
+
+  const isInCartData = (productId) => {
+    return cartItemsData.some((item) => item.productId._id === productId);
+  };
+
 
   const product = {
     name: 'BAMBOO TOOTHBRUSH ',
@@ -41,10 +138,10 @@ function Product() {
           {/* Image Gallery */}
           <Col lg={6} className="mb-4">
             <Carousel interval={null} slide={false}>
-              {product.images.map((image, index) => (
+              {  productData.image && productData?.image?.map((image, index) => (
                 <Carousel.Item key={index}>
                   <Image
-                    src={image}
+                    src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${image}`}
                     alt={`Thumbnail ${index}`}
                     fluid
                     className="carousel-image"
@@ -58,11 +155,11 @@ function Product() {
           {/* Product Info */}
           <Col lg={6}>
             <div className="product-info">
-              <h1 className="product-name">{product.name}</h1>
+              <h1 className="product-name">{productData.name}</h1>
               <div className="product-price">
-                <span className="text-muted mrp">MRP: ₹{product.mrp}</span>
-                <span className="h3 fw-bold">₹{product.price}</span>
-                <span className="text-success discount">({((product.mrp - product.price) / product.mrp * 100).toFixed(0)}% OFF)</span>
+                <span className="text-muted mrp">MRP: ₹{productData.price}</span>
+                <span className="h3 fw-bold">₹{productData.sale_rate}</span>
+                <span className="text-success discount">({productData.discount}% OFF)</span>
               </div>
               <p className="text-muted small mb-4">Inclusive of all taxes</p>
 
@@ -79,8 +176,13 @@ function Product() {
               </div>
 
               <div className="d-grid gap-2">
-                <Link to="/checkout" className="btn btn-success btn-lg">Buy Now</Link>
-                <Button variant="outline-success" size="lg">Add to Cart</Button>
+                <Link to={userDetails ?  `/checkout` : `/login`} className="btn btn-success btn-lg">Buy Now</Link>
+
+                {
+                    !isInCartData(proId) ? <Button variant="outline-success" size="lg" onClick={() => addCartData(proId)}  >Add to Cart</Button> :
+                      <Button variant="outline-danger" size="lg" onClick={() => removeCartData(proId)}>Remove from Cart</Button>
+                  }
+                
               </div>
             </div>
           </Col>
@@ -91,7 +193,7 @@ function Product() {
           <Col>
             <div className="product-description">
               <h2 className="mb-3">Product Description</h2>
-              <p>{product.description}</p>
+              <p>{productData.description}</p>
             </div>
           </Col>
         </Row>
@@ -99,7 +201,7 @@ function Product() {
         {/* Reviews */}
         <Row className="mt-5">
           <Col>
-            <Review />
+            <Review productId={productData._id} />
           </Col>
         </Row>
       </Container>

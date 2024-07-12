@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react'
+import axiosInstance from '../axios'
+import { useSelector } from 'react-redux';
 import { Col, Row, Card, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaMapMarkerAlt, FaShoppingBag } from 'react-icons/fa';
@@ -11,6 +13,7 @@ import ProfileInfo from './ProfileInfo';
 function Profile() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
+  const userDetails = useSelector(state => state.userDetails);
 
   const handleTabChange = (tab) => {
     if (tab === 'orders') {
@@ -34,8 +37,8 @@ function Profile() {
                   className="rounded-circle img-thumbnail mb-3"
                   width="150"
                 />
-                <h4 className="mb-0">John Doe</h4>
-                <p className="text-muted">john.doe@example.com</p>
+                <h4 className="mb-0">{userDetails.username}</h4>
+                <p className="text-muted">{userDetails.email} </p>
               </Card.Body>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item>

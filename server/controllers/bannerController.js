@@ -14,6 +14,8 @@ const getBanners = async (req, res) => {
 const addBanner = async (req, res) => {
   try {
     const { title, subtitle, url, description, status } = req?.body
+    console.log(req?.body)
+    console.log(req?.file?.filename)
     const image = req?.file?.filename
     if (!image) {
       return res.status(404).json({ message: 'Image not found' });

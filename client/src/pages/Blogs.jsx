@@ -1,4 +1,5 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
+import axiosInstance from '../axios'
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 

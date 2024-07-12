@@ -50,14 +50,14 @@ const routes = [
     icon: <Box component="i" color="warning" fontSize="14px" className="ni ni-album-2" />,
     component: <Banner />,
   },
-  {
-    type: "route",
-    name: "Blogs",
-    key: "blogs",
-    route: "/blogs",
-    icon: <Box component="i" color="primary" fontSize="14px" className="ni ni-book-bookmark" />,
-    component: <Blogs />,
-  },
+  // {
+  //   type: "route",
+  //   name: "Blogs",
+  //   key: "blogs",
+  //   route: "/blogs",
+  //   icon: <Box component="i" color="primary" fontSize="14px" className="ni ni-book-bookmark" />,
+  //   component: <Blogs />,
+  // },
   // {
   //   type: "route",
   //   name: "Billing",

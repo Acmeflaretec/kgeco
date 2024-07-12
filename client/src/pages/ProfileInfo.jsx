@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Form, Button, Card, Row, Col } from 'react-bootstrap';
+import React, { useState,useEffect } from 'react'
+import axiosInstance from '../axios'
+import { useSelector } from 'react-redux';import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave } from 'react-icons/fa';
 
 function ProfileInfo() {
@@ -8,6 +9,8 @@ function ProfileInfo() {
     email: 'user.email@example.com',
     phone: '123-456-7890'
   });
+  const userDetails = useSelector(state => state.userDetails);
+
 
   const [editable, setEditable] = useState({
     name: false,
@@ -39,7 +42,7 @@ function ProfileInfo() {
         <Form.Control
           type="text"
           name={field}
-          value={profile[field]}
+          value={userDetails[field]}
           onChange={handleChange}
           disabled={!editable[field]}
           className={editable[field] ? 'border-primary' : ''}
@@ -62,7 +65,7 @@ function ProfileInfo() {
       <Card.Body>
         <Card.Title className="mb-4">Profile Information</Card.Title>
         <Form>
-          {renderField('name', <FaUser className="me-2" />)}
+          {renderField('username', <FaUser className="me-2" />)}
           {renderField('email', <FaEnvelope className="me-2" />)}
           {renderField('phone', <FaPhone className="me-2" />)}
         </Form>

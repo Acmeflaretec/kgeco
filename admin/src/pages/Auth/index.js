@@ -15,12 +15,13 @@ const Login = () => {
     const [controller, dispatch] = useController();
     const [data, setData] = useState({})
     const handleLogin = () => {
-        // if (process.env.REACT_APP_USERNAME === data?.email && process.env.REACT_APP_PASSWORD === data?.password) {
+     
+        if (process.env.REACT_APP_USERNAME === data?.email && process.env.REACT_APP_PASSWORD === data?.password) {
             toast.success('Login Successfull')
             setAuth(dispatch, true)
-        // } else {
-        //     toast.error('Invalid username or password')
-        // }
+        } else {
+            toast.error('Invalid username or password')
+        }
     }
     const handleChange = (e) => {
         setData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -30,7 +31,7 @@ const Login = () => {
             title="Sign In"
             description="Enter your email and password to sign in"
             illustration={{
-                title: "Melon Magnets",
+                title: "KGECO",
                 description:
                     "Admin Management Console",
                 image

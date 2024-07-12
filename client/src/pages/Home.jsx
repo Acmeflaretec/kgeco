@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import '../App.css';
 import Banner from '../components/Banner';
 import Footer from '../components/Footer';
@@ -10,12 +10,14 @@ import HomeContact from '../components/HomeContact';
 
 
 function Home() {
+  const [notif,setNotif] = useState(true)
+
   return (
     <div>
-     <MiddleNav/>
+     <MiddleNav notification={notif}/>
      <Banner/>
      <WhoAreWe/>
-     <Products/>
+     <Products setNotification={setNotif} />
      <WhyChooseUs/>
      <HomeContact/>
      <Footer/>

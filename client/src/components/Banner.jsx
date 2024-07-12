@@ -1,9 +1,39 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
+import axiosInstance from '../axios'
 import { motion } from 'framer-motion';
 import './Banner.css';
 import { Link } from 'react-router-dom';
 
 function Banner() {
+
+  const [banner,setBanner] = useState([])
+
+  
+    useEffect(()=>{
+  
+      
+  
+      const fetchData = async()=>{
+  
+        try {
+  
+          const response = await axiosInstance.get(`/banners`);
+          setBanner(response.data.data)
+          console.log(response.data.data)
+          
+        } catch (error) {
+          console.log(error)
+        }
+  
+      }
+  
+  
+      fetchData()
+  
+  
+    },[])
+  
+
   return (
     <div className="banner">
       <div className="banner-overlay"></div>
@@ -16,11 +46,11 @@ function Banner() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <h1 className="banner-title">
-              Eco-Friendly Living,<br />
-              <span className="highlight">Sustainable Future</span>
+              {banner[0]?.title}<br />
+              <span className="highlight">{banner[0]?.subtitle}</span>
             </h1>
             <p className="banner-subtitle">
-              Join us in creating a culture of sustainability with our eco-friendly products
+             {banner[0]?.description}
             </p>
            <Link to={'/allproducts'}>
               <motion.button 
@@ -38,7 +68,9 @@ function Banner() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            <img src="https://img.freepik.com/premium-photo/zero-waste-selfcare-products-top-view-bamboo-toothbrush-body-cream-soap-travel-bottle_377884-87.jpg?w=900" alt="Eco-friendly products" className="img-fluid banner-image" />
+            <img
+src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${banner[0]?.image}`}
+              alt="Eco-friendly products" className="img-fluid banner-image" />
           </motion.div>
         </div>
       </div>

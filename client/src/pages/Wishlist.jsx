@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react'
+import axiosInstance from '../axios'
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Footer from '../components/Footer';
@@ -11,15 +12,74 @@ function Wishlist() {
     { id: 3, name: 'BAMBOO TONQUE CLEANER', imageUrl: 'https://img.freepik.com/free-photo/eco-friendly-environment-bamboo-tube-straws_23-2148768567.jpg?t=st=1720514232~exp=1720517832~hmac=62cd94a2d5614c27c2c97a3235759bf284823b8b6df313938850f4dd238eb4fe&w=1060', price: '180', quantity: '500' },
   ]);
 
-  const handleRemoveFromWishlist = (itemId) => {
-    const updatedWishlistItems = wishlistItems.filter((item) => item._id !== itemId);
-    setWishlistItems(updatedWishlistItems);
-  };
+  // const handleRemoveFromWishlist = (itemId) => {
+  //   const updatedWishlistItems = wishlistItems.filter((item) => item._id !== itemId);
+  //   setWishlistItems(updatedWishlistItems);
+  // };
 
-  const handleAddToCart = (item) => {
-    // Implement your logic to add the item to the cart here
-    console.log('Adding to cart:', item);
+  // const handleAddToCart = (item) => {
+  //   // Implement your logic to add the item to the cart here
+  //   console.log('Adding to cart:', item);
+  // };
+
+  
+  const [wishListData,setWishListData] = useState([])
+
+  let urlQuery = '';
+
+  useEffect(()=>{
+
+     
+
+    const fetchData = async()=>{
+
+      try {
+
+        const response = await axiosInstance.get(`/user/getwishlist`);
+        setWishListData(response.data.data)
+        console.log(response.data.data)
+        
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+
+
+    fetchData()
+
+
+  },[])
+const handleRemoveFromWishlist = async (itemId) => {
+    
+      try {
+          const response = await axiosInstance.patch(`/user/removeFromWishlist/${itemId}`);
+      //    setWishlistItems([])
+          const updatedWishlistItems = wishListData.filter((item) => item._id !== itemId);
+          setWishListData(updatedWishlistItems);
+       
+      } catch (error) {
+          console.error("Error removing item from wishlist:", error);
+         
+      }
   };
+  
+    const handleAddToCart =async (item) => {
+     
+
+      
+      const response = await axiosInstance.patch(`/user/addToCart/${item._id}`);
+
+    
+    };
+    const handleRemoveFromCart =async (item) => {
+       
+
+      // Implement your logic to add the item to the cart here 
+      const response = await axiosInstance.patch(`/user/removeFromCart/${item._id}`);
+
+   //   console.log('Adding to cart:', item);
+    };
 
   return (
     <>
@@ -55,7 +115,7 @@ function Wishlist() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            {wishlistItems.map((item) => (
+            {wishListData.map((item) => (
               <motion.div
                 key={item._id}
                 className="col-md-4 mb-4"
@@ -66,14 +126,15 @@ function Wishlist() {
                 <div className="product-card">
                 <Link to="/product" className="product-link">
                   <div className="product-image">
-                    <img src={item.imageUrl} alt={item.name} className="img-fluid" />
+                    <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.image[0]}`}
+                     alt={item.name} className="img-fluid" />
                   </div>
                   <div className="product-info">
                     <h3 className="product-title">{item.name}</h3>
                     <div className="price-info">
-                      <span className="current-price">₹{item.price}</span>
-                      <span className="original-price">₹999</span>
-                      <span className="discount-badge">70% off</span>
+                      <span className="current-price">₹{item.sale_rate}</span>
+                      <span className="original-price">₹{item.price}</span>
+                      <span className="discount-badge">{item.discount}% off</span>
                     </div>
                     {/* <p className="product-quantity">{item.quantity} gm</p> */}
                   </div>

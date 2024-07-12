@@ -1,20 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axiosInstance from '../axios';
+import { useNavigate } from 'react-router-dom';
 import { Col, Row, Container, Form, Button, Image } from 'react-bootstrap';
 import { FaLock } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
+
   const [showPassword, setShowPassword] = useState(false);
+  const [userDetails, setUserDetails] = useState({
+    email: "",
+    password: "",
+  });
+  
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post('/auth/login', userDetails);
+      localStorage.setItem(
+        "Tokens",
+        JSON.stringify({ access: response.data.data.token.accessToken, refresh: response.data.data.token.refreshToken })
+      );
+      console.log('resss ', response.data);
+
+ if(response.data.proceed){
+
+   navigate('/')
+
+ }
+
+    } catch (error) {
+      console.error('Error during registration: ', error);
+    
+    }
+  };
 
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Implement your login logic here
-    console.log('Logging in...');
-  };
 
   return (
     <>
@@ -39,7 +73,12 @@ const Login = () => {
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email address</Form.Label>
-                  <Form.Control type="email" placeholder="Enter email" />
+                  <Form.Control type="email"
+                   name="email"
+                   
+                  value={userDetails.email}
+                  onChange={handleChange} 
+                   placeholder="Enter email" />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -48,6 +87,9 @@ const Login = () => {
                     <Form.Control
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
+                      name="password"
+                      value={userDetails.password}
+                      onChange={handleChange}
                     />
                     <span
                       className="position-absolute top-50 end-0 translate-middle-y me-3"

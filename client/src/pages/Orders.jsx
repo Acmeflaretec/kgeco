@@ -1,5 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React,{useState,useEffect} from 'react'
+import axiosInstance from '../axios'
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge } from 'react-bootstrap';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
@@ -19,21 +21,32 @@ const orderData = [
 
 function OrderCard({ order }) {
   return (
+
+
     <Card className="mb-3 shadow-sm">
       <Card.Body>
+
         <Row>
           <Col md={3} className="mb-3 mb-md-0">
-            <img src={order.image} alt={order.name} className="img-fluid rounded" />
+            <img
+           src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order.products.item[0].product_id.image[0]}`}
+              alt={order.name} className="img-fluid rounded" />
           </Col>
           <Col md={6}>
-            <h5 className="mb-1">{order.name}</h5>
+{order?.products?.item?.map((item,index)=>(
+
+<h5 className="mb-1">{index+1}. {item.product_id.name}</h5>
+
+))
+            }
             <p className="text-muted mb-2">{order.category}</p>
             <span bg="info" className="mb-2">{order.status}</span>
-            <p className="small mb-0">{order.statusDetails}</p>
+            {/* <p className="small mb-0">{order.statusDetails}</p> */}
           </Col>
           <Col md={3} className="text-md-end">
-            <h5 className="mb-3">₹{order.price}</h5>
-            <Link to={`/ordertrack`} className="btn btn-outline-primary btn-sm">
+            <h5 className="mb-3">₹{order.amount
+            }</h5>
+            <Link to={`/ordertrack/${order._id}`} className="btn btn-outline-primary btn-sm">
               Track Order
             </Link>
           </Col>
@@ -44,13 +57,35 @@ function OrderCard({ order }) {
 }
 
 function Orders() {
+  const [ordersData,setOrdersData] = useState([])
+  const navigate = useNavigate();
+
+
+const fetchOrderData  = async()=>{
+
+  try {
+    const response = await axiosInstance.get(`/orders/getuserorders`)
+    setOrdersData(response.data.data)
+    console.log('order :',response.data.data)
+  } catch (error) {
+    
+  }
+}
+
+
+useEffect(()=>{
+fetchOrderData()
+},[])
+
+
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <MiddleNav />
       <Container className="flex-grow-1 py-5">
         <h2 className="mb-4">Your Orders</h2>
-        {orderData.map(order => (
-          <OrderCard key={order.id} order={order} />
+        {ordersData.map((order,index) => (
+          <OrderCard key={order._id} order={order} />
         ))}
       </Container>
       <Footer />

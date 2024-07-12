@@ -14,12 +14,20 @@ const getAddress = async (req, res) => {
 };
    
 const addAddress = async (req, res) => {
-  const {   firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary } = req?.body
+  const {   firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile,type } = req?.body
  // const userId = '66796d0936bb97720a7764f4';
  const { _id } = req?.decoded
+
+ const isExisting = await Address.find({
+  userId:_id
+});
+console.log(isExisting)
+let SetPrimaryTrue = false;
+if(isExisting.length <=0) SetPrimaryTrue=true
+
   try {
     const data = await Address.create({
-      userId:_id, firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary
+      userId:_id, firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary:SetPrimaryTrue,type
     })
     res.status(201).json({ data, message: 'Address created successfully' });
   } catch (error) {
@@ -29,10 +37,10 @@ const addAddress = async (req, res) => {
 }
 
 const updateAddress = async (req, res) => {
-  const { _id, firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary } = req?.body
+  const { _id, firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary,type } = req?.body
   try {
     const data = await Address.updateOne({ _id },
-      { $set: { firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary }})
+      { $set: { firstname, lastname, country, address_line_1, address_line_2, city, state, zip, mobile, primary,type }})
     res.status(201).json({ data, message: 'Address updated successfully' });
   } catch (error) {
     console.log(error);

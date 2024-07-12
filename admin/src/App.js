@@ -139,11 +139,11 @@ export default function App() {
               <Route path="/category/editCategory/:id" element={<EditCategory />} />
               <Route path="/products/addProducts" element={<AddProduct />} />
               <Route path="/banners/addBanner" element={<AddBanner />} />
-              <Route path="/blogs/addBlog" element={<AddBlog />} />
+              {/* <Route path="/blogs/addBlog" element={<AddBlog />} /> */}
               <Route path="/products/editProduct/:id" element={<EditProduct />} />
               <Route path="/orders/editOrder/:id" element={<EditOrder />} />
               <Route path="/banners/editBanner/:id" element={<EditBanner />} />
-              <Route path="/blogs/editBlog/:id" element={<EditBlog />} />
+              {/* <Route path="/blogs/editBlog/:id" element={<EditBlog />} /> */}
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
             <Footer />

@@ -14,7 +14,7 @@ const corsOptions = {
 app.use(cors(corsOptions));    
 // app.use(cors());    
 app.use(express.json());   
-app.use(express.static(path.join(__dirname, "./middlewares/public")));
+app.use(express.static(path.join(__dirname, "./middlewares/public"))); 
 morgan.token("custom-date", (req, res) => {   
   return new Date().toUTCString(); 
 });
