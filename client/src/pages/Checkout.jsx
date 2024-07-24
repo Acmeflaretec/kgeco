@@ -476,8 +476,7 @@ await fetchAddress('/address')
                       {addressDatas.map(address => (
                         <div key={address._id} className="col-md-6">
                           <div className={`border rounded p-3 h-100 ${selectedAddress === address ? 'border-success' : ''}`}>
-                            <p className="mb-1"><strong>{address.firstname}</strong></p>
-                            <p className="mb-1"><strong>{address.lastname}</strong></p>
+                            <p className="mb-1"><strong>{address.firstname} {address.lastname}</strong></p>
                             <p className="mb-1">{address.address_line_1}</p>
                             <p className="mb-1">{address.address_line_2}</p>
                             <p className="mb-1">{address.city}, {address.state} {address.pincode}</p>
@@ -487,7 +486,8 @@ await fetchAddress('/address')
                               className={`btn ${orderAddress === address ? 'btn-success' : 'btn-outline-success'} w-100`}
                               onClick={() => setOrderAddress(address)}
                             >
-                              {selectedAddress === address ? 'Selected' : 'Select This Address'}
+                          
+                              {orderAddress === address ? 'Selected' : 'Select This Address'}
                             </button>
                           </div>
                         </div>
@@ -514,7 +514,7 @@ await fetchAddress('/address')
             {currentStep === 2 && (
               <section className="card shadow-sm mb-4">
                 <div className="card-header bg-white border-bottom">
-                  <h5 className="mb-0 text-success">2. Review Items and Shipping</h5>
+                  <h5 className="mb-0 text-success">2. Review Items</h5>
                 </div>
                 <div className="card-body">
                   {cartData?.item?.map(product => (
@@ -533,10 +533,10 @@ await fetchAddress('/address')
                           <span className="bg-success-subtle text-success px-2 py-1 rounded-pill">{product.productId.discount}% off</span>
                         </div>
                       </div>
-                      <div className="col-md-3">
+                      <div className="col-md-3 mt-4">
                         <div className="input-group">
                           <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'decrement')} disabled={product.qty === 1}>-</button>
-                          <input type="text" className="form-control text-center" value={product.qty} readOnly />
+                          <input type="text" className="form-control text-center" value={product.qty} readOnly  />
                           <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'increment')}>+</button>
                         </div>
                         <button className="btn btn-link text-danger mt-2" onClick={() => handleRemoveItem(product._id)}>
@@ -547,8 +547,11 @@ await fetchAddress('/address')
                   ))}
                   <div className="d-flex justify-content-between mt-4">
                     <button className="btn btn-outline-secondary" onClick={() => setCurrentStep(1)}>Back</button>
-                    <button className="btn btn-success" onClick={() => setCurrentStep(3)}>Continue to Payment</button>
+                    <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
+                     disabled={salePriceTotal<80} >{salePriceTotal<80? 'add above ₹80 to continue': 'Continue to Payment'} </button>
                   </div>
+                  {console.log('products total',salePriceTotal)}
+                  {/*  */}
                 </div>
               </section>
             )}
@@ -566,10 +569,12 @@ await fetchAddress('/address')
                       <span className="text-muted small">Pay securely with your credit/debit card or net banking</span>
                     </label>
                   </div>
-                  <div className="form-check mb-3 p-3 border rounded">
-                    <input className="form-check-input" type="radio" name="paymentOption" id="codOption" value="cod" checked={paymentOption === 'cod'} onChange={() => setPaymentOption('cod')} />
+                  <div className="form-check mb-3 p-3 border rounded" >
+                    <input className="form-check-input" type="radio" disabled name="paymentOption" id="codOption" value="cod" checked={paymentOption === 'cod'} onChange={() => setPaymentOption('cod')} />
                     <label className="form-check-label" htmlFor="codOption">
+                    <span className='text-danger' >*** not available ***</span> <br />
                       <span className="fw-bold d-block mb-1">Cash on Delivery</span>
+                     
                       <span className="text-muted small">Pay when your order is delivered</span>
                     </label>
                   </div>

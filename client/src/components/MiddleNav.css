@@ -63,6 +63,11 @@
     background-color: #1B5E20;
     border-color: #1B5E20;
   }
+
+  .mobile-action{
+    display: none;
+  }
+
   
   @media (max-width: 991.98px) {
     .nav-actions {
@@ -72,6 +77,14 @@
     .nav-icon-link {
       margin-right: 1.5rem;
     }
+    .pc-action{
+      display: none;
+    }
+
+    .mobile-action{
+      display: flex;
+    }
+
   }
 
   /* MiddleNav.css */

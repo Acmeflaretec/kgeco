@@ -3,6 +3,7 @@ import axiosInstance from '../axios'
 import { motion } from 'framer-motion';
 import './Banner.css';
 import { Link } from 'react-router-dom';
+import { Carousel } from 'react-bootstrap';
 
 function Banner() {
 
@@ -34,6 +35,12 @@ function Banner() {
     },[])
   
 
+    const [index, setIndex] = useState(0);
+    
+    const handleSelect = (selectedIndex, e) => {
+      setIndex(selectedIndex);
+    };
+
   return (
     <div className="banner">
       <div className="banner-overlay"></div>
@@ -45,22 +52,35 @@ function Banner() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h1 className="banner-title">
+            <div style={{
+              display:'flex',
+              flexDirection:'column',
+              alignItems:'center'
+
+            }}>
+            <h1 className="banner-title" style={{textAlign:'center'}} >
               {banner[0]?.title}<br />
-              <span className="highlight">{banner[0]?.subtitle}</span>
+           
             </h1>
             <p className="banner-subtitle">
-             {banner[0]?.description}
+             {banner[0]?.subtitle}
             </p>
            <Link to={'/allproducts'}>
               <motion.button 
                 className="btn btn-primary btn-lg mt-4"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                style={{color:'#2D6507',backgroundColor:'white',}}
               >
+                <span className='ban-button'>
                 Explore Products
+                </span>
+             
               </motion.button>
            </Link>
+            </div>
+           
+          
           </motion.div>
           <motion.div
             className="col-lg-6 banner-image-container"
@@ -68,10 +88,20 @@ function Banner() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
+
+<Carousel activeIndex={index} onSelect={handleSelect}>
+      {banner.map((item, idx) => (
+        <Carousel.Item key={idx}>
             <img
-src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${banner[0]?.image}`}
+src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`}
               alt="Eco-friendly products" className="img-fluid banner-image" />
+        </Carousel.Item>
+      ))}
+    </Carousel>
+        
           </motion.div>
+
+
         </div>
       </div>
     </div>
