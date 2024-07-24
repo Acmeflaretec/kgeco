@@ -17,11 +17,9 @@ const WhoAreWe = () => {
             <h2 className="section-title">Who Are We?</h2>
             <div className="green-line"></div>
             <p className="section-text">
-              We are a dedicated team on a mission to make the world a greener place. Our goal is to provide eco-friendly products that promote a culture of sustainability and environmental responsibility. From oral care to home essentials, each of our products is designed with the planet in mind.
-            </p>
-            <p className="section-text">
-              Join us in our journey towards a more sustainable future. Together, we can make a significant impact on our environment by choosing products that are kind to the Earth.
-            </p>
+            Eco-friendly solutions are essential for our future as plastic pollution threatens our planet. Our business provides a wide range of eco-products, available online and offline, revolutionizing personal care and daily essentials with sustainable alternatives. By creating a hub for all eco-friendly products, we address challenges like time-consuming choices and the lack of affordable, quality items. Starting in India and expanding across world, our goal is to reduce plastic waste and promote sustainable living globally.
+                        </p>
+         
            <Link to={'/about'}>
                 <motion.button 
                   className="btn btn-primary learn-more-btn"

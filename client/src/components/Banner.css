@@ -1,3 +1,12 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@font-face {
+  font-family: 'BlockBerthold';
+  src: url('blockberthold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .banner {
     position: relative;
     background-color: #f8f9fa;
@@ -11,7 +20,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(165, 214, 167, 0.7) 0%, rgba(46, 125, 50, 0.7) 100%);
+    /* background: linear-gradient(135deg, rgba(165, 214, 167, 0.7) 0%, rgba(46, 125, 50, 0.7) 100%); */
+    background: linear-gradient(to right, #2D6507, #1F4A02);
     z-index: 1;
   }
   
@@ -22,6 +32,8 @@
   }
   
   .banner-title {
+    font-family: 'BlockBerthold', sans-serif;
+
     font-size: 3.5rem;
     font-weight: 700;
     line-height: 1.2;
@@ -34,9 +46,14 @@
   }
   
   .banner-subtitle {
+    font-family: 'Poppins', sans-serif;
     font-size: 1.25rem;
     margin-bottom: 2rem;
     max-width: 80%;
+  }
+  .ban-button{
+    font-family: 'Poppins', sans-serif;
+
   }
   
   .btn-primary {

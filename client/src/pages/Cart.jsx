@@ -106,15 +106,15 @@ try {
 if(item.qty <=  item.productId.stock && operation==='increment'){
   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
  
-  setProPriceTotal(null)
-  setSalePriceTotal(null)
+  // setProPriceTotal(null)
+  // setSalePriceTotal(null)
 
 
 }else if(item.qty>1 && operation==='decrement'){
   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
 
-  setProPriceTotal(null)
-    setSalePriceTotal(null)
+  // setProPriceTotal(null)
+  //   setSalePriceTotal(null)
 
 }
 
@@ -220,7 +220,7 @@ if(item.qty <=  item.productId.stock && operation==='increment'){
                             >
                               <FaMinus />
                             </button>
-                            <button className="btn btn-outline-secondary" disabled>
+                            <button className="btn btn-outline-secondary " disabled style={{ color: 'darkgreen' }}>
                               {item.qty}
                             </button>
                             <button

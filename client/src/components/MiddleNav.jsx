@@ -100,6 +100,31 @@ useEffect(()=>{
         <Link className="navbar-brand" to="/">
           <img src="logo.png" className="logo" alt="Logo" />
         </Link>
+
+        <div className="nav-actions mobile-action">
+            <Link to={userDetails? '/cart' :'/login'} className="nav-icon-link" title="Cart">
+              <i className="fas fa-shopping-cart"></i>
+              { cartData > 0 && <span className="badge">{cartData}</span>}
+            </Link>
+            <Link to={userDetails? '/wishlist' :'/login'} className="nav-icon-link" title="Wishlist">
+              <i className="fas fa-heart"></i>
+              {wishListData > 0 && <span className="badge">{wishListData}</span>}
+            </Link>
+            {userDetails ? (
+              <div className="dropdown">
+                <button className=" profile-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i className="fas fa-user text-white"></i>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                  <li><Link className="dropdown-item" to={userDetails? '/profile' :'/login'}>Profile</Link></li>
+                  <li><button className="dropdown-item" onClick={logoutUser}>Logout</button></li>
+                </ul>
+              </div>
+            ) : (
+              <Link to="/login" className="btn btn-primary login-btn">Login</Link>
+            )}
+          </div>
+
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -118,7 +143,7 @@ useEffect(()=>{
               <Link className="nav-link" to="/contactus">Contact</Link>
             </li>
           </ul>
-          <div className="nav-actions">
+          <div className="nav-actions pc-action">
             <Link to={userDetails? '/cart' :'/login'} className="nav-icon-link" title="Cart">
               <i className="fas fa-shopping-cart"></i>
               { cartData > 0 && <span className="badge">{cartData}</span>}

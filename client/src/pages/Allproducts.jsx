@@ -240,8 +240,8 @@ const Allproducts = () => {
                    ! isInCart(item._id)?  <button className="btn btn-success btn-sm" onClick={()=> addCart(item._id)}>
                   <i className="fas fa-shopping-cart"></i> Add to Cart
                 </button>  :
-                <button className="btn btn-danger btn-sm" onClick={()=> removeCart(item._id)}>
-                <i className="fas fa-shopping-cart"></i> Remove from Cart
+                <button className="btn btn-success btn-sm" onClick={()=> navigate('/cart')}>
+                <i className="fas fa-shopping-cart"></i> Go to Cart
               </button>
                  }
 
