@@ -55,6 +55,9 @@ const productSchema = new mongoose.Schema({
     },
     reviews: {
         type: Array
+    },
+    benefits:{
+        type:Array
     }
 },
 {

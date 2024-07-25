@@ -10,6 +10,13 @@ import { Link } from "react-router-dom";
 import { Icon } from "@mui/material";
 
 function Author({ image, name, desc }) {
+  const truncateText = (text, wordLimit) => {
+    const words = text.split(' ');
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(' ') + '...';
+    }
+    return text;
+  };
   return (
     <Box display="flex" alignItems="center" px={1} py={0.5}>
       <Box mr={2}>
@@ -19,8 +26,8 @@ function Author({ image, name, desc }) {
         <Typography variant="button" fontWeight="medium">
           {name}
         </Typography>
-        <Typography variant="caption" color="secondary">
-          {desc}
+        <Typography variant="caption" color="secondary" x={{ whiteSpace: 'pre-line' }}>
+        {truncateText(desc, 10)}
         </Typography>
       </Box>
     </Box>

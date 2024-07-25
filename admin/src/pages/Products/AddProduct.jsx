@@ -16,6 +16,25 @@ const AddProduct = () => {
   const { data, isLoading } = useGetCategory({ pageNo: 1, pageCount: 100 });
   const { mutateAsync: AddProduct, isLoading: loading } = useAddProduct()
   const [images, setImage] = useState([])
+
+
+  //benefits 
+  const [benefits, setBenefits] = useState([])
+  const [benefitInput, setBenefitInput] = useState('')
+  const handleBenefitChange = (e) => {
+    setBenefitInput(e.target.value);
+  }
+  const handleAddBenefit = () => {
+    if (benefitInput.trim()) {
+      setBenefits(prev => [...prev, benefitInput.trim()]);
+      setBenefitInput('');
+    }
+  }
+
+console.log('ben',benefits)
+console.log('ben in',benefitInput)
+  //
+  
   const handleChange = (e) => {
     setDetails(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -27,15 +46,7 @@ const AddProduct = () => {
     console.log(details);
     console.log(images);
     try {
-      // if (!details?.name) {
-      //   return toast.error("name is required")
-      // }
-      // if (!details?.desc) {
-      //   return toast.error("description is required")
-      // }
-      // if (!details?.image) {
-      //   return toast.error("image is required")
-      // }
+   
       const formData = new FormData();
       images?.forEach((image) => {
         formData.append('images', image, image.name);
@@ -46,8 +57,9 @@ const AddProduct = () => {
         }
       }
       formData.append('category', category?._id);
-      // typeof (details.image) == 'object' && formData.append("image", details.image, details?.image?.name);
-      AddProduct(formData)
+      formData.append('benefits', JSON.stringify(benefits)); // Add benefits to formData
+
+       AddProduct(formData)
         .then((res) => {
           toast.success(res?.message ?? "category added");
           navigate('/products')
@@ -164,33 +176,7 @@ const AddProduct = () => {
               onChange={handleChange}
             />
           </Grid>
-          {/* <Grid xs={12} pl={3} pt={2}>
-            <Typography variant="body2">variations</Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Input
-              placeholder="4 piece"
-              name="type1"
-              value={details?.type1 || ''}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Input
-              placeholder="6 piece"
-              name="type2"
-              value={details?.type2 || ''}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Input
-              placeholder="9 piece"
-              name="type3"
-              value={details?.type3 || ''}
-              onChange={handleChange}
-            />
-          </Grid> */}
+       
           <Grid item xs={12}>
             <Input
               id="description"
@@ -202,7 +188,30 @@ const AddProduct = () => {
               rows={5}
             />
           </Grid>
+
+    {/* Benefits Input */}
+    <Grid item xs={12}>
+            <TextField
+              placeholder="Add Benefit"
+              value={benefitInput}
+              onChange={handleBenefitChange}
+              sx={{ mr: 2 }}
+            />
+            <Button onClick={handleAddBenefit} variant='contained'>Add</Button>
+            <Box mt={2}>
+              {benefits.map((benefit, index) => (
+                <Typography key={index} variant="body2">
+                  {benefit}
+                </Typography>
+              ))}
+            </Box>
+          </Grid>
+        
+          
         </Grid>
+
+
+        
         <Grid item container spacing={2} xs={12} sm={12} md={6} py={5}>
           <Grid xs={12}>
             <DropZone dispatch={setImage} />

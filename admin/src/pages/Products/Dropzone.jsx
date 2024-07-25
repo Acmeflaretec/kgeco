@@ -12,7 +12,7 @@ const DropZone = ({ dispatch }) => {
     myDropzone = new Dropzone('#my-dropzone', {
       // url: 'http://localhost:5000/api/v1/products', 
       paramName: 'file', // The name to use for the file upload
-      acceptedFiles: '.png',
+      acceptedFiles:'image/*',
       accept: function (file, done) {
         if (file.size === 0) {
           done('Folder uploads are not allowed. Please select individual files.');

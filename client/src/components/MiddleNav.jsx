@@ -63,8 +63,8 @@ useEffect(()=>{
        try {
  
          const response = await axiosInstance.get(`/user/getwishlist`);
-         setWishListData(response.data.data.length)
-      //   console.log(response.data.data.length)
+         setWishListData(response?.data?.data?.length)
+      
          
        } catch (error) {
          console.log(error)
