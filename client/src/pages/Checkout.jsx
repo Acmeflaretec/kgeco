@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
 
+
 const Checkout = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -17,6 +18,9 @@ const [discountTotal,setDiscountTotal] = useState(0)
 
 const [addressDatas,setAddressDatas] = useState([])
 const [orderAddress,setOrderAddress] = useState({})
+
+const [loadingIndex, setLoadingIndex] = useState(null);
+
 
 const fetchAddress = async(urlQ) =>{
 
@@ -136,8 +140,8 @@ const handleRemoveItem =async (itemId) => {
    const updatedCartItems = cartData.item.filter((item) => item._id !== itemId);
    const updatedTotalPrice = updatedCartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-setProPriceTotal(null)
-setSalePriceTotal(null)
+// setProPriceTotal(null)
+// setSalePriceTotal(null)
    setCartData({
        ...cartData,
        item: updatedCartItems,
@@ -174,34 +178,39 @@ console.log(totalProPrice)
 
 
 
-  const handleQuantityChange =async (item, operation) => {
+  const handleQuantityChange =async (item, operation,index) => {
     let QtyApi = item.qty
     if(operation==='increment'){
       QtyApi +=1
     }else if (operation==='decrement'){
       QtyApi -=1
     }
+// Optimistically update the UI
+const updatedCartData = { ...cartData };
+updatedCartData.item[index].qty = QtyApi;
+setCartData(updatedCartData);
+
+setLoadingIndex(index); // Set loading state
+
     try {
-       
-    
     if(item.qty <=  item.productId.stock && operation==='increment'){
       const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-      console.log('incrr')
-     
-    
-    
+      fetchData()
     }else if(item.qty>1 && operation==='decrement'){
       const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-    
-      console.log('decrrr')
-    
+      fetchData()
     }
     
       } catch (error) {
+        // Revert the state change if the API call fails
+    const revertedCartData = { ...cartData };
+    revertedCartData.item[index].qty = item.qty;
+    setCartData(revertedCartData);
        console.log(error)
+      } finally {
+        setLoadingIndex(null); // Clear loading state
       }
-    
-      fetchData()
+      
      }
 
 
@@ -356,20 +365,7 @@ await fetchAddress('/address')
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
   // static 
    const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -517,8 +513,8 @@ await fetchAddress('/address')
                   <h5 className="mb-0 text-success">2. Review Items</h5>
                 </div>
                 <div className="card-body">
-                  {cartData?.item?.map(product => (
-                    <div key={product.id} className="row mb-4 align-items-center">
+                  {cartData?.item?.map((product,index) => (
+                    <div key={product._id} className="row mb-4 align-items-center">
                       <div className="col-md-3">
                         <img
                           src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${product.productId.image[0]}`}
@@ -533,12 +529,35 @@ await fetchAddress('/address')
                           <span className="bg-success-subtle text-success px-2 py-1 rounded-pill">{product.productId.discount}% off</span>
                         </div>
                       </div>
+
+
                       <div className="col-md-3 mt-4">
-                        <div className="input-group">
-                          <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'decrement')} disabled={product.qty === 1}>-</button>
+                        {/* <div className="input-group">
+                          <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'decrement',index)} disabled={product.qty === 1}>-</button>
                           <input type="text" className="form-control text-center" value={product.qty} readOnly  />
-                          <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'increment')}>+</button>
-                        </div>
+                          <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'increment',index)}>+</button>
+                        </div> */}
+     <div className="input-group">
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={() => handleQuantityChange(product, 'decrement', index)}
+              disabled={product.qty === 1 || loadingIndex === index}
+            >
+              -
+            </button>
+            <input type="text" className="form-control text-center" value={product.qty} readOnly />
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={() => handleQuantityChange(product, 'increment', index)}
+              disabled={loadingIndex === index}
+            >
+              +
+            </button>
+          </div>
+
+
                         <button className="btn btn-link text-danger mt-2" onClick={() => handleRemoveItem(product._id)}>
                           <FaRegTrashAlt /> Remove
                         </button>
@@ -547,8 +566,12 @@ await fetchAddress('/address')
                   ))}
                   <div className="d-flex justify-content-between mt-4">
                     <button className="btn btn-outline-secondary" onClick={() => setCurrentStep(1)}>Back</button>
-                    <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
-                     disabled={salePriceTotal<80} >{salePriceTotal<80? 'add above ₹80 to continue': 'Continue to Payment'} </button>
+                    {/* <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
+                     disabled={salePriceTotal<80} >{salePriceTotal<80? 'add above ₹80 to continue': 'Continue to Payment'} 
+                     </button> */}
+                      <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
+                       >  Continue to Payment
+                     </button>
                   </div>
                   {console.log('products total',salePriceTotal)}
                   {/*  */}

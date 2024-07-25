@@ -19,8 +19,8 @@ function Banner() {
         try {
   
           const response = await axiosInstance.get(`/banners`);
-          setBanner(response.data.data)
-          console.log(response.data.data)
+          setBanner(response?.data?.data)
+         
           
         } catch (error) {
           console.log(error)
@@ -90,7 +90,7 @@ function Banner() {
           >
 
 <Carousel activeIndex={index} onSelect={handleSelect}>
-      {banner.map((item, idx) => (
+      {banner?.map((item, idx) => (
         <Carousel.Item key={idx}>
             <img
 src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`}

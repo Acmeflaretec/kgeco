@@ -45,6 +45,7 @@ const getBannerById = async (req, res) => {
 
 const updateBanner = async (req, res) => {
   const { _id, title, subtitle, url, description, status } = req.body;
+  console.log(req.body)
   const image = req?.file?.filename;
   try {
     const data = await Banner.findById(_id);
@@ -61,7 +62,7 @@ const updateBanner = async (req, res) => {
       });
     }
     await Banner.updateOne({ _id }, {
-      $set: { title, subtitle, url, description, status, ...(image && { image }) }
+      $set: { title, subtitle, url, description, status:status, ...(image && { image }) }
     })
     res.status(200).json({ data, message: 'Banner updated successfully' });
   } catch (error) {

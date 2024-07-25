@@ -20,12 +20,14 @@ import SingleOrder from './pages/SingleOrder';
 import Wishlist from './pages/Wishlist';
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import ScrollToTop from './ScrollToTop';
 
 function App() {
 
   return (
     <>
      <Provider store={store}> 
+     <ScrollToTop />
      <Routes>
       <Route path='/' element={<Home/>}/>
       <Route path='/cart' element={<Cart/>}/>

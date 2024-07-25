@@ -31,16 +31,19 @@ const Allproducts = () => {
   const [cartItems, setCartItems] = useState([]);
   const [notif, setNotif] = useState(true);
 
+  const [loading, setLoading] = useState({}); // Add loading state
+
+
   let urlQuery = `/products?page=${page}&limit=${limit}&sortField=createdAt&sortOrder=desc`;
 
   const fetchProducts = async (urlQ) => {
     try {
       const response = await axiosInstance.get(urlQ);
-      setProducts((prevProducts) => [...prevProducts, ...response.data.data]);
+      setProducts((prevProducts) => [...prevProducts, ...response?.data?.data]);
       const wishlistResponse = await axiosInstance.get('/user/getwishlist');
-      setWishlistItems(wishlistResponse.data.data);
+      setWishlistItems(wishlistResponse?.data?.data);
       const cartResponse = await axiosInstance.get('/user/getcarts');
-      setCartItems(cartResponse.data.data.item);
+      setCartItems(cartResponse?.data?.data?.item);
     } catch (error) {
       console.error('Error fetching products:', error);
     }
@@ -49,7 +52,7 @@ const Allproducts = () => {
   const fetchCategory = async (urlC) => {
     try {
       const response = await axiosInstance.get(urlC);
-      setCategory(response.data.data);
+      setCategory(response?.data?.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -98,7 +101,7 @@ const Allproducts = () => {
   const fetchCart = async () => {
     try {
       const cartResponse = await axiosInstance.get('/user/getcarts');
-      setCartItems(cartResponse.data.data.item);
+      setCartItems(cartResponse?.data?.data?.item);
     } catch (error) {
       console.error('Error fetching cart:', error);
     }
@@ -107,7 +110,7 @@ const Allproducts = () => {
   const fetchWishlist = async () => {
     try {
       const wishlistResponse = await axiosInstance.get('/user/getwishlist');
-      setWishlistItems(wishlistResponse.data.data);
+      setWishlistItems(wishlistResponse?.data?.data);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
     }
@@ -141,16 +144,32 @@ const Allproducts = () => {
     }
   };
 
+  // const addCart = async (proId) => {
+  //   if (!userDetails) {
+  //     navigate('/login');
+  //   } else {
+  //     try {
+  //       const response = await axiosInstance.patch(`/user/addToCart/${proId}`);
+  //       await fetchCart();
+  //       setNotif(prev => !prev);
+  //     } catch (error) {
+  //       console.error('Error adding to cart:', error);
+  //     }
+  //   }
+  // };
   const addCart = async (proId) => {
     if (!userDetails) {
       navigate('/login');
     } else {
+      setLoading(prev => ({ ...prev, [proId]: true })); // Set loading state
       try {
         const response = await axiosInstance.patch(`/user/addToCart/${proId}`);
         await fetchCart();
         setNotif(prev => !prev);
       } catch (error) {
-        console.error('Error adding to cart:', error);
+        console.log(error);
+      } finally {
+        setLoading(prev => ({ ...prev, [proId]: false })); // Reset loading state
       }
     }
   };
@@ -160,7 +179,7 @@ const Allproducts = () => {
       navigate('/login');
     } else {
       try {
-        const itemId = cartItems.find(item => item.productId._id === proId)._id;
+        const itemId = cartItems?.find(item => item?.productId?._id === proId)._id;
         const response = await axiosInstance.patch(`/user/removeFromCart/${itemId}`);
         await fetchCart();
         setNotif(prev => !prev);
@@ -171,13 +190,19 @@ const Allproducts = () => {
   };
 
   const isInWishlist = (productId) => {
-    return wishlistItems.some((item) => item._id === productId);
+    return wishlistItems.some((item) => item?._id === productId);
   };
 
   const isInCart = (productId) => {
-    return cartItems.some((item) => item.productId._id === productId);
+    return cartItems?.some((item) => item?.productId?._id === productId);
   };
-
+  const truncateText = (text, wordLimit) => {
+    const words = text.split(' ');
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(' ') + '...';
+    }
+    return text;
+  };
 
   // dummy data and fn's
   const [productsD, setProductsD] = useState([]);
@@ -203,8 +228,8 @@ const Allproducts = () => {
             Our Products
           </motion.h2>
           <Row>
-          {products.map((item, index) => (
-            <Col key={item.id} md={4} className="mb-4">
+          {products?.map((item, index) => (
+            <Col key={item?._id} md={4} className="mb-4">
               <motion.div 
                 className="product-card"
                 initial={{ opacity: 0, y: 50 }}
@@ -213,36 +238,45 @@ const Allproducts = () => {
               >
                 <Link to={`/product/${item._id}`} className="product-link">
                   <div className="product-image">
-                    <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.image}`} alt={item.name} className="img-fluid" />
+                    <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`} alt={item?.name} className="img-fluid" />
                   </div>
                   <div className="product-info">
-                    <h3 className="product-title">{item.name}</h3>
+                    <h3 className="product-title">{item?.name}</h3>
                     <div className="price-info">
-                      <span className="current-price">₹{item.sale_rate}</span>
-                      <span className="original-price">₹{item.price}</span>
-                      <span className="discount-badge">{item.discount}% off</span>
+                      <span className="current-price">₹{item?.sale_rate}</span>
+                      <span className="original-price">₹{item?.price}</span>
+                      <span className="discount-badge">{item?.discount}% off</span>
                     </div>
-                    {/* <p className="product-quantity">{item.quantity} gm</p> */}
+                    <p className="product-quantity"> {truncateText(item?.subheading, 20)} </p>
                   </div>
                 </Link>
                 <div className="product-actions">
                   {
-! isInWishlist(item._id) ?  <button className="btn btn-outline-success btn-sm"  onClick={ ()=> addWishlist(item._id)}>
+! isInWishlist(item?._id) ?  <button className="btn btn-outline-success btn-sm"  onClick={ ()=> addWishlist(item?._id)}>
 <i className="fa-solid fa-heart"></i>
 </button>   :
- <button className="btn btn-outline-danger btn-sm" onClick={()=> removeWishlist(item._id)}>
+ <button className="btn btn-outline-danger btn-sm" onClick={()=> removeWishlist(item?._id)}>
  <i className="fa-solid fa-heart"></i>
 </button>
 
                   }
                  
                  {
-                   ! isInCart(item._id)?  <button className="btn btn-success btn-sm" onClick={()=> addCart(item._id)}>
-                  <i className="fas fa-shopping-cart"></i> Add to Cart
-                </button>  :
-                <button className="btn btn-success btn-sm" onClick={()=> navigate('/cart')}>
+                   ! isInCart(item?._id)?  (
+              
+                <button className="btn btn-success btn-sm" onClick={() => addCart(item?._id)} disabled={loading[item?._id]}>
+                      {loading[item?._id] ? (
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      ) : (
+                        <>
+                          <i className="fas fa-shopping-cart"></i> Add to Cart
+                        </>
+                      )}
+                    </button>
+                ) :
+            (    <button className="btn btn-warning btn-sm" onClick={()=> navigate('/cart')}>
                 <i className="fas fa-shopping-cart"></i> Go to Cart
-              </button>
+              </button> )
                  }
 
 

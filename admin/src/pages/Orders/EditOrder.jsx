@@ -119,7 +119,7 @@ const EditOrder = () => {
                   <Typography variant='body2'>{product?.product_id?.name}</Typography>
                   <Typography variant='caption'>{product?.product_id?.brand}</Typography>
                   <Typography>₹{product?.price}</Typography>
-                  <Typography fontSize={15}>qty x{product?.qty}</Typography>
+                  <Typography fontSize={15}>quantity: {product?.qty}</Typography>
                 </Grid>
                 <Grid p={1} container spacing={1} xs={12}>
                   {product?.product_id?.image?.map(image => (

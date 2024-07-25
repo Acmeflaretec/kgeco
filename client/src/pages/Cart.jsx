@@ -1,17 +1,20 @@
 import React, { useState,useEffect } from 'react';
 import axiosInstance from '../axios'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaReceipt } from 'react-icons/fa';
 
 function Cart() {
-
+  const navigate = useNavigate();
   const [cartData,setCartData] = useState([])
   const [salePriceTotal,setSalePriceTotal] = useState(0)
   const [proPriceTotal,setProPriceTotal] = useState(0)
   const [discountTotal,setDiscountTotal] = useState(0)
   const [notif,setNotif] = useState(true)
+
+  const [loadingIndex, setLoadingIndex] = useState(null);
+
 
 
 const calculateTotalSalePrice = (items) => {
@@ -93,37 +96,59 @@ useEffect(()=>{
 
  
 
-  const handleQuantityChange =async (item, operation,index) => {
-let QtyApi = item.qty
-if(operation==='increment'){
-  QtyApi +=1
-}else if (operation==='decrement'){
-  QtyApi -=1
-}
-try {
-   
+//   const handleQuantityChange =async (item, operation,index) => {
+// let QtyApi = item.qty
+// if(operation==='increment'){
+//   QtyApi +=1
+// }else if (operation==='decrement'){
+//   QtyApi -=1
+// }
+// try {
+// if(item.qty <=  item.productId.stock && operation==='increment'){
+//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
+// }else if(item.qty>1 && operation==='decrement'){
+//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
 
-if(item.qty <=  item.productId.stock && operation==='increment'){
-  const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
- 
-  // setProPriceTotal(null)
-  // setSalePriceTotal(null)
+// }
+//   } catch (error) {
+//    console.log(error)
+//   }
+//   fetchData()
+//  }
 
+const handleQuantityChange = async (item, operation, index) => {
+  let newQty = item.qty;
 
-}else if(item.qty>1 && operation==='decrement'){
-  const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-
-  // setProPriceTotal(null)
-  //   setSalePriceTotal(null)
-
-}
-
-  } catch (error) {
-   console.log(error)
+  if (operation === 'increment' && item.qty < item.productId.stock) {
+    newQty += 1;
+  } else if (operation === 'decrement' && item.qty > 1) {
+    newQty -= 1;
   }
 
-  fetchData()
- }
+  // Optimistically update the UI
+  const updatedCartData = { ...cartData };
+  updatedCartData.item[index].qty = newQty;
+  setCartData(updatedCartData);
+
+  setLoadingIndex(index); // Set loading state
+
+  try {
+    const response = await axiosInstance.patch(`/user/updateQty`, { qty: newQty, productId: item.productId._id });
+
+    // Fetch the updated cart data
+    fetchData();
+  } catch (error) {
+    console.log(error);
+
+    // Revert the state change if the API call fails
+    const revertedCartData = { ...cartData };
+    revertedCartData.item[index].qty = item.qty;
+    setCartData(revertedCartData);
+  } finally {
+    setLoadingIndex(null); // Clear loading state
+  }
+};
+
 
 
 
@@ -212,7 +237,7 @@ if(item.qty <=  item.productId.stock && operation==='increment'){
                           <span className="bg-success-subtle">{item.productId.discount}% off</span>
                         </div>
                         <div className="d-flex align-items-center">
-                          <div className="btn-group me-3" role="group">
+                          {/* <div className="btn-group me-3" role="group">
                             <button
                               className="btn btn-outline-secondary"
                               onClick={() => handleQuantityChange(item, 'decrement',index)}
@@ -229,7 +254,31 @@ if(item.qty <=  item.productId.stock && operation==='increment'){
                             >
                               <FaPlus />
                             </button>
-                          </div>
+                          </div> */}
+
+
+                          <div className="btn-group me-3" role="group">
+  <button
+    className="btn btn-outline-secondary"
+    onClick={() => handleQuantityChange(item, 'decrement', index)}
+    disabled={item.qty === 1 || loadingIndex === index}
+  >
+    {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaMinus />}
+  </button>
+  <button className="btn btn-outline-secondary" disabled style={{ color: 'darkgreen' }}>
+    {item.qty}
+  </button>
+  <button
+    className="btn btn-outline-secondary"
+    onClick={() => handleQuantityChange(item, 'increment', index)}
+    disabled={loadingIndex === index}
+  >
+    {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaPlus />}
+  </button>
+</div>
+
+
+
                           <button
                             className="btn btn-outline-danger"
                             onClick={() => handleRemoveItem(item._id)}
@@ -267,9 +316,12 @@ if(item.qty <=  item.productId.stock && operation==='increment'){
                     <span>Total:</span>
                     <span>₹{salePriceTotal}</span>
                   </div>
-                  <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-4">
+                  {/* <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-4" >
                     Proceed to Checkout
-                  </Link>
+                  </Link> */}
+                   <button className="btn btn-success btn-lg w-100 mt-4" onClick={() => navigate('/checkout')} 
+                     disabled={salePriceTotal<80} >{salePriceTotal<80? 'Add above ₹80 to continue': 'Proceed to Checkout'} 
+                     </button>
                 </div>
               </div>
             </div>

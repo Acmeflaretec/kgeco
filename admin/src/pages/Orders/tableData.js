@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
 import Box from 'components/Box';
+import { useNavigate } from 'react-router-dom';
+
 import Typography from 'components/Typography';
 import Table from 'examples/Tables/Table';
 import { Avatar, Select, MenuItem } from '@mui/material';
@@ -45,12 +47,12 @@ const TableData = () => {
 
   const columns = [
     { name: 'User', align: 'left' },
-    { name: 'PaymentMode', align: 'center' },
-    { name: 'Amount', align: 'center' },
+    // { name: 'PaymentMode', align: 'center' },
+    // { name: 'Amount', align: 'center' },
     { name: 'orderPerson', align: 'center' },
-    { name: 'Address', align: 'center' },
+    // { name: 'Address', align: 'center' },
     // { name: 'Products', align: 'center' },
-    { name: 'Ordered', align: 'center' },
+    // { name: 'Ordered', align: 'center' },
     { name: 'Status', align: 'center' },
     { name: 'Action', align: 'center' },
   ];
@@ -58,41 +60,44 @@ const TableData = () => {
   const rows = data?.data?.map(item => ({
     User: (
       <Typography variant="caption" color="secondary" fontWeight="medium">
-        {item?.userId?.username} ({item?.userId?.email})
+         <Link to={`/orders/editOrder/${item?._id}`} state={{ item }}>
+         {item?.userId?.username} <br /> 
+         {item?.userId?.email}
+         </Link>
+    
       </Typography>
     ),
-    PaymentMode: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
-        {item?.payment_mode}
-      </Typography>
-    ),
-    Amount: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
-        ₹{item?.amount}
-      </Typography>
-    ),
+    // PaymentMode: (
+    //   <Typography variant="caption" color="secondary" fontWeight="medium">
+    //     {item?.payment_mode}
+    //   </Typography>
+    // ),
+    // Amount: (
+    //   <Typography variant="caption" color="secondary" fontWeight="medium">
+    //     ₹{item?.amount}
+    //   </Typography>
+    // ),
     orderPerson: (
       <Typography variant="caption" color="secondary" fontWeight="medium">
         {item?.address?.firstname} {item?.address?.lastname}
       </Typography>
     ),
-    Address: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
-        {item?.address?.address_line_1}, {item?.address?.address_line_2},{item?.address?.city}, {item?.address?.state},{item?.address?.zip}, {item?.address?.mobile}
-      </Typography>
-    ),
-    // Products: item?.products?.item.map(product => (
-    //   console.log('product', product),
-    //   <Blogs
-    //     key={product.product_id._id}
-    //     image={`${process.env.REACT_APP_API_URL}/uploads/${product.product_id.image[0]}`}
-    //     name={product.product_id.name}
-    //     category={product.product_id.category}
-    //     qty={product.qty}
-    //     totalPrice={product.price * product.qty}
-    //   />
-      
-    // )),
+//     Address: (
+//       <Typography
+//   variant="caption"
+//   color="secondary"
+//   fontWeight="medium"
+//   sx={{ textAlign: 'left', display: 'block' }}
+// >
+//   {item?.address?.address_line_1},<br />
+//   {item?.address?.address_line_2},<br />
+//   {item?.address?.city},<br />
+//   {item?.address?.state}, {item?.address?.zip},<br />
+//   {item?.address?.mobile}
+// </Typography>
+
+//     ),
+   
     Status: (
       <Select
         value={item?.status}
@@ -105,11 +110,11 @@ const TableData = () => {
         ))}
       </Select>
     ),
-    Ordered: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
-        {new Date(item?.createdAt).toDateString()}
-      </Typography>
-    ),
+    // Ordered: (
+    //   <Typography variant="caption" color="secondary" fontWeight="medium">
+    //     {new Date(item?.createdAt).toDateString()}
+    //   </Typography>
+    // ),
     Action: (
       // <Link to={`/orders/editOrder/${item?._id}`}>
       <Link to={`/orders/editOrder/${item?._id}`} state={{ item }}>

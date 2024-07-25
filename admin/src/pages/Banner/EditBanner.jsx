@@ -81,6 +81,9 @@ const EditBanner = () => {
          console.error(error)
       }
    }
+
+
+   console.log('data ',data)
    return (
       <PageLayout
          title={'Edit Banner'}
