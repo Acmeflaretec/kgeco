@@ -1,4 +1,6 @@
-import { Button, Grid,ToggleButton } from '@mui/material'
+
+
+import { Button, Grid, ToggleButton, TextField, IconButton } from '@mui/material'
 import Input from 'components/Input'
 import PageLayout from 'layouts/PageLayout'
 import React, { useEffect, useState } from 'react'
@@ -7,79 +9,115 @@ import toast from 'react-hot-toast'
 import { useGetProductById } from 'queries/ProductQuery'
 import { useNavigate, useParams } from 'react-router-dom'
 import ImageList from './ImageList'
-import { useUpdateProduct,useDeleteProduct } from 'queries/ProductQuery'
+import { useUpdateProduct, useDeleteProduct } from 'queries/ProductQuery'
+import Box from 'components/Box'
+import CancelIcon from '@mui/icons-material/Cancel'
 
 const EditProduct = () => {
    const { id } = useParams()
    const navigate = useNavigate()
    const [details, setDetails] = useState({})
-   const { data, isLoading } = useGetProductById({ id });
+   const { data, isLoading } = useGetProductById({ id })
+
+   const [benefits, setBenefits] = useState([])
+   const [benefitInput, setBenefitInput] = useState('')
+
+
    useEffect(() => {
       setDetails(data?.data)
+       setBenefits(data?.data?.benefits)
+     // setBenefits(data?.data?.benefits || []);
+
    }, [data])
    const { mutateAsync: updateProduct, isLoading: loading } = useUpdateProduct()
-   const { mutateAsync: deleteProduct, isLoading: deleting } =useDeleteProduct()
+   const { mutateAsync: deleteProduct, isLoading: deleting } = useDeleteProduct()
+
    const handleChange = (e) => {
-      setDetails(prev => ({ ...prev, [e.target.name]: e.target.value }));
-   };
+      setDetails(prev => ({ ...prev, [e.target.name]: e.target.value }))
+   }
+
    useEffect(() => {
-      console.log(details);
+      console.log(details)
    }, [details])
-   const handleSubmit = () => {
+
+   const handleSubmit =async () => {
       try {
-         // if (!details?.name) {
-         //   return toast.error("name is required")
-         // }
-         // if (!details?.desc) {
-         //   return toast.error("description is required")
-         // }
-         // if (!details?.image) {
-         //   return toast.error("image is required")
-         // }
-         const formData = new FormData();
-
-         const image = details?.image?.filter((image) => typeof (image) === 'string');
-         console.log(image);
-         formData.append('image', JSON.stringify(image));
+         const formData = new FormData()
+         const image = details?.image?.filter((image) => typeof image === 'string')
+         formData.append('image', JSON.stringify(image))
          details?.image?.forEach((image) => {
-            if (typeof (image) == 'object') {
-               formData.append('images', image, image.name);
-               console.log(image);
+            if (typeof image === 'object') {
+               formData.append('images', image, image.name)
             }
-         });
+         })
          for (const key in details) {
-            if (details.hasOwnProperty(key) && key !== "image") {
-               formData.append(key, details[key]);
-             }
+            if (details.hasOwnProperty(key) && key !== 'image') {
+               formData.append(key, details[key])
+            }
          }
+         // benefits?.forEach((ben, index) => {
+         //    console.log(`benefits[${index}]`, ben)
+         //    formData.append(`benefits[${index}]`, ben);
+         //  });
+         console.log('benefits near formdata',benefits)
 
+         
+         benefits.forEach((ben, index) => {
+            formData.append('benefits', JSON.stringify(ben));
+          });
+          
          updateProduct(formData)
             .then((res) => {
                if (res) {
-                  toast.success(res?.message ?? "product updated successfully");
+                  toast.success(res?.message ?? 'Product updated successfully')
                   navigate('/products')
                }
             })
             .catch((err) => {
-               toast.error(err?.message ?? "Something went wrong");
-            });
+               toast.error(err?.message ?? 'Something went wrong')
+            })
       } catch (error) {
          console.error(error)
       }
    }
 
+
+  
+   
+
    const handleDelete = () => {
       deleteProduct(details)
          .then((res) => {
             if (res) {
-               toast.success(res?.message ?? "products deleted Successfully");
+               toast.success(res?.message ?? 'Product deleted successfully')
                navigate('/products')
             }
          })
          .catch((err) => {
-            toast.error(err?.message ?? "Something went wrong");
-         });
-   };
+            toast.error(err?.message ?? 'Something went wrong')
+         })
+   }
+
+   // Benefits
+ 
+
+   const handleBenefitChange = (e) => {
+      setBenefitInput(e.target.value)
+   }
+
+   const handleAddBenefit = () => {
+      if (benefitInput.trim()) {
+         setBenefits(prev => [...prev, benefitInput.trim()])
+         console.log(benefits)
+         console.log(benefitInput)
+         setBenefitInput('')
+      }
+   }
+
+   const handleRemoveBenefit = (index) => {
+      setBenefits(prev => prev.filter((_, i) => i !== index))
+   }
+console.log('benefits for server pass',benefits)
    return (
       <PageLayout
          title={'Edit Product'}
@@ -89,7 +127,7 @@ const EditProduct = () => {
                <Grid item container spacing={2} xs={12} sm={12} md={6} py={5}>
                   <Grid item xs={12} sm={12} md={6}>
                      <Input
-                        required   
+                        required
                         placeholder="Item name"
                         id="name"
                         name="name"
@@ -159,48 +197,20 @@ const EditProduct = () => {
                         onChange={handleChange}
                      />
                   </Grid>
-                  {/* <Grid xs={12} pl={3} pt={2}>
-                     <Typography variant="body2">variations</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                     <Input
-                        placeholder="4 piece"
-                        name="type1"
-                        value={details?.type1 || ''}
-                        onChange={handleChange}
-                     />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                     <Input
-                        placeholder="6 piece"
-                        name="type2"
-                        value={details?.type2 || ''}
-                        onChange={handleChange}
-                     />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                     <Input
-                        placeholder="9 piece"
-                        name="type3"
-                        value={details?.type3 || ''}
-                        onChange={handleChange}
-                     />
-                  </Grid> */}
                   <Grid item xs={12} sm={6}>
-                  <Typography variant="caption">
-                  Product status &nbsp;
-                  </Typography>
-                  <ToggleButton
-                     value={details?.isAvailable}
-                     selected={details?.isAvailable}
-                     onChange={() => {
-                        setDetails(prev => ({ ...prev, isAvailable: !details?.isAvailable}))
-                     }}
-                     // onChange={handleChange}
-                  >
-                     {details?.isAvailable ? 'Active' : 'Blocked'}
-                  </ToggleButton>
-               </Grid>
+                     <Typography variant="caption">
+                        Product status &nbsp;
+                     </Typography>
+                     <ToggleButton
+                        value={details?.isAvailable}
+                        selected={details?.isAvailable}
+                        onChange={() => {
+                           setDetails(prev => ({ ...prev, isAvailable: !details?.isAvailable }))
+                        }}
+                     >
+                        {details?.isAvailable ? 'Active' : 'Blocked'}
+                     </ToggleButton>
+                  </Grid>
                   <Grid item xs={12}>
                      <Input
                         id="description"
@@ -212,10 +222,34 @@ const EditProduct = () => {
                         rows={5}
                      />
                   </Grid>
+
+                  {/* Benefits Input */}
+                  <Grid item xs={12}>
+                     <TextField
+                        placeholder="Add Benefit"
+                        value={benefitInput}
+                        onChange={handleBenefitChange}
+                        sx={{ mr: 2 }}
+                     />
+                     <Button onClick={handleAddBenefit} variant='contained'>Add</Button>
+                     <Box mt={2}>
+                        {benefits?.map((benefit, index) => (
+                           <Box key={index} display="flex" alignItems="center">
+                              <Typography variant="body2">
+                                 {benefit}
+                              </Typography>
+                              <IconButton size="small" onClick={() => handleRemoveBenefit(index)}>
+                                 <CancelIcon fontSize="small" />
+                              </IconButton>
+                           </Box>
+                        ))}
+                     </Box>
+                  </Grid>
+
                   <Grid item xs={12} sm={12} mt={'auto'}>
                      <Grid item xs={12}>
                         <Button onClick={handleSubmit}>UPDATE PRODUCT</Button>
-                        <Button color="secondary" onClick={handleDelete}>Delete PRODUCT</Button>
+                        <Button color="secondary" onClick={handleDelete}>DELETE PRODUCT</Button>
                      </Grid>
                   </Grid>
                </Grid>

@@ -57,7 +57,7 @@ const productSchema = new mongoose.Schema({
         type: Array
     },
     benefits:{
-        type:Array
+        type:[String]
     }
 },
 {

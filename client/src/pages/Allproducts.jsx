@@ -189,13 +189,27 @@ const Allproducts = () => {
     }
   };
 
+  // const isInWishlist = (productId) => {
+  //   return wishlistItems.some((item) => item?._id === productId);
+  // };
+
+  // const isInCart = (productId) => {
+  //   return cartItems?.some((item) => item?.productId?._id === productId);
+  // };
+
   const isInWishlist = (productId) => {
+    if (wishlistItems === undefined) {
+      return null;
+    }
     return wishlistItems.some((item) => item?._id === productId);
   };
-
   const isInCart = (productId) => {
-    return cartItems?.some((item) => item?.productId?._id === productId);
+    if (cartItems === undefined) {
+      return null;
+    }
+    return cartItems.some((item) => item?._id === productId);
   };
+
   const truncateText = (text, wordLimit) => {
     const words = text.split(' ');
     if (words.length > wordLimit) {

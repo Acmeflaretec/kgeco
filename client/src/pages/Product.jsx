@@ -30,7 +30,7 @@ function Product() {
       const urlQuery = `/products/${proId}`
       const response = await axiosInstance.get(urlQuery);
       setProductData(response.data.data)
-      console.log(response.data.data)
+      console.log('server product respnse',response.data.data)
     } catch (error) {
       console.log(error)
     }
@@ -166,7 +166,7 @@ function Product() {
               <div className="product-benefits mb-4">
                 <h5 className="mb-3">Key Benefits:</h5>
                 <ul className="list-unstyled">
-                  {product.benefits.map((benefit, index) => (
+                  {productData?.benefits?.map((benefit, index) => (
                     <li key={index} className="mb-2">
                       <i className="fas fa-check-circle text-success me-2"></i>
                       {benefit}

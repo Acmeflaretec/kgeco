@@ -10,6 +10,10 @@ import { useAddProduct } from 'queries/ProductQuery'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
+import { IconButton } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+
 const AddProduct = () => {
   const [details, setDetails] = useState({})
   const navigate= useNavigate()
@@ -31,8 +35,10 @@ const AddProduct = () => {
     }
   }
 
-console.log('ben',benefits)
-console.log('ben in',benefitInput)
+  const handleRemoveBenefit = (index) => {
+    setBenefits(prev => prev.filter((_, i) => i !== index));
+  };
+  
   //
   
   const handleChange = (e) => {
@@ -57,8 +63,10 @@ console.log('ben in',benefitInput)
         }
       }
       formData.append('category', category?._id);
-      formData.append('benefits', JSON.stringify(benefits)); // Add benefits to formData
 
+      benefits.forEach((ben, index) => {
+        formData.append(`benefits[${index}]`, ben);
+      });
        AddProduct(formData)
         .then((res) => {
           toast.success(res?.message ?? "category added");
@@ -199,12 +207,18 @@ console.log('ben in',benefitInput)
             />
             <Button onClick={handleAddBenefit} variant='contained'>Add</Button>
             <Box mt={2}>
-              {benefits.map((benefit, index) => (
-                <Typography key={index} variant="body2">
-                  {benefit}
-                </Typography>
-              ))}
-            </Box>
+  {benefits.map((benefit, index) => (
+    <Box key={index} display="flex" alignItems="center">
+      <Typography variant="body2">
+        {benefit}
+      </Typography>
+      <IconButton size="small" onClick={() => handleRemoveBenefit(index)}>
+        <CancelIcon fontSize="small" />
+      </IconButton>
+    </Box>
+  ))}
+</Box>
+
           </Grid>
         
           
