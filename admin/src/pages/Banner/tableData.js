@@ -35,7 +35,7 @@ const TableData = () => {
     { name: "Lastupdated", align: "center" },
     { name: "action", align: "center" },
   ]
-console.log('data banner',data.data)
+
   const rows = data?.data?.map(item => ({
     Banners: <Banners image={`${process.env.REACT_APP_API_URL}/uploads/${item?.image}`} name={item?.title} desc={item?.subtitle} />,
     url: (
