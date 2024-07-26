@@ -67,7 +67,6 @@ const removeFromCart = async (req, res) => {
 }
 
 const addToWishlist = async (req, res) => {
-  console.log('rea wi')
   try {
     const { _id } = req?.decoded
   // const id = '66796d0936bb97720a7764f4'
@@ -99,40 +98,55 @@ const removeFromWishlist = async (req, res) => {
 }
 
 const getWishLists = async (req, res) => {
- // const userId = '66796d0936bb97720a7764f4'; // Assuming this is the user ID
    const { _id } = req?.decoded
-  // console.log('  _uid',_id)
+   if (_id) {
 
-  try {
+    try {
       const userWishlist = await User.getWishlistWithProductsByUserId(_id);
       
       if (userWishlist) {
           res.status(200).json({ data: userWishlist });
       } else {
-          res.status(404).json({ message: 'User or wishlist not found' });
+          res.status(404).json({ data:[] });
       }
   } catch (error) {
+    console.log('wish err,', error)
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
   }
+
+   }else{
+
+    return res.status(404).json({ data: [] });
+
+   }
+
+
 };
 
 const getCartDetailsByUserId = async (req, res) => {
-  //const userId = '66796d0936bb97720a7764f4'; // Assuming the user ID is passed as a route parameter
   const { _id } = req?.decoded
 
-  try {
+  if (_id) {
+    try {
       const cart = await User.getCartWithProductsByUserId(_id);
 
       if (cart) {
           return res.status(200).json({ data:cart });
       } else {
-          return res.status(404).json({ message: "User or cart not found." });
+          return res.status(404).json({data:[] });
       }
   } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal server error" });
   }
+
+  }else{
+
+    return res.status(404).json({ data: [] });
+  }
+
+
 }
 
 module.exports = {

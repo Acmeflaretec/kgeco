@@ -23,7 +23,9 @@ try {
   setProducts(response?.data?.data)
   const wishlistResponse = await axiosInstance.get('/user/getwishlist');
   setWishlistItems(wishlistResponse?.data?.data);
+  console.log('wishlst',wishlistResponse?.data?.data)
   const cartResponse = await axiosInstance.get('/user/getcarts');
+  console.log('cartlist',cartResponse?.data?.data?.item)
   setCartItems(cartResponse?.data?.data?.item);
 } catch (error) {
   console.log(error)
@@ -38,6 +40,7 @@ fetchProducts()
 const fetchCart = async () => {
   try {
     const cartResponse = await axiosInstance.get('/user/getcarts');
+    console.log(cartResponse?.data?.data)
     setCartItems(cartResponse?.data?.data?.item);
   
   } catch (error) {
@@ -48,6 +51,8 @@ const fetchCart = async () => {
 const fetchWishlist = async () => {
   try {
     const wishlistResponse = await axiosInstance.get('/user/getwishlist');
+    console.log(wishlistResponse?.data?.data)
+
     setWishlistItems(wishlistResponse?.data?.data);
   } catch (error) {
     console.log(error);
@@ -137,36 +142,26 @@ const addCart = async (proId) => {
 
 
 
-    const removeCart = async (proId) => {
-      if(!userDetails){
-        navigate('/login')
-        
-            }else{
-              console.log('reached rem cart',proId)
-      
-              try {
-                const ItemId = cartItems.filter((item)=>item?.productId?._id == proId )
-                 
-                const response = await axiosInstance.patch(`/user/removeFromCart/${ItemId[0]?._id}`);
-              await  fetchCart()
-              setNotification(prev => !prev);
-          //console.log(response)
-              } catch (error) {
-                console.log(error)
-              }
-
-            }
-    
-  
-    }
+    // const isInWishlist = (productId) => {
+    //   return wishlistItems?.some((item) => item?._id === productId);
+    // };
 
     const isInWishlist = (productId) => {
-      return wishlistItems?.some((item) => item?._id === productId);
+      if (wishlistItems === undefined) {
+        return null;
+      }
+      return wishlistItems.some((item) => item?._id === productId);
+    };
+    const isInCart = (productId) => {
+      if (cartItems === undefined) {
+        return null;
+      }
+      return cartItems.some((item) => item?._id === productId);
     };
 
-    const isInCart = (productId) => {
-      return cartItems.some((item) => item?.productId?._id === productId);
-    };
+    // const isInCart = (productId) => {
+    //   return cartItems.some((item) => item?.productId?._id === productId);
+    // };
 
     const truncateText = (text, wordLimit) => {
       const words = text.split(' ');
@@ -212,7 +207,7 @@ const addCart = async (proId) => {
                 </Link>
                 <div className="product-actions">
                   {
-! isInWishlist(item?._id) ?  <button className="btn btn-outline-success btn-sm"  onClick={ ()=> addWishlist(item?._id)}>
+ ! isInWishlist(item?._id) ?  <button className="btn btn-outline-success btn-sm"  onClick={ ()=> addWishlist(item?._id)}>
 <i className="fa-solid fa-heart"></i>
 </button>   :
  <button className="btn btn-outline-danger btn-sm" onClick={()=> removeWishlist(item?._id)}>
@@ -222,7 +217,7 @@ const addCart = async (proId) => {
                   }
                  
                  {
-                   ! isInCart(item?._id)?  (
+                   ! isInCart(item?._id) ?  (
               
                 <button className="btn btn-success btn-sm" onClick={() => addCart(item?._id)} disabled={loading[item?._id]}>
                       {loading[item?._id] ? (
