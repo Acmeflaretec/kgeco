@@ -42,9 +42,9 @@ function Footer() {
           <Col lg={3} md={6} className="footer-section">
             <h5 className="footer-title">Contact Us</h5>
             <ul className="footer-contact">
-              <li><i className="fas fa-phone"></i> +1 (234) 567-8900</li>
-              <li><i className="fas fa-envelope"></i> info@ecostore.com</li>
-              <li><i className="fas fa-map-marker-alt"></i> 123 Eco Street, Green City, 12345</li>
+              <li><i className="fas fa-phone"></i> +91 7902832661</li>
+              <li><i className="fas fa-envelope"></i> kgecoproductss@gmail.com</li>
+              <li><i className="fas fa-map-marker-alt"></i>Cherppulasseri, palakkad 679505</li>
             </ul>
           </Col>
         </Row>

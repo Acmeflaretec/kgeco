@@ -266,7 +266,7 @@ function Review({ productId }) {
     const fetchReviews = async () => {
       try {
         const response = await axiosInstance.get(`/reviews/${productId}`);
-        setReviews(response.data.data);
+        setReviews(response?.data?.data);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
@@ -274,8 +274,8 @@ function Review({ productId }) {
 
     const checkCanWriteReview = async () => {
       try {
-        const response = await axiosInstance.get(`/orders/user/${userDetails._id}/product/${productId}`);
-        setCanWriteReview(response.data.canWriteReview);
+        const response = await axiosInstance.get(`/orders/user/${userDetails?._id}/product/${productId}`);
+        setCanWriteReview(response?.data?.canWriteReview);
       } catch (error) {
         console.error('Error checking if user can write review:', error);
       }
@@ -298,15 +298,15 @@ function Review({ productId }) {
     try {
       const response = await axiosInstance.post(`/reviews`, {
         productId,
-        userId:userDetails._id,
+        userId:userDetails?._id,
         ...newReview,
       }, {
         headers: {
-          Authorization: `Bearer ${userDetails.token}`,
+          Authorization: `Bearer ${userDetails?.token}`,
         },
       });
 
-      setReviews([...reviews, response.data.data]);
+      setReviews([...reviews, response?.data?.data]);
       setNewReview({ name: '', rating: 0, review: '' });
       handleCloseReviewModal();
     } catch (error) {
@@ -318,16 +318,16 @@ function Review({ productId }) {
     setShowAllReviews(true);
   };
 
-  const totalReviews = reviews.length;
+  const totalReviews = reviews?.length;
   const ratingCounts = [0, 0, 0, 0, 0];
-  reviews.forEach((review) => {
-    ratingCounts[review.rating - 1]++;
+  reviews?.forEach((review) => {
+    ratingCounts[review?.rating - 1]++;
   });
 
-  const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+  const totalRating = reviews?.reduce((sum, review) => sum + review?.rating, 0);
   const averageRating = (totalRating / totalReviews).toFixed(1) ;
 
-  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 4);
+  const displayedReviews = showAllReviews ? reviews : reviews?.slice(0, 4);
 
   return (
     <div className="review-section mt-5">
@@ -401,23 +401,23 @@ function Review({ productId }) {
           <Card>
             <Card.Body>
               <Card.Title>Reviews from customers</Card.Title>
-              {displayedReviews.map((review) => (
+              {displayedReviews?.map((review) => (
                 <div key={review.id} className="mb-4">
                   <div className="d-flex align-items-center justify-content-between mb-2">
                     <div>
                       {[...Array(5)].map((_, index) => (
                         <i
                           key={index}
-                          className={`fas fa-star ${index < review.rating ? 'text-success' : 'text-muted'}`}
+                          className={`fas fa-star ${index < review?.rating ? 'text-success' : 'text-muted'}`}
                         />
                       ))}
                     </div>
                     <div>
-                      <span className="me-2 fw-bold">{review.name}</span>
-                      <small className="me-auto">{review.date}</small>
+                      <span className="me-2 fw-bold">{review?.name}</span>
+                      <small className="me-auto">{review?.date}</small>
                     </div>
                   </div>
-                  <p>{review.review}</p>
+                  <p>{review?.review}</p>
                 </div>
               ))}
               {!showAllReviews && (

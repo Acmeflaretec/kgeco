@@ -169,7 +169,9 @@ const Allproducts = () => {
       } catch (error) {
         console.log(error);
       } finally {
+
         setLoading(prev => ({ ...prev, [proId]: false })); // Reset loading state
+        await fetchCart();
       }
     }
   };
@@ -202,13 +204,13 @@ const Allproducts = () => {
       return null;
     }
     return wishlistItems.some((item) => item?._id === productId);
-  };
+    };
   const isInCart = (productId) => {
     if (cartItems === undefined) {
       return null;
     }
-    return cartItems.some((item) => item?._id === productId);
-  };
+    return cartItems?.some((item) => item?.productId?._id === productId);
+    };
 
   const truncateText = (text, wordLimit) => {
     const words = text.split(' ');

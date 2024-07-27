@@ -37,6 +37,7 @@ import { useGetOrders, useUpdateOrderStatus } from 'queries/OrderQuery';
 // }
 
 const TableData = () => {
+  const navigate = useNavigate()
   const { data, isLoading } = useGetOrders({ pageNo: 1, pageCount: 100 });
   // console.log("data", data);
   const { mutate: updateOrderStatus,isLoading: deleting  } = useUpdateOrderStatus();
@@ -49,7 +50,7 @@ const TableData = () => {
     { name: 'User', align: 'left' },
     // { name: 'PaymentMode', align: 'center' },
     // { name: 'Amount', align: 'center' },
-    { name: 'orderPerson', align: 'center' },
+    // { name: 'orderPerson', align: 'center' },
     // { name: 'Address', align: 'center' },
     // { name: 'Products', align: 'center' },
     // { name: 'Ordered', align: 'center' },
@@ -59,13 +60,20 @@ const TableData = () => {
 
   const rows = data?.data?.map(item => ({
     User: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
+      <>
+         <Typography variant="caption" color="secondary" fontWeight="medium">
          <Link to={`/orders/editOrder/${item?._id}`} state={{ item }}>
-         {item?.userId?.username} <br /> 
-         {item?.userId?.email}
+       <span style={{color:'grey'}} >  {item?.userId?.username} </span>  <br /> 
+         {item?.userId?.email} 
          </Link>
     
+      </Typography> <br/>
+
+      <Typography variant="caption" color="secondary" fontWeight="medium">
+        {item._id}
       </Typography>
+      </>
+   
     ),
     // PaymentMode: (
     //   <Typography variant="caption" color="secondary" fontWeight="medium">
@@ -77,11 +85,11 @@ const TableData = () => {
     //     ₹{item?.amount}
     //   </Typography>
     // ),
-    orderPerson: (
-      <Typography variant="caption" color="secondary" fontWeight="medium">
-        {item?.address?.firstname} {item?.address?.lastname}
-      </Typography>
-    ),
+    // orderPerson: (
+    //   <Typography variant="caption" color="secondary" fontWeight="medium">
+    //     {item?.address?.firstname} {item?.address?.lastname}
+    //   </Typography>
+    // ),
 //     Address: (
 //       <Typography
 //   variant="caption"

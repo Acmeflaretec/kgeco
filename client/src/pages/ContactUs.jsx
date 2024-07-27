@@ -45,10 +45,10 @@ const ContactUs = () => {
                 <Col md={6} className="mb-4">
                   <div className="contact-info">
                     <h3 className="fw-bold">Contact Details</h3>
-                    <p>123 Street Name</p>
-                    <p>City, Country</p>
-                    <p>Email: info@example.com</p>
-                    <p>Phone: +1234567890</p>
+                    {/* <p>123 Street Name</p> */}
+                    <p>Cherppulasseri, palakkad 679505</p>
+                    <p>Email: kgecoproductss@gmail.com</p>
+                    <p>Phone: +91 7902832661</p>
                   </div>
                 </Col>
                 <Col md={6}>
