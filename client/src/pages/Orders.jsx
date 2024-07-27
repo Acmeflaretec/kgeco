@@ -29,24 +29,24 @@ function OrderCard({ order }) {
         <Row>
           <Col md={3} className="mb-3 mb-md-0">
             <img
-           src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order.products.item[0].product_id.image[0]}`}
-              alt={order.name} className="img-fluid rounded" />
+           src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order?.products?.item[0]?.product_id?.image[0]}`}
+              alt={order?.name} className="img-fluid rounded" />
           </Col>
           <Col md={6}>
 {order?.products?.item?.map((item,index)=>(
 
-<h5 className="mb-1">{index+1}. {item.product_id.name}</h5>
+<h5 className="mb-1">{index+1}. {item?.product_id?.name}</h5>
 
 ))
             }
-            <p className="text-muted mb-2">{order.category}</p>
-            <span bg="info" className="mb-2">{order.status}</span>
+            <p className="text-muted mb-2">{order?.category}</p>
+            <span bg="info" className="mb-2">{order?.status}</span>
             {/* <p className="small mb-0">{order.statusDetails}</p> */}
           </Col>
           <Col md={3} className="text-md-end">
-            <h5 className="mb-3">₹{order.amount
+            <h5 className="mb-3">₹{order?.amount
             }</h5>
-            <Link to={`/ordertrack/${order._id}`} className="btn btn-outline-primary btn-sm">
+            <Link to={`/ordertrack/${order?._id}`} className="btn btn-outline-primary btn-sm">
               Track Order
             </Link>
           </Col>
@@ -65,8 +65,8 @@ const fetchOrderData  = async()=>{
 
   try {
     const response = await axiosInstance.get(`/orders/getuserorders`)
-    setOrdersData(response.data.data)
-    console.log('order :',response.data.data)
+    setOrdersData(response?.data?.data)
+     
   } catch (error) {
     
   }
@@ -84,8 +84,8 @@ fetchOrderData()
       <MiddleNav />
       <Container className="flex-grow-1 py-5">
         <h2 className="mb-4">Your Orders</h2>
-        {ordersData.map((order,index) => (
-          <OrderCard key={order._id} order={order} />
+        {ordersData?.map((order,index) => (
+          <OrderCard key={order?._id} order={order} />
         ))}
       </Container>
       <Footer />

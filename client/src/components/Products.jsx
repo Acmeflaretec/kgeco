@@ -23,9 +23,7 @@ try {
   setProducts(response?.data?.data)
   const wishlistResponse = await axiosInstance.get('/user/getwishlist');
   setWishlistItems(wishlistResponse?.data?.data);
-  console.log('wishlst',wishlistResponse?.data?.data)
   const cartResponse = await axiosInstance.get('/user/getcarts');
-  console.log('cartlist',cartResponse?.data?.data?.item)
   setCartItems(cartResponse?.data?.data?.item);
 } catch (error) {
   console.log(error)
@@ -40,7 +38,6 @@ fetchProducts()
 const fetchCart = async () => {
   try {
     const cartResponse = await axiosInstance.get('/user/getcarts');
-    console.log(cartResponse?.data?.data)
     setCartItems(cartResponse?.data?.data?.item);
   
   } catch (error) {
@@ -51,8 +48,6 @@ const fetchCart = async () => {
 const fetchWishlist = async () => {
   try {
     const wishlistResponse = await axiosInstance.get('/user/getwishlist');
-    console.log(wishlistResponse?.data?.data)
-
     setWishlistItems(wishlistResponse?.data?.data);
   } catch (error) {
     console.log(error);
@@ -136,6 +131,7 @@ const addCart = async (proId) => {
       console.log(error);
     } finally {
       setLoading(prev => ({ ...prev, [proId]: false })); // Reset loading state
+      await fetchCart();
     }
   }
 };
@@ -150,13 +146,13 @@ const addCart = async (proId) => {
       if (wishlistItems === undefined) {
         return null;
       }
-      return wishlistItems.some((item) => item?._id === productId);
+      return wishlistItems?.some((item) => item?._id === productId);
     };
     const isInCart = (productId) => {
       if (cartItems === undefined) {
         return null;
       }
-      return cartItems.some((item) => item?._id === productId);
+      return  cartItems.some((item) => item?.productId?._id === productId);
     };
 
     // const isInCart = (productId) => {

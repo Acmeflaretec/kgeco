@@ -130,6 +130,23 @@ useEffect(()=>{
             <li className="nav-item">
               <Link className="nav-link" to="/contactus">Contact</Link>
             </li>
+            <li><Link className=" nav-link mobile-action" to={userDetails? '/profile' :'/login'}>Profile</Link></li>
+{
+userDetails &&  <li><button className="mobile-action" onClick={logoutUser} 
+style={{
+  backgroundColor: '#4CAF50',
+  color: 'white',
+  padding: '10px 20px',
+  borderRadius: '5px',
+  border: 'none',
+  cursor: 'pointer',
+  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+  fontWeight: 'bold',
+}}
+>Logout</button></li>
+
+}
+
           </ul>
           <div className="nav-actions pc-action">
             <Link to={userDetails? '/cart' :'/login'} className="nav-icon-link" title="Cart">

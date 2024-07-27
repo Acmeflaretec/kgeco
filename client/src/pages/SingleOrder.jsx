@@ -22,11 +22,9 @@ function SingleOrder() {
 
     try {
       const response = await axiosInstance.get(`/orders/getorderbyid/${orderId}`)
-      setOrdersData(response.data.data)
-      setAddress(response.data.data.address)
-      setProductsData(response.data.data.products.item)
-      console.log('order by id :',response.data.data)
-      //console.log('address :',response.data.data.address)
+      setOrdersData(response?.data?.data)
+      setAddress(response?.data?.data?.address)
+      setProductsData(response?.data?.data?.products?.item)
     } catch (error) {
       
     }
@@ -69,7 +67,7 @@ function SingleOrder() {
     // const backendStatus = dataFromBackend.status.toLowerCase().replace(/ /g, '_');
     // setStatus(backendStatus);
 
-    switch (ordersData.status) {
+    switch (ordersData?.status) {
       case 'Placed':
         setProgress(0);
         break;
@@ -100,11 +98,11 @@ function SingleOrder() {
         {steps.map((step, index) => (
           <div
             key={index}
-            className={`round-point ${step.completed ? 'completed' : ''}`}
+            className={`round-point ${step?.completed ? 'completed' : ''}`}
             style={{ left: `${index * 33}%` }}
           >
-            <div className="icon-container">{step.icon}</div>
-            <p>{step.name}</p>
+            <div className="icon-container">{step?.icon}</div>
+            <p>{step?.name}</p>
           </div>
         ))}
       </div>
@@ -128,13 +126,13 @@ function SingleOrder() {
 <Col md={3} className="mb-3 mb-md-0">
                 <div className="d-flex align-items-center">
                   <img
-                   src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.product_id.image[0]}`}
+                   src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.product_id?.image[0]}`}
                     alt=""
                     className="img-fluid rounded me-3"
                     style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                   />
                   <div>
-                    <h5 className="mb-1"> {index+1}. {item.product_id.name}</h5>
+                    <h5 className="mb-1"> {index+1}. {item?.product_id?.name}</h5>
                   </div>
                 </div>
               </Col>
@@ -163,21 +161,21 @@ function SingleOrder() {
                   <tbody>
                     <tr>
                       <td>Order ID</td>
-                      <td className="text-end">{ordersData._id}</td>
+                      <td className="text-end">{ordersData?._id}</td>
                     </tr>
                     <tr>
                       <td>Order Date</td>
-                      <td className="text-end">{formatDate(ordersData.createdAt)}</td>
+                      <td className="text-end">{formatDate(ordersData?.createdAt)}</td>
                     </tr>
                     <tr>
                       <td>Status</td>
                       <td className="text-end">
-                        <span className="text-success fw-bold">{ordersData.status}</span>
+                        <span className="text-success fw-bold">{ordersData?.status}</span>
                       </td>
                     </tr>
                     <tr>
                       <td>Total</td>
-                      <td className="text-end fw-bold">₹{ordersData.amount}</td>
+                      <td className="text-end fw-bold">₹{ordersData?.amount}</td>
                     </tr>
                   </tbody>
                 </Table>
@@ -188,15 +186,15 @@ function SingleOrder() {
             <Card className="shadow-sm">
               <Card.Body>
                 <h5 className="mb-3">Delivery Address</h5>
-                <p className="mb-1 fw-bold">{address.firstname} {address.lastname}</p>
-                <p className="mb-1">{address.address_line_1}</p>
-                <p className="mb-1">{address.address_line_2}</p>
+                <p className="mb-1 fw-bold">{address?.firstname} {address?.lastname}</p>
+                <p className="mb-1">{address?.address_line_1}</p>
+                <p className="mb-1">{address?.address_line_2}</p>
 
                 <p className="mb-0">
-                  {address.city},{' '}
-                  {address.state}{' '}
-                  {address.zip}{' '}
-                  {address.Country}
+                  {address?.city},{' '}
+                  {address?.state}{' '}
+                  {address?.zip}{' '}
+                  {address?.Country}
                 </p>
               </Card.Body>
             </Card>

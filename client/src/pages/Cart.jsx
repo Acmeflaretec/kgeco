@@ -25,7 +25,7 @@ const calculateTotalSalePrice = (items) => {
   
     
     // Add the sale_rate to the totalSalePrice
-    totalSalePrice +=item.productId.sale_rate * item.qty ;
+    totalSalePrice +=item?.productId?.sale_rate * item?.qty ;
   });
 
   return totalSalePrice;
@@ -38,7 +38,7 @@ const calculateTotalProPrice = (items) => {
   
     
     // Add the sale_rate to the totalSalePrice
-    totalSalePrice +=item.productId.price* item.qty;
+    totalSalePrice +=item?.productId?.price* item?.qty;
   });
 
   return totalSalePrice;
@@ -51,7 +51,7 @@ const calculateTotalDiscountPrice = (items) => {
   
     
     // Add the sale_rate to the totalSalePrice
-    totalSalePrice +=item.productId.discount;
+    totalSalePrice +=item?.productId?.discount;
   });
 
   return totalSalePrice;
@@ -62,10 +62,10 @@ const fetchData = async()=>{
   try {
 
     const response = await axiosInstance.get(`/user/getcarts`);
-    setCartData(response.data.data)
-    console.log('cart details array',response.data.data)
+    setCartData(response?.data?.data)
+    // console.log('cart details array',response.data.data)
     //console.log('fetch qty ',response.data.data.item[0].qty)
-    const items = response.data.data.item;
+    const items = response?.data?.data?.item;
 
 // Calculate the total sale price
 const totalSalePrice = calculateTotalSalePrice(items);
@@ -74,7 +74,7 @@ const totalSalePrice = calculateTotalSalePrice(items);
   // Calculate the total  price
 const totalProPrice = calculateTotalProPrice(items);
    setProPriceTotal(totalProPrice)
-   console.log('total pr ',totalProPrice)
+  //  console.log('total pr ',totalProPrice)
 
   // Calculate the total discount
 const totalDiscount = calculateTotalDiscountPrice(items);
@@ -117,9 +117,9 @@ useEffect(()=>{
 //  }
 
 const handleQuantityChange = async (item, operation, index) => {
-  let newQty = item.qty;
+  let newQty = item?.qty;
 
-  if (operation === 'increment' && item.qty < item.productId.stock) {
+  if (operation === 'increment' && item?.qty < item?.productId?.stock) {
     newQty += 1;
   } else if (operation === 'decrement' && item.qty > 1) {
     newQty -= 1;
@@ -133,7 +133,7 @@ const handleQuantityChange = async (item, operation, index) => {
   setLoadingIndex(index); // Set loading state
 
   try {
-    const response = await axiosInstance.patch(`/user/updateQty`, { qty: newQty, productId: item.productId._id });
+    const response = await axiosInstance.patch(`/user/updateQty`, { qty: newQty, productId: item?.productId?._id });
 
     // Fetch the updated cart data
     fetchData();
@@ -142,7 +142,7 @@ const handleQuantityChange = async (item, operation, index) => {
 
     // Revert the state change if the API call fails
     const revertedCartData = { ...cartData };
-    revertedCartData.item[index].qty = item.qty;
+    revertedCartData.item[index].qty = item?.qty;
     setCartData(revertedCartData);
   } finally {
     setLoadingIndex(null); // Clear loading state
@@ -156,14 +156,14 @@ const handleQuantityChange = async (item, operation, index) => {
   
 
   const handleRemoveItem =async (itemId) => {
-   console.log('cart id ',itemId)
+  //  console.log('cart id ',itemId)
    let urlQuery=`/user/removeFromCart/${itemId}`
 
 
    try {
     const response = await axiosInstance.patch(urlQuery);
-    const updatedCartItems = cartData.item.filter((item) => item._id !== itemId);
-    const updatedTotalPrice = updatedCartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+    const updatedCartItems = cartData.item.filter((item) => item?._id !== itemId);
+    const updatedTotalPrice = updatedCartItems.reduce((acc, item) => acc + (item?.price * item?.qty), 0);
     setProPriceTotal(null)
     setSalePriceTotal(null)
     setCartData({
@@ -173,12 +173,12 @@ const handleQuantityChange = async (item, operation, index) => {
     });
    // Calculate the total sale price
    const totalSalePrice = calculateTotalSalePrice(updatedCartItems);
-   console.log(totalSalePrice)
+  //  console.log(totalSalePrice)
        setSalePriceTotal(totalSalePrice)
    
        // Calculate the total  price
    const totalProPrice = calculateTotalProPrice(updatedCartItems);
-   console.log(totalProPrice)
+  //  console.log(totalProPrice)
        setProPriceTotal(totalProPrice)
 
        setNotif(prev => !prev);
@@ -218,23 +218,23 @@ const handleQuantityChange = async (item, operation, index) => {
           <div className="row g-4">
             <div className="col-lg-8">
               {cartData?.item?.map((item,index )=> (
-                <div key={item._id} className="card mb-3 border-0 shadow-sm">
+                <div key={item?._id} className="card mb-3 border-0 shadow-sm">
                   <div className="row g-0">
                     <div className="col-md-3 p-3">
                       <img
-                        src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.productId.image[0]}`}
+                        src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.productId?.image[0]}`}
                         className="img-fluid rounded"
-                        alt={item.productId.name}
+                        alt={item?.productId?.name}
                       />
                     </div>
                     <div className="col-md-9">
                       <div className="card-body">
-                        <h5 className="card-title text-success">{item.productId.name}</h5>
+                        <h5 className="card-title text-success">{item?.productId?.name}</h5>
                         {/* <p className="text-muted small">Microgreen</p> */}
                         <div className="d-flex align-items-center mb-3">
-                          <p className="card-text fw-bold mb-0 me-3">₹{item.productId.sale_rate}</p>
-                          <span className="text-muted text-decoration-line-through small me-2">₹{item.productId.price}</span>
-                          <span className="bg-success-subtle">{item.productId.discount}% off</span>
+                          <p className="card-text fw-bold mb-0 me-3">₹{item?.productId?.sale_rate}</p>
+                          <span className="text-muted text-decoration-line-through small me-2">₹{item?.productId?.price}</span>
+                          <span className="bg-success-subtle">{item?.productId?.discount}% off</span>
                         </div>
                         <div className="d-flex align-items-center">
                           {/* <div className="btn-group me-3" role="group">
@@ -266,7 +266,7 @@ const handleQuantityChange = async (item, operation, index) => {
     {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaMinus />}
   </button>
   <button className="btn btn-outline-secondary" disabled style={{ color: 'darkgreen' }}>
-    {item.qty}
+    {item?.qty}
   </button>
   <button
     className="btn btn-outline-secondary"
@@ -281,7 +281,7 @@ const handleQuantityChange = async (item, operation, index) => {
 
                           <button
                             className="btn btn-outline-danger"
-                            onClick={() => handleRemoveItem(item._id)}
+                            onClick={() => handleRemoveItem(item?._id)}
                           >
                             <FaTrash /> Remove
                           </button>

@@ -17,7 +17,7 @@ function Product() {
  
 
   const [cartItemsData, setCartItemsData] = useState([]);
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
   const [notif, setNotif] = useState(true)
 
 
@@ -29,8 +29,7 @@ function Product() {
     try {
       const urlQuery = `/products/${proId}`
       const response = await axiosInstance.get(urlQuery);
-      setProductData(response.data.data)
-      console.log('server product respnse',response.data.data)
+      setProductData(response?.data?.data)
     } catch (error) {
       console.log(error)
     }
@@ -42,14 +41,13 @@ function Product() {
     fetchProductData()
     fetchCartData()
 
-  }, [proId])
+  }, [proId,notif])
 
   const fetchCartData = async () => {
     console.log('reached fetch cart 2')
     try {
       const cartResponse = await axiosInstance.get('/user/getcarts');
-      setCartItemsData(cartResponse.data.data.item);
-      //  console.log('reached fetch cart 3',cartResponse.data.data.item)
+      setCartItemsData(cartResponse?.data?.data?.item);
     } catch (error) {
       console.log(error);
     }
@@ -58,53 +56,40 @@ function Product() {
   const addCartData = async (proId1) => {
     if (!userDetails) {
       navigate('/login')
-
     } else {
       try {
         const urlQuery = `/user/addToCart/${proId1}`
         const response = await axiosInstance.patch(urlQuery);
         await fetchCartData()
         setNotif(prev => !prev);
-        //console.log(response)
       } catch (error) {
         console.log(error)
-
       }
     }
-
-
   }
 
   const removeCartData = async (proId1) => {
     if (!userDetails) {
       navigate('/login')
-
     } else {
-      console.log('reached rem cart', proId1)
-
       try {
-        const ItemId = cartItemsData.filter((item) => item.productId._id == proId1)
-        console.log(' item id', ItemId)
-
-
-        const urlQuery = `/user/removeFromCart/${ItemId[0]._id}`
+        const ItemId = cartItemsData?.filter((item) => item?.productId?._id == proId1)
+        const urlQuery = `/user/removeFromCart/${ItemId[0]?._id}`
         const response = await axiosInstance.patch(urlQuery);
         await fetchCartData()
         setNotif(prev => !prev);
-        //console.log(response)
       } catch (error) {
         console.log(error)
       }
-
     }
-
-
   }
 
   const isInCartData = (productId) => {
-    return cartItemsData.some((item) => item.productId._id === productId);
+    if (cartItemsData === undefined) {
+      return null;
+    }
+    return cartItemsData?.some((item) => item?.productId?._id === productId);
   };
-
 
   const product = {
     name: 'BAMBOO TOOTHBRUSH ',
