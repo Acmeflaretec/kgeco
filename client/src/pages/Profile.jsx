@@ -9,11 +9,12 @@ import MiddleNav from '../components/MiddleNav';
 import ManageAddress from './ManageAddress';
 import './Profile.css';
 import ProfileInfo from './ProfileInfo';
+import proImg from '../assets/images/profile.png'
 
 function Profile() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
 
   const handleTabChange = (tab) => {
     if (tab === 'orders') {
@@ -32,13 +33,13 @@ function Profile() {
             <Card className="profile-sidebar mb-4">
               <Card.Body className="text-center">
                 <img
-                  src="https://via.placeholder.com/150"
+                  src={proImg}
                   alt="User"
                   className="rounded-circle img-thumbnail mb-3"
                   width="150"
                 />
-                <h4 className="mb-0">{userDetails.username}</h4>
-                <p className="text-muted">{userDetails.email} </p>
+                <h4 className="mb-0">{userDetails?.username}</h4>
+                <p className="text-muted">{userDetails?.email} </p>
               </Card.Body>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item>

@@ -172,7 +172,11 @@ userSchema.methods.removefromWishlist =async function (id){
 
 userSchema.statics.getWishlistWithProductsByUserId = async function(userId) {
     try {
-        const user = await this.findById(userId).populate('wishlist');
+        const user = await this.findById(userId)
+        .populate({
+            path: 'wishlist',
+            options: { sort: { 'createdAt': -1 } } // sort by createdAt in descending order
+        });
         return user.wishlist;
     } catch (error) {
         console.error(error);
@@ -182,7 +186,13 @@ userSchema.statics.getWishlistWithProductsByUserId = async function(userId) {
 
 userSchema.statics.getCartWithProductsByUserId = async function(userId) {
     try {
-        const user = await this.findById(userId).populate('cart.item.productId');
+        const user = await this.findById(userId).populate('cart.item.productId')
+        if (user && user.cart && user.cart.item) {
+            // Sort cart items based on the createdAt field of the product
+            user.cart.item.sort((a, b) => {
+                return b.productId.createdAt - a.productId.createdAt;
+            });
+        }
         return user.cart;
     } catch (error) {
         console.error(error);

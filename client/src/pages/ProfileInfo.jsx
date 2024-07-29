@@ -9,7 +9,7 @@ function ProfileInfo() {
     email: 'user.email@example.com',
     phone: '123-456-7890'
   });
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
 
 
   const [editable, setEditable] = useState({
@@ -42,7 +42,7 @@ function ProfileInfo() {
         <Form.Control
           type="text"
           name={field}
-          value={userDetails[field]}
+          value={ userDetails&& userDetails[field]  }
           onChange={handleChange}
           disabled={!editable[field]}
           className={editable[field] ? 'border-primary' : ''}

@@ -24,7 +24,7 @@ function MiddleNav({notification}) {
       try {
         const response = await axiosInstance.get('/auth/user');
        // console.log(response.data.data)
-        dispatch(setUserDetails(response.data.data));
+        dispatch(setUserDetails(response?.data?.data));
       } catch (error) {
         console.log('errr', error);
         dispatch(clearUserDetails());
@@ -130,7 +130,7 @@ useEffect(()=>{
             <li className="nav-item">
               <Link className="nav-link" to="/contactus">Contact</Link>
             </li>
-            <li><Link className=" nav-link mobile-action" to={userDetails? '/profile' :'/login'}>Profile</Link></li>
+            <li><Link className=" nav-link mobile-action" to={userDetails? '/profile' :'/login'}> {userDetails ? 'Profile': 'Login'} </Link></li>
 {
 userDetails &&  <li><button className="mobile-action" onClick={logoutUser} 
 style={{

@@ -4,6 +4,7 @@ import { FaRegTrashAlt, FaLock, FaPlus } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
+import logoPng from '../assets/images/logo.png'
 
 
 const Checkout = () => {
@@ -158,14 +159,10 @@ const totalProPrice = calculateTotalProPrice(updatedCartItems);
 console.log(totalProPrice)
     setProPriceTotal(totalProPrice)
 
-    console.log('logic',cartData)
-    console.log('logic l',cartData.item.length)
-    if(cartData.item.length - 1==0){
+    if(cartData?.item.length - 1==0){
       navigate('/')
     }
 
-  // console.log('Updated cart ', updatedCartItems);
-  // console.log("Item removed from cart:");
 } catch (error) {
    console.error("Error removing item from wishlist:", error);
 
@@ -264,7 +261,7 @@ setLoadingIndex(index); // Set loading state
       showConfirmButton: false,
       timer: 3000
     });
-    navigate('/');
+    navigate('/order');
 
      
    };
@@ -280,14 +277,17 @@ if(paymentOption === 'cod'){
 }else if(paymentOption === 'razorpay' ){
   const options = {
     key: 'rzp_test_wNhVz81BFxrIrL',
-    amount: parseInt(1000) * 100, // amount in paisa
+    amount: parseInt(salePriceTotal) * 100, // amount in paisa
     currency: 'INR',
-    name: 'TUT FINDER',
+    name: 'KGECO',
     description: 'Purchase course',
     handler: function (response) {
        handlePaymentSuccess()
     },
-   
+    theme: {
+      color: '#008000', 
+      image: logoPng
+  }
   };
   
   const rzp = new window.Razorpay(options);

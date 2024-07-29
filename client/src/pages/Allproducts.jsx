@@ -144,24 +144,11 @@ const Allproducts = () => {
     }
   };
 
-  // const addCart = async (proId) => {
-  //   if (!userDetails) {
-  //     navigate('/login');
-  //   } else {
-  //     try {
-  //       const response = await axiosInstance.patch(`/user/addToCart/${proId}`);
-  //       await fetchCart();
-  //       setNotif(prev => !prev);
-  //     } catch (error) {
-  //       console.error('Error adding to cart:', error);
-  //     }
-  //   }
-  // };
   const addCart = async (proId) => {
     if (!userDetails) {
       navigate('/login');
     } else {
-      setLoading(prev => ({ ...prev, [proId]: true })); // Set loading state
+      setLoading(prev => ({ ...prev, [proId]: true }));
       try {
         const response = await axiosInstance.patch(`/user/addToCart/${proId}`);
         await fetchCart();
@@ -169,8 +156,7 @@ const Allproducts = () => {
       } catch (error) {
         console.log(error);
       } finally {
-
-        setLoading(prev => ({ ...prev, [proId]: false })); // Reset loading state
+        setLoading(prev => ({ ...prev, [proId]: false })); 
         await fetchCart();
       }
     }
@@ -190,14 +176,6 @@ const Allproducts = () => {
       }
     }
   };
-
-  // const isInWishlist = (productId) => {
-  //   return wishlistItems.some((item) => item?._id === productId);
-  // };
-
-  // const isInCart = (productId) => {
-  //   return cartItems?.some((item) => item?.productId?._id === productId);
-  // };
 
   const isInWishlist = (productId) => {
     if (wishlistItems === undefined) {

@@ -63,8 +63,7 @@ const fetchData = async()=>{
 
     const response = await axiosInstance.get(`/user/getcarts`);
     setCartData(response?.data?.data)
-    // console.log('cart details array',response.data.data)
-    //console.log('fetch qty ',response.data.data.item[0].qty)
+
     const items = response?.data?.data?.item;
 
 // Calculate the total sale price
@@ -93,28 +92,6 @@ useEffect(()=>{
 },[])
 
 
-
- 
-
-//   const handleQuantityChange =async (item, operation,index) => {
-// let QtyApi = item.qty
-// if(operation==='increment'){
-//   QtyApi +=1
-// }else if (operation==='decrement'){
-//   QtyApi -=1
-// }
-// try {
-// if(item.qty <=  item.productId.stock && operation==='increment'){
-//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-// }else if(item.qty>1 && operation==='decrement'){
-//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-
-// }
-//   } catch (error) {
-//    console.log(error)
-//   }
-//   fetchData()
-//  }
 
 const handleQuantityChange = async (item, operation, index) => {
   let newQty = item?.qty;
@@ -156,9 +133,7 @@ const handleQuantityChange = async (item, operation, index) => {
   
 
   const handleRemoveItem =async (itemId) => {
-  //  console.log('cart id ',itemId)
    let urlQuery=`/user/removeFromCart/${itemId}`
-
 
    try {
     const response = await axiosInstance.patch(urlQuery);
@@ -173,12 +148,10 @@ const handleQuantityChange = async (item, operation, index) => {
     });
    // Calculate the total sale price
    const totalSalePrice = calculateTotalSalePrice(updatedCartItems);
-  //  console.log(totalSalePrice)
        setSalePriceTotal(totalSalePrice)
    
        // Calculate the total  price
    const totalProPrice = calculateTotalProPrice(updatedCartItems);
-  //  console.log(totalProPrice)
        setProPriceTotal(totalProPrice)
 
        setNotif(prev => !prev);
@@ -237,26 +210,6 @@ const handleQuantityChange = async (item, operation, index) => {
                           <span className="bg-success-subtle">{item?.productId?.discount}% off</span>
                         </div>
                         <div className="d-flex align-items-center">
-                          {/* <div className="btn-group me-3" role="group">
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => handleQuantityChange(item, 'decrement',index)}
-                              disabled={item.qty === 1}
-                            >
-                              <FaMinus />
-                            </button>
-                            <button className="btn btn-outline-secondary " disabled style={{ color: 'darkgreen' }}>
-                              {item.qty}
-                            </button>
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => handleQuantityChange(item, 'increment',index )}
-                            >
-                              <FaPlus />
-                            </button>
-                          </div> */}
-
-
                           <div className="btn-group me-3" role="group">
   <button
     className="btn btn-outline-secondary"
