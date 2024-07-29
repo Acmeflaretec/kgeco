@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaReceipt } from 'react-icons/fa';
 
+import LoadingScreen from '../components/loading/LoadingScreen';
+
 function Cart() {
   const navigate = useNavigate();
   const [cartData,setCartData] = useState([])
@@ -14,6 +16,7 @@ function Cart() {
   const [notif,setNotif] = useState(true)
 
   const [loadingIndex, setLoadingIndex] = useState(null);
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
 
 
@@ -81,7 +84,9 @@ const totalDiscount = calculateTotalDiscountPrice(items);
 
   } catch (error) {
     console.log(error)
-  }
+  } finally {
+    setLoadScreenState(false); // Set loading to false after data is fetched
+}
 
 }
 
@@ -175,7 +180,12 @@ const handleQuantityChange = async (item, operation, index) => {
     <div className="bg-light min-vh-100 d-flex flex-column">
       <MiddleNav notification={notif} />
       
-      <div className="container my-5 flex-grow-1">
+      {
+loadScreenState ? (
+  <LoadingScreen/>
+)  : (
+
+<div className="container my-5 flex-grow-1">
         <h1 className="text-success mb-4 text-center">
           <FaShoppingCart className="me-2" /> Your Cart
         </h1>
@@ -281,6 +291,11 @@ const handleQuantityChange = async (item, operation, index) => {
           </div>
         )}
       </div>
+)
+
+
+      }
+      
       
       <Footer />
     </div>

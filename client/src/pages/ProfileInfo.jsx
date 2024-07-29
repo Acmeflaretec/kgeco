@@ -9,7 +9,7 @@ function ProfileInfo() {
     email: 'user.email@example.com',
     phone: '123-456-7890'
   });
-  const userDetails = useSelector(state => state?.userDetails);
+  const userDetails = useSelector(state => state.userDetails);
 
 
   const [editable, setEditable] = useState({
@@ -42,13 +42,13 @@ function ProfileInfo() {
         <Form.Control
           type="text"
           name={field}
-          value={ userDetails&& userDetails[field]  }
+          value={userDetails[field]}
           onChange={handleChange}
           disabled={!editable[field]}
           className={editable[field] ? 'border-primary' : ''}
         />
       </Col>
-      <Col sm={2}>
+      {/* <Col sm={2}>
         <Button
           variant={editable[field] ? "success" : "outline-primary"}
           onClick={() => editable[field] ? handleSave(field) : handleEdit(field)}
@@ -56,7 +56,7 @@ function ProfileInfo() {
         >
           {editable[field] ? <FaSave /> : <FaEdit />}
         </Button>
-      </Col>
+      </Col> */}
     </Form.Group>
   );
 

@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 import { useParams } from 'react-router-dom';
 import './SingleOrder.css';
+import LoadingScreen from '../components/loading/LoadingScreen';
 
 function SingleOrder() {
   const [progress, setProgress] = useState(0);
@@ -15,6 +16,7 @@ function SingleOrder() {
   const [ordersData,setOrdersData] = useState({})
   const [address,setAddress] = useState({})
   const [productsData,setProductsData] = useState([])
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
 
  // console.log('ord id :',orderId)
@@ -27,7 +29,9 @@ function SingleOrder() {
       setProductsData(response?.data?.data?.products?.item)
     } catch (error) {
       
-    }
+    }finally {
+      setLoadScreenState(false); // Set loading to false after data is fetched
+  }
   }
   
   
@@ -115,27 +119,31 @@ function SingleOrder() {
   return (
     <>
       <MiddleNav />
-      <Container className="my-5">
-        <h2 className="mb-4">Order Details</h2>
-     
+{
+   loadScreenState ? (
+    <LoadingScreen/>
+  )  : (
+    <Container className="my-5">
+    <h2 className="mb-4">Order Details</h2>
+ 
 {ordersData?.products?.item?.map((item,index)=>(
-     <Card className="shadow-sm mb-4">
-     <Card.Body>
-       <Row className="align-items-center">
+ <Card className="shadow-sm mb-4">
+ <Card.Body>
+   <Row className="align-items-center">
 
 <Col md={3} className="mb-3 mb-md-0">
-                <div className="d-flex align-items-center">
-                  <img
-                   src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.product_id?.image[0]}`}
-                    alt=""
-                    className="img-fluid rounded me-3"
-                    style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                  />
-                  <div>
-                    <h5 className="mb-1"> {index+1}. {item?.product_id?.name}</h5>
-                  </div>
-                </div>
-              </Col>
+            <div className="d-flex align-items-center">
+              <img
+               src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.product_id?.image[0]}`}
+                alt=""
+                className="img-fluid rounded me-3"
+                style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+              />
+              <div>
+                <h5 className="mb-1"> {index+1}. {item?.product_id?.name}</h5>
+              </div>
+            </div>
+          </Col>
 {index == 0 &&
 <Col md={6} className="mb-3 mb-md-0">
 { renderProgressBar()}
@@ -147,60 +155,64 @@ function SingleOrder() {
 
 ))
 
-              
+          
 }
 
-             
+         
 
-        <Row>
-          <Col md={8}>
-            <Card className="shadow-sm mb-4">
-              <Card.Body>
-                <h5 className="mb-3">Order Summary</h5>
-                <Table responsive borderless className="mb-0">
-                  <tbody>
-                    <tr>
-                      <td>Order ID</td>
-                      <td className="text-end">{ordersData?._id}</td>
-                    </tr>
-                    <tr>
-                      <td>Order Date</td>
-                      <td className="text-end">{formatDate(ordersData?.createdAt)}</td>
-                    </tr>
-                    <tr>
-                      <td>Status</td>
-                      <td className="text-end">
-                        <span className="text-success fw-bold">{ordersData?.status}</span>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Total</td>
-                      <td className="text-end fw-bold">₹{ordersData?.amount}</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className="shadow-sm">
-              <Card.Body>
-                <h5 className="mb-3">Delivery Address</h5>
-                <p className="mb-1 fw-bold">{address?.firstname} {address?.lastname}</p>
-                <p className="mb-1">{address?.address_line_1}</p>
-                <p className="mb-1">{address?.address_line_2}</p>
+    <Row>
+      <Col md={8}>
+        <Card className="shadow-sm mb-4">
+          <Card.Body>
+            <h5 className="mb-3">Order Summary</h5>
+            <Table responsive borderless className="mb-0">
+              <tbody>
+                <tr>
+                  <td>Order ID</td>
+                  <td className="text-end">{ordersData?._id}</td>
+                </tr>
+                <tr>
+                  <td>Order Date</td>
+                  <td className="text-end">{formatDate(ordersData?.createdAt)}</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td className="text-end">
+                    <span className="text-success fw-bold">{ordersData?.status}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total</td>
+                  <td className="text-end fw-bold">₹{ordersData?.amount}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      </Col>
+      <Col md={4}>
+        <Card className="shadow-sm">
+          <Card.Body>
+            <h5 className="mb-3">Delivery Address</h5>
+            <p className="mb-1 fw-bold">{address?.firstname} {address?.lastname}</p>
+            <p className="mb-1">{address?.address_line_1}</p>
+            <p className="mb-1">{address?.address_line_2}</p>
 
-                <p className="mb-0">
-                  {address?.city},{' '}
-                  {address?.state}{' '}
-                  {address?.zip}{' '}
-                  {address?.Country}
-                </p>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+            <p className="mb-0">
+              {address?.city},{' '}
+              {address?.state}{' '}
+              {address?.zip}{' '}
+              {address?.Country}
+            </p>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  </Container>
+  )
+}
+
+    
       <Footer />
     </>
   );

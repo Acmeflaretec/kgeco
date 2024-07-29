@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge } from 'react-bootstrap';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
+import LoadingScreen from '../components/loading/LoadingScreen';
 
 const orderData = [
   {
@@ -20,39 +21,61 @@ const orderData = [
 ];
 
 function OrderCard({ order }) {
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
+  useEffect(() => {
+    const delay = 500;  // Set the duration of the loading simulation in milliseconds (e.g., 2000ms)
+
+    // Simulate a loading delay with setTimeout
+    const timeout = setTimeout(() => {
+      setLoadScreenState(false);  // Set the loading state to false after the delay
+    }, delay);
+
+    // Clean up the timeout to prevent memory leaks
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
+<>
+{
+ loadScreenState ? (
+  <LoadingScreen/>
+)  : (
+  <Card className="mb-3 shadow-sm">
+  <Card.Body>
 
-
-    <Card className="mb-3 shadow-sm">
-      <Card.Body>
-
-        <Row>
-          <Col md={3} className="mb-3 mb-md-0">
-            <img
-           src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order?.products?.item[0]?.product_id?.image[0]}`}
-              alt={order?.name} className="img-fluid rounded" />
-          </Col>
-          <Col md={6}>
+    <Row>
+      <Col md={3} className="mb-3 mb-md-0">
+        <img
+       src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order?.products?.item[0]?.product_id?.image[0]}`}
+          alt={order?.name} className="img-fluid rounded" />
+      </Col>
+      <Col md={6}>
 {order?.products?.item?.map((item,index)=>(
 
 <h5 className="mb-1">{index+1}. {item?.product_id?.name}</h5>
 
 ))
-            }
-            <p className="text-muted mb-2">{order?.category}</p>
-            <span bg="info" className="mb-2">{order?.status}</span>
-            {/* <p className="small mb-0">{order.statusDetails}</p> */}
-          </Col>
-          <Col md={3} className="text-md-end">
-            <h5 className="mb-3">₹{order?.amount
-            }</h5>
-            <Link to={`/ordertrack/${order?._id}`} className="btn btn-outline-primary btn-sm">
-              Track Order
-            </Link>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+        }
+        <p className="text-muted mb-2">{order?.category}</p>
+        <span bg="info" className="mb-2">{order?.status}</span>
+        {/* <p className="small mb-0">{order.statusDetails}</p> */}
+      </Col>
+      <Col md={3} className="text-md-end">
+        <h5 className="mb-3">₹{order?.amount
+        }</h5>
+        <Link to={`/ordertrack/${order?._id}`} className="btn btn-outline-primary btn-sm">
+          Track Order
+        </Link>
+      </Col>
+    </Row>
+  </Card.Body>
+</Card>
+)
+
+}
+</>
+
+   
   );
 }
 

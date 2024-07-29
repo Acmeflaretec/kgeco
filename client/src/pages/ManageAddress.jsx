@@ -1,11 +1,13 @@
 import React, { useState,useEffect } from 'react'
 import axiosInstance from '../axios'
 import { Modal, Button, Form } from 'react-bootstrap';
+import LoadingScreen from '../components/loading/LoadingScreen';
 
 function ManageAddress() {
 
   const [addressDatas,setAddressDatas] = useState([])
-  
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
+
   const [showEdit, setShowEdit] = useState(false);
 
   const fetchAddress = async(urlQ) =>{
@@ -18,7 +20,9 @@ function ManageAddress() {
     console.log(response.data.data)
     } catch (error) {
       console.log(error)
-    }
+    }finally {
+      setLoadScreenState(false); // Set loading to false after data is fetched
+  }
     
       }
     
@@ -93,59 +97,71 @@ const handleShowEdit = async(addr) => {
   };
 
   return (
-    <div className='p-4 shadow rounded'>
-      <h5 className='fw-bold mb-4'>Manage Addresses</h5>
-      <Button variant="outline-success" className='w-100 mb-4' onClick={() => handleShow()}>
-        Add a new address
-      </Button>
-      {addressDatas.map((address) => (
-        <div key={address._id} className='mb-3 border p-3 rounded'>
-          <div className='d-flex justify-content-between align-items-center mb-2'>
-            <span className='bg-secondary-subtle p-1 rounded'>
-              {address.type}
-            </span>
-            <div>
-            {! address.primary && (<Button variant="outline-primary" size="sm" className="me-2" type="submit" 
-            onClick={(e)=> setPrimary(address._id)}
-             >
-        default
-      </Button>)}
+    <>
+    {
+ loadScreenState ? (
+  <LoadingScreen/>
+)  : (
+  <div className='p-4 shadow rounded'>
+  <h5 className='fw-bold mb-4'>Manage Addresses</h5>
+  <Button variant="outline-success" className='w-100 mb-4' onClick={() => handleShow()}>
+    Add a new address
+  </Button>
+  {addressDatas.map((address) => (
+    <div key={address._id} className='mb-3 border p-3 rounded'>
+      <div className='d-flex justify-content-between align-items-center mb-2'>
+        <span className='bg-secondary-subtle p-1 rounded'>
+          {address.type}
+        </span>
+        <div>
+        {! address.primary && (<Button variant="outline-primary" size="sm" className="me-2" type="submit" 
+        onClick={(e)=> setPrimary(address._id)}
+         >
+    default
+  </Button>)}
 
-              <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowEdit(address)}>Edit</Button>
-              <Button variant="outline-danger" size="sm" onClick={() => handleDelete(address._id)}>Delete</Button>
-            </div>
-          </div>
-          <p className='fw-bold mb-1'>{address.firstname} | {address.phone}</p>
-          <p className='text-muted mb-1'>{address.address_line_1}</p>
-          <p className='text-muted mb-1'>{address.address_line_2}</p>
-          <p className='text-muted mb-1'>{address.city}</p>
-          <p className='text-muted mb-1'>{address.state}</p>
-          <p className='text-muted mb-1'>{address.country}</p>
-          <p className='fw-bold mb-0'>Pincode: {address.zip}</p>
-          <AddressEditModal
-        showEdit={showEdit}
-        handleCloseEdit={handleCloseEdit}
-        handleSave={handleSave}
-        address={address}
-        setAddressDatasM={setAddressDatas}
-        fetchAddressM={fetchAddress}
-        setEditDataM={setEditData}
-        editDataM={editData}
-      />
+          <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowEdit(address)}>Edit</Button>
+          <Button variant="outline-danger" size="sm" onClick={() => handleDelete(address._id)}>Delete</Button>
         </div>
-      ))}
-
-      <AddressModal
-        show={showModal}
-        handleClose={handleClose}
-        handleSave={handleSave}
-        address={currentAddress}
-        setAddressDatasM={setAddressDatas}
-        fetchAddressM={fetchAddress}
-      />
-      
-
+      </div>
+      <p className='fw-bold mb-1'>{address.firstname}</p>
+      <p className='text-muted mb-1'>{address.address_line_1}</p>
+      <p className='text-muted mb-1'>{address.address_line_2}</p>
+      <p className='text-muted mb-1'>{address.city}</p>
+      <p className='text-muted mb-1'>{address.state}</p>
+      <p className='text-muted mb-1'>{address.country}</p>
+      <p className='fw-bold mb-0'>Pincode: {address.zip}</p>
+      <p className='fw-bold mb-1'>Phone: {address.mobile}</p>
+      <AddressEditModal
+    showEdit={showEdit}
+    handleCloseEdit={handleCloseEdit}
+    handleSave={handleSave}
+    address={address}
+    setAddressDatasM={setAddressDatas}
+    fetchAddressM={fetchAddress}
+    setEditDataM={setEditData}
+    editDataM={editData}
+  />
     </div>
+  ))}
+
+  <AddressModal
+    show={showModal}
+    handleClose={handleClose}
+    handleSave={handleSave}
+    address={currentAddress}
+    setAddressDatasM={setAddressDatas}
+    fetchAddressM={fetchAddress}
+  />
+  
+
+</div>
+)
+    }
+    </>
+
+
+   
   );
 }
 
