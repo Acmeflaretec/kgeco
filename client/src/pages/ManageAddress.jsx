@@ -11,13 +11,11 @@ function ManageAddress() {
   const [showEdit, setShowEdit] = useState(false);
 
   const fetchAddress = async(urlQ) =>{
-    console.log('address fetchh called . . . ')
 
     try {
       
     const response = await axiosInstance.get(urlQ)
-    setAddressDatas(response.data.data)
-    console.log(response.data.data)
+    setAddressDatas(response?.data?.data)
     } catch (error) {
       console.log(error)
     }finally {
@@ -91,9 +89,18 @@ const handleShowEdit = async(addr) => {
     }
     handleClose();
   };
+// delete
+  const handleDelete = async(id) => {
+    // setAddresses(addresses.filter(addr => addr.id !== id));
+try {
+  const response = await axiosInstance.delete(`/address/${id}`);
 
-  const handleDelete = (id) => {
-    setAddresses(addresses.filter(addr => addr.id !== id));
+  fetchAddress('/address')
+
+} catch (error) {
+  
+}
+
   };
 
   return (
@@ -117,11 +124,11 @@ const handleShowEdit = async(addr) => {
         {! address.primary && (<Button variant="outline-primary" size="sm" className="me-2" type="submit" 
         onClick={(e)=> setPrimary(address._id)}
          >
-    default
+   Set as default
   </Button>)}
 
-          <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowEdit(address)}>Edit</Button>
-          <Button variant="outline-danger" size="sm" onClick={() => handleDelete(address._id)}>Delete</Button>
+          {/* <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowEdit(address)}>Edit</Button>
+          <Button variant="outline-danger" size="sm" onClick={() => handleDelete(address._id)}>Delete</Button> */}
         </div>
       </div>
       <p className='fw-bold mb-1'>{address.firstname}</p>
@@ -132,6 +139,14 @@ const handleShowEdit = async(addr) => {
       <p className='text-muted mb-1'>{address.country}</p>
       <p className='fw-bold mb-0'>Pincode: {address.zip}</p>
       <p className='fw-bold mb-1'>Phone: {address.mobile}</p>
+
+      <div className='d-flex justify-content-between align-items-center mb-2'>
+  <div style={{paddingLeft:'10px',paddingTop:'10px'}} >
+ <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowEdit(address)}>Edit</Button>
+          <Button variant="outline-danger" size="sm" onClick={() => handleDelete(address._id)}>Delete</Button>
+        </div>
+      </div>
+
       <AddressEditModal
     showEdit={showEdit}
     handleCloseEdit={handleCloseEdit}
@@ -274,8 +289,6 @@ await fetchAddressM('/address')
   );
 }
 function AddressEditModal({ showEdit, handleCloseEdit, handleSave, address,setAddressDatasM,fetchAddressM,editDataM,setEditDataM }) {
-  
-console.log(editDataM)
 
 const handleSubmitEdit = async (e) => {
 
@@ -300,8 +313,6 @@ const handleSubmitEdit = async (e) => {
     // Make a POST request to send the updated address data to the backend
     const response = await axiosInstance.patch('/address', updatedAddressData);
     
-    console.log('Address updated successfully:', updatedAddressData);
-
     // Close the modal after successful submission
     setAddressDatasM([])
 

@@ -1,8 +1,15 @@
+
+
 .progress-container {
   position: relative;
   height: 4px;
   background-color: #e9ecef;
   margin: 2rem 0;
+
+  margin-left: 100px !important;
+margin-top: 100px !important;
+margin-bottom: 100px !important;
+
 }
 
 .progress-bar {
@@ -45,4 +52,19 @@
 
 .star-rating {
   font-size: 1.2rem;
+}
+
+@media only screen and (max-width: 767px) {
+
+  .progress-bar {
+     height: 100%;
+   
+  }
+.progress-container{
+
+width: 60% ;
+margin-left: 100px !important;
+margin-top: 100px !important;
+margin-bottom: 100px !important;
+}
 }

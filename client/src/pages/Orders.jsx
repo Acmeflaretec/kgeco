@@ -6,6 +6,9 @@ import { Container, Row, Col, Card, Badge } from 'react-bootstrap';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 import LoadingScreen from '../components/loading/LoadingScreen';
+import {
+  FaPlus
+  } from 'react-icons/fa';
 
 const orderData = [
   {
@@ -21,25 +24,10 @@ const orderData = [
 ];
 
 function OrderCard({ order }) {
-  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
-  useEffect(() => {
-    const delay = 500;  // Set the duration of the loading simulation in milliseconds (e.g., 2000ms)
-
-    // Simulate a loading delay with setTimeout
-    const timeout = setTimeout(() => {
-      setLoadScreenState(false);  // Set the loading state to false after the delay
-    }, delay);
-
-    // Clean up the timeout to prevent memory leaks
-    return () => clearTimeout(timeout);
-  }, []);
-
+   
   return (
 <>
-{
- loadScreenState ? (
-  <LoadingScreen/>
-)  : (
+
   <Card className="mb-3 shadow-sm">
   <Card.Body>
 
@@ -70,9 +58,7 @@ function OrderCard({ order }) {
     </Row>
   </Card.Body>
 </Card>
-)
 
-}
 </>
 
    
@@ -82,6 +68,7 @@ function OrderCard({ order }) {
 function Orders() {
   const [ordersData,setOrdersData] = useState([])
   const navigate = useNavigate();
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
 
 const fetchOrderData  = async()=>{
@@ -89,9 +76,12 @@ const fetchOrderData  = async()=>{
   try {
     const response = await axiosInstance.get(`/orders/getuserorders`)
     setOrdersData(response?.data?.data)
+    console.log('order datas length',response?.data?.data?.length)
      
   } catch (error) {
     
+  }finally{
+    setLoadScreenState(false);
   }
 }
 
@@ -105,12 +95,42 @@ fetchOrderData()
   return (
     <div className="d-flex flex-column min-vh-100">
       <MiddleNav />
-      <Container className="flex-grow-1 py-5">
-        <h2 className="mb-4">Your Orders</h2>
-        {ordersData?.map((order,index) => (
-          <OrderCard key={order?._id} order={order} />
-        ))}
-      </Container>
+      {
+ loadScreenState ? (
+  <LoadingScreen/>
+)  :
+ (
+<>
+<h2 className="mb-4" style={{textAlign:'center',marginTop:'50px'}} >Your Orders</h2>
+{
+!ordersData?.length <1 ? (
+  <Container className="flex-grow-1 py-5">
+
+  {ordersData?.map((order,index) => (
+    <OrderCard key={order?._id} order={order} />
+  ))}
+</Container>
+)  : 
+(
+  <div className="text-center py-5" style={{marginBottom:'100px'}} >
+  <p className="text-muted mb-4">You don't have any order</p>
+  <Link to="/allproducts" className="btn btn-success btn-lg">
+    <FaPlus className="me-2" />Browse Products
+  </Link>
+</div>
+)
+
+
+}
+
+
+</>
+
+
+
+)
+      }
+ 
       <Footer />
     </div>
   );

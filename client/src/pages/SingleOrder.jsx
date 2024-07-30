@@ -125,6 +125,15 @@ function SingleOrder() {
   )  : (
     <Container className="my-5">
     <h2 className="mb-4">Order Details</h2>
+
+
+    <div   >
+    <Col md={6} className="mb-3 mb-md-0">
+{ renderProgressBar()}
+</Col>
+    </div>
+
+
  
 {ordersData?.products?.item?.map((item,index)=>(
  <Card className="shadow-sm mb-4">
@@ -144,11 +153,11 @@ function SingleOrder() {
               </div>
             </div>
           </Col>
-{index == 0 &&
+{/* {index == 0 &&
 <Col md={6} className="mb-3 mb-md-0">
 { renderProgressBar()}
 </Col>
-}
+} */}
 </Row>
 </Card.Body>
 </Card>

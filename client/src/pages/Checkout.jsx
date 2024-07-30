@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import axiosInstance from '../axios'
 import { FaRegTrashAlt, FaLock, FaPlus } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { Modal, Button, Form } from 'react-bootstrap';
 import logoPng from '../assets/images/logo.png'
@@ -10,6 +10,8 @@ import LoadingScreen from '../components/loading/LoadingScreen';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [deliveryAddress, setDeliveryAddress] = useState('Ananthu xyz house yeroor po yeroor Yeroor KOLLAM, KERALA 691312');
   const [paymentOption, setPaymentOption] = useState('razorpay');
@@ -17,6 +19,7 @@ const Checkout = () => {
 const [salePriceTotal,setSalePriceTotal] = useState(0)
 const [proPriceTotal,setProPriceTotal] = useState(0)
 const [discountTotal,setDiscountTotal] = useState(0)
+const deliveryCharge = 30
 
 const [addressDatas,setAddressDatas] = useState([])
 const [orderAddress,setOrderAddress] = useState({})
@@ -500,7 +503,7 @@ loadScreenState ? (
                   ))}
                   <div className="col-md-6">
                     <div className="border rounded p-3 h-100 d-flex align-items-center justify-content-center">
-                      <button className="btn btn-outline-success" onClick={() => setShowAddressModal(true)}>
+                      <button className="btn btn-outline-success" onClick={() => setShowAddressModal(true) }>
                         <FaPlus className="me-2" />
                         Add New Address
                       </button>
@@ -510,7 +513,13 @@ loadScreenState ? (
               )}
               {orderAddress && (
                 <div className="mt-4 text-end">
-                  <button className="btn btn-success" onClick={() => setCurrentStep(2)}>Continue to Review</button>
+                  <button className="btn btn-success"
+                  //  onClick={() => setCurrentStep(2)}
+                  onClick={() => {
+                    window.scrollTo(0, 0);
+                    setCurrentStep(2);
+                  }}
+                   >Continue to Review</button>
                 </div>
               )}
             </div>
@@ -524,39 +533,35 @@ loadScreenState ? (
             </div>
             <div className="card-body">
               {cartData?.item?.map((product,index) => (
-                <div key={product._id} className="row mb-4 align-items-center">
+                <div key={product?._id} className="row mb-4 align-items-center">
                   <div className="col-md-3">
                     <img
-                      src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${product.productId.image[0]}`}
-                     alt={product.name} className="img-fluid rounded" />
+                      src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${product?.productId?.image[0]}`}
+                     alt={product?.name} className="img-fluid rounded" />
                   </div>
                   <div className="col-md-6">
-                    <h6 className="fw-bold mb-1">{product.name}</h6>
+                    <h6 className="fw-bold mb-1">{product?.name}</h6>
                     {/* <p className="text-muted small mb-2">Microgreen</p> */}
                     <div className="d-flex align-items-center">
-                      <span className="fw-bold me-2">₹{product.productId.sale_rate}</span>
-                      <span className="text-muted text-decoration-line-through small me-2">₹{product.price}</span>
-                      <span className="bg-success-subtle text-success px-2 py-1 rounded-pill">{product.productId.discount}% off</span>
+                      <span className="fw-bold me-2">₹{product?.productId?.sale_rate}</span>
+                      <span className="text-muted text-decoration-line-through small me-2">₹{product?.price}</span>
+                      <span className="bg-success-subtle text-success px-2 py-1 rounded-pill">{product?.productId?.discount}% off</span>
                     </div>
                   </div>
 
 
                   <div className="col-md-3 mt-4">
-                    {/* <div className="input-group">
-                      <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'decrement',index)} disabled={product.qty === 1}>-</button>
-                      <input type="text" className="form-control text-center" value={product.qty} readOnly  />
-                      <button className="btn btn-outline-secondary" type="button" onClick={() => handleQuantityChange(product, 'increment',index)}>+</button>
-                    </div> */}
+             
  <div className="input-group">
         <button
           className="btn btn-outline-secondary"
           type="button"
           onClick={() => handleQuantityChange(product, 'decrement', index)}
-          disabled={product.qty === 1 || loadingIndex === index}
+          disabled={product?.qty === 1 || loadingIndex === index}
         >
           -
         </button>
-        <input type="text" className="form-control text-center" value={product.qty} readOnly />
+        <input type="text" className="form-control text-center" value={product?.qty} readOnly />
         <button
           className="btn btn-outline-secondary"
           type="button"
@@ -568,22 +573,25 @@ loadScreenState ? (
       </div>
 
 
-                    <button className="btn btn-link text-danger mt-2" onClick={() => handleRemoveItem(product._id)}>
+                    <button className="btn btn-link text-danger mt-2" onClick={() => handleRemoveItem(product?._id)}>
                       <FaRegTrashAlt /> Remove
                     </button>
                   </div>
                 </div>
               ))}
               <div className="d-flex justify-content-between mt-4">
-                <button className="btn btn-outline-secondary" onClick={() => setCurrentStep(1)}>Back</button>
-                {/* <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
-                 disabled={salePriceTotal<80} >{salePriceTotal<80? 'add above ₹80 to continue': 'Continue to Payment'} 
-                 </button> */}
-                  <button className="btn btn-success" onClick={() => setCurrentStep(3)} 
+                <button className="btn btn-outline-secondary"  onClick={() => {
+                    window.scrollTo(0, 0);
+                    setCurrentStep(1);
+                  }}>Back</button>
+         
+                  <button className="btn btn-success"  onClick={() => {
+                    window.scrollTo(0, 0);
+                    setCurrentStep(3);
+                  }} 
                    >  Continue to Payment
                  </button>
               </div>
-              {console.log('products total',salePriceTotal)}
               {/*  */}
             </div>
           </section>
@@ -612,7 +620,10 @@ loadScreenState ? (
                 </label>
               </div>
               <div className="d-flex justify-content-between mt-4">
-                <button className="btn btn-outline-secondary" onClick={() => setCurrentStep(2)}>Back</button>
+                <button className="btn btn-outline-secondary"  onClick={() => {
+                    window.scrollTo(0, 0);
+                    setCurrentStep(2);
+                  }}>Back</button>
                 <button className="btn btn-success" onClick={placeOrder}>Place Your Order</button>
               </div>
             </div>
@@ -632,7 +643,10 @@ loadScreenState ? (
             </div>
             <div className="d-flex justify-content-between mb-2">
               <span>Delivery Fee:</span>
-              <span className='text-decoration-line-through'>₹100.00</span>
+              {salePriceTotal > 299 ? (
+  <span className='text-decoration-line-through text-success' >₹{deliveryCharge} Free Delivery  </span>
+):(<span>₹{deliveryCharge}</span>
+) }
             </div>
             <div className="d-flex justify-content-between mb-2">
               <span>Total Discount:</span>
@@ -641,7 +655,9 @@ loadScreenState ? (
             <hr />
             <div className="d-flex justify-content-between fw-bold">
               <span>Total:</span>
-              <span>₹{salePriceTotal}</span>
+              <span>
+              ₹{salePriceTotal < 299 ? salePriceTotal + deliveryCharge : salePriceTotal}
+              </span>
             </div>
           </div>
         </div>

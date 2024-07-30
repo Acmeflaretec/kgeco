@@ -14,6 +14,7 @@ function Cart() {
   const [proPriceTotal,setProPriceTotal] = useState(0)
   const [discountTotal,setDiscountTotal] = useState(0)
   const [notif,setNotif] = useState(true)
+  const deliveryCharge = 30
 
   const [loadingIndex, setLoadingIndex] = useState(null);
   const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
@@ -268,16 +269,22 @@ loadScreenState ? (
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Discount:</span>
-                      <span className="text-success">₹{proPriceTotal-salePriceTotal}</span>
+                      <span className="text-success text-decoration-line-through">₹{proPriceTotal-salePriceTotal}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Delivery Charges:</span>
-                      <span>₹300</span>
+{salePriceTotal > 299 ? (
+  <span className='text-decoration-line-through text-success' >₹{deliveryCharge} Free Delivery  </span>
+):(<span>₹{deliveryCharge}</span>
+) }
+
                     </div>
                   </div>
                   <div className="d-flex justify-content-between fw-bold">
                     <span>Total:</span>
-                    <span>₹{salePriceTotal}</span>
+                    <span>
+                    ₹{salePriceTotal < 299 ? salePriceTotal + deliveryCharge : salePriceTotal}
+                    </span>
                   </div>
                   {/* <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-4" >
                     Proceed to Checkout
