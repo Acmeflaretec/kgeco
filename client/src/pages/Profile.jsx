@@ -9,11 +9,15 @@ import MiddleNav from '../components/MiddleNav';
 import ManageAddress from './ManageAddress';
 import './Profile.css';
 import ProfileInfo from './ProfileInfo';
+import proImg from '../assets/images/profile.png'
+import LoadingScreen from '../components/loading/LoadingScreen';
+
 
 function Profile() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
   const handleTabChange = (tab) => {
     if (tab === 'orders') {
@@ -23,22 +27,38 @@ function Profile() {
     }
   };
 
+  useEffect(() => {
+    const delay = 500;  // Set the duration of the loading simulation in milliseconds (e.g., 2000ms)
+
+    // Simulate a loading delay with setTimeout
+    const timeout = setTimeout(() => {
+      setLoadScreenState(false);  // Set the loading state to false after the delay
+    }, delay);
+
+    // Clean up the timeout to prevent memory leaks
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <div className="profile-page">
       <MiddleNav />
-      <div className="container py-5">
+{
+ loadScreenState ? (
+  <LoadingScreen/>
+)  : (
+<div className="container py-5">
         <Row>
           <Col lg={3}>
             <Card className="profile-sidebar mb-4">
               <Card.Body className="text-center">
                 <img
-                  src="https://via.placeholder.com/150"
+                  src={proImg}
                   alt="User"
                   className="rounded-circle img-thumbnail mb-3"
                   width="150"
                 />
-                <h4 className="mb-0">{userDetails.username}</h4>
-                <p className="text-muted">{userDetails.email} </p>
+                <h4 className="mb-0">{userDetails?.username}</h4>
+                <p className="text-muted">{userDetails?.email} </p>
               </Card.Body>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item>
@@ -75,6 +95,11 @@ function Profile() {
           </Col>
         </Row>
       </div>
+)
+
+}
+
+      
       <Footer />
     </div>
   );

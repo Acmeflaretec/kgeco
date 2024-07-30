@@ -48,7 +48,7 @@ function ProfileInfo() {
           className={editable[field] ? 'border-primary' : ''}
         />
       </Col>
-      <Col sm={2}>
+      {/* <Col sm={2}>
         <Button
           variant={editable[field] ? "success" : "outline-primary"}
           onClick={() => editable[field] ? handleSave(field) : handleEdit(field)}
@@ -56,7 +56,7 @@ function ProfileInfo() {
         >
           {editable[field] ? <FaSave /> : <FaEdit />}
         </Button>
-      </Col>
+      </Col> */}
     </Form.Group>
   );
 

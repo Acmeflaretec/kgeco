@@ -5,7 +5,7 @@ const Address = require('../models/address');
 
 const getOrders = async (req, res) => {
   try {
-    const data = await Order.find()
+    const data = await Order.find().sort({ createdAt: -1 });
     res.status(200).json({ data })
   } catch (error) {
     console.log(error);
@@ -30,7 +30,8 @@ const getUserOrders = async (req, res) => {
   try {
     const { _id } = req?.decoded
     const data = await Order.find({ userId:_id }).populate('products.item.product_id') // Populate all fields in products
-    .populate('address'); // Populate all fields in address
+    .populate('address')
+    .sort({ createdAt: -1 });
     res.status(200).json({ data })
   } catch (error) {
     console.log(error);
@@ -44,7 +45,7 @@ const getOrderById = async (req, res) => {
       console.log(orderId);
       const data = await Order.findById(orderId)
           .populate('products.item.product_id')
-          .populate('address');
+        
      // console.log(data);
       res.status(200).json({ data });
   } catch (error) {
@@ -58,6 +59,8 @@ const createOrder = async (req, res) => {
   const { _id } = req?.decoded
 
   const {  payment_mode, amount, address, products } = req?.body
+
+  console.log('addrr',address)
   try {
     const data = await Order.create({ userId:_id, payment_mode, amount, address, products })
     console.log('prod qty findings ',products.item)

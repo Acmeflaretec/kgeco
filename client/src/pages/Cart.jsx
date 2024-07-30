@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
 import { FaShoppingCart, FaPlus, FaMinus, FaTrash, FaReceipt } from 'react-icons/fa';
 
+import LoadingScreen from '../components/loading/LoadingScreen';
+
 function Cart() {
   const navigate = useNavigate();
   const [cartData,setCartData] = useState([])
@@ -12,8 +14,10 @@ function Cart() {
   const [proPriceTotal,setProPriceTotal] = useState(0)
   const [discountTotal,setDiscountTotal] = useState(0)
   const [notif,setNotif] = useState(true)
+  const deliveryCharge = 30
 
   const [loadingIndex, setLoadingIndex] = useState(null);
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
 
 
@@ -63,8 +67,7 @@ const fetchData = async()=>{
 
     const response = await axiosInstance.get(`/user/getcarts`);
     setCartData(response?.data?.data)
-    // console.log('cart details array',response.data.data)
-    //console.log('fetch qty ',response.data.data.item[0].qty)
+
     const items = response?.data?.data?.item;
 
 // Calculate the total sale price
@@ -82,7 +85,9 @@ const totalDiscount = calculateTotalDiscountPrice(items);
 
   } catch (error) {
     console.log(error)
-  }
+  } finally {
+    setLoadScreenState(false); // Set loading to false after data is fetched
+}
 
 }
 
@@ -93,28 +98,6 @@ useEffect(()=>{
 },[])
 
 
-
- 
-
-//   const handleQuantityChange =async (item, operation,index) => {
-// let QtyApi = item.qty
-// if(operation==='increment'){
-//   QtyApi +=1
-// }else if (operation==='decrement'){
-//   QtyApi -=1
-// }
-// try {
-// if(item.qty <=  item.productId.stock && operation==='increment'){
-//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-// }else if(item.qty>1 && operation==='decrement'){
-//   const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
-
-// }
-//   } catch (error) {
-//    console.log(error)
-//   }
-//   fetchData()
-//  }
 
 const handleQuantityChange = async (item, operation, index) => {
   let newQty = item?.qty;
@@ -156,9 +139,7 @@ const handleQuantityChange = async (item, operation, index) => {
   
 
   const handleRemoveItem =async (itemId) => {
-  //  console.log('cart id ',itemId)
    let urlQuery=`/user/removeFromCart/${itemId}`
-
 
    try {
     const response = await axiosInstance.patch(urlQuery);
@@ -173,12 +154,10 @@ const handleQuantityChange = async (item, operation, index) => {
     });
    // Calculate the total sale price
    const totalSalePrice = calculateTotalSalePrice(updatedCartItems);
-  //  console.log(totalSalePrice)
        setSalePriceTotal(totalSalePrice)
    
        // Calculate the total  price
    const totalProPrice = calculateTotalProPrice(updatedCartItems);
-  //  console.log(totalProPrice)
        setProPriceTotal(totalProPrice)
 
        setNotif(prev => !prev);
@@ -202,7 +181,12 @@ const handleQuantityChange = async (item, operation, index) => {
     <div className="bg-light min-vh-100 d-flex flex-column">
       <MiddleNav notification={notif} />
       
-      <div className="container my-5 flex-grow-1">
+      {
+loadScreenState ? (
+  <LoadingScreen/>
+)  : (
+
+<div className="container my-5 flex-grow-1">
         <h1 className="text-success mb-4 text-center">
           <FaShoppingCart className="me-2" /> Your Cart
         </h1>
@@ -237,26 +221,6 @@ const handleQuantityChange = async (item, operation, index) => {
                           <span className="bg-success-subtle">{item?.productId?.discount}% off</span>
                         </div>
                         <div className="d-flex align-items-center">
-                          {/* <div className="btn-group me-3" role="group">
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => handleQuantityChange(item, 'decrement',index)}
-                              disabled={item.qty === 1}
-                            >
-                              <FaMinus />
-                            </button>
-                            <button className="btn btn-outline-secondary " disabled style={{ color: 'darkgreen' }}>
-                              {item.qty}
-                            </button>
-                            <button
-                              className="btn btn-outline-secondary"
-                              onClick={() => handleQuantityChange(item, 'increment',index )}
-                            >
-                              <FaPlus />
-                            </button>
-                          </div> */}
-
-
                           <div className="btn-group me-3" role="group">
   <button
     className="btn btn-outline-secondary"
@@ -305,16 +269,22 @@ const handleQuantityChange = async (item, operation, index) => {
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Discount:</span>
-                      <span className="text-success">₹{proPriceTotal-salePriceTotal}</span>
+                      <span className="text-success text-decoration-line-through">₹{proPriceTotal-salePriceTotal}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Delivery Charges:</span>
-                      <span>₹300</span>
+{salePriceTotal > 299 ? (
+  <span className='text-decoration-line-through text-success' >₹{deliveryCharge} Free Delivery  </span>
+):(<span>₹{deliveryCharge}</span>
+) }
+
                     </div>
                   </div>
                   <div className="d-flex justify-content-between fw-bold">
                     <span>Total:</span>
-                    <span>₹{salePriceTotal}</span>
+                    <span>
+                    ₹{salePriceTotal < 299 ? salePriceTotal + deliveryCharge : salePriceTotal}
+                    </span>
                   </div>
                   {/* <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-4" >
                     Proceed to Checkout
@@ -328,6 +298,11 @@ const handleQuantityChange = async (item, operation, index) => {
           </div>
         )}
       </div>
+)
+
+
+      }
+      
       
       <Footer />
     </div>
