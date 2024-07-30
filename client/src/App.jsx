@@ -22,6 +22,12 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import ScrollToTop from './ScrollToTop';
 
+import CancellationRefunds from './pages/CancellationRefunds';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import ReturnPolicy from './pages/ReturnPolicy';
+import StorePolicy from './pages/StorePolicy';
+import TermsOfService from './pages/TermsOfServicce';
+
 function App() {
 
   return (
@@ -45,6 +51,14 @@ function App() {
       <Route path='/manageaddress' element={<ManageAddress/>}/>
       <Route path='/order' element={<Orders/>}/>
       <Route path='/ordertrack/:orderId' element={<SingleOrder/>}/>
+          <Route path='/privacypolicy' element={<PrivacyPolicy />} />
+          <Route path='/cancellation' element={<CancellationRefunds />} />
+          <Route path='/returnpolicy' element={<ReturnPolicy />} />
+          <Route path='/storepolicy' element={<StorePolicy />} />
+          <Route path='/termsofservice' element={<TermsOfService />} />
+         
+
+
       <Route path='*' element={<PageNotFound/>}/>
      </Routes>
      </Provider>
