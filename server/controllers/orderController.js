@@ -45,7 +45,7 @@ const getOrderById = async (req, res) => {
       console.log(orderId);
       const data = await Order.findById(orderId)
           .populate('products.item.product_id')
-          .populate('address');
+        
      // console.log(data);
       res.status(200).json({ data });
   } catch (error) {
@@ -59,6 +59,8 @@ const createOrder = async (req, res) => {
   const { _id } = req?.decoded
 
   const {  payment_mode, amount, address, products } = req?.body
+
+  console.log('addrr',address)
   try {
     const data = await Order.create({ userId:_id, payment_mode, amount, address, products })
     console.log('prod qty findings ',products.item)

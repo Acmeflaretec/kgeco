@@ -33,10 +33,8 @@ const fetchAddress = async(urlQ) =>{
   try {
     
   const response = await axiosInstance.get(urlQ)
-  setAddressDatas(response.data.data)
-  console.log(response.data.data)
-  const defAddress = response.data.data.filter((addr)=>  addr.primary == true )
-console.log('prim addr ',defAddress[0])
+  setAddressDatas(response?.data?.data)
+  const defAddress = response?.data?.data?.filter((addr)=>  addr.primary == true )
 setOrderAddress(defAddress[0])
 
   } catch (error) {
@@ -197,11 +195,11 @@ setCartData(updatedCartData);
 setLoadingIndex(index); // Set loading state
 
     try {
-    if(item.qty <=  item.productId.stock && operation==='increment'){
-      const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
+    if(item?.qty <=  item?.productId?.stock && operation==='increment'){
+      const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item?.productId?._id })
       fetchData()
-    }else if(item.qty>1 && operation==='decrement'){
-      const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item.productId._id })
+    }else if(item?.qty>1 && operation==='decrement'){
+      const response = await axiosInstance.patch(`/user/updateQty`,{ qty:QtyApi, productId:item?.productId?._id })
       fetchData()
     }
     
@@ -253,12 +251,9 @@ setLoadingIndex(index); // Set loading state
     };
     
     // Now 'products' object is ready to be used following the defined schema
-    console.log('Final Products Object:', productsOrderData);
    
-  
-   
-     const response = await axiosInstance.post(`/orders`,{payment_mode:paymentOption,amount:productsOrderData.totalPrice,
-      address:orderAddress._id,products:productsOrderData,
+     const response = await axiosInstance.post(`/orders`,{payment_mode:paymentOption,amount:productsOrderData?.totalPrice,
+      address:orderAddress,products:productsOrderData,
      })
   
   Swal.fire({
