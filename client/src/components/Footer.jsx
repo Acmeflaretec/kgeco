@@ -33,10 +33,11 @@ function Footer() {
           <Col lg={3} md={6} className="footer-section">
             <h5 className="footer-title">Policies</h5>
             <ul className="footer-links">
-              <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-              <li><Link to="/shipping-policy">Shipping Policy</Link></li>
-              <li><Link to="/terms-conditions">Terms & Conditions</Link></li>
-              <li><Link to="/faq">FAQ</Link></li>
+            <li><Link to={'/privacypolicy'}>Privacy Policy</Link></li>
+              <li><Link to={'/cancellation'}>Cancellation & Refunds</Link></li>
+              <li><Link to={'/returnpolicy'}>Return Policy</Link></li>
+              <li><Link to={'/storepolicy'}>Store Policies</Link></li>
+              <li><Link to={'/termsofservice'}>Terms of Service</Link></li>
             </ul>
           </Col>
           <Col lg={3} md={6} className="footer-section">
