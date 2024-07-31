@@ -2,16 +2,14 @@ import React, { useState,useEffect } from 'react'
 import axiosInstance from '../axios'
 import { useSelector } from 'react-redux';import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave } from 'react-icons/fa';
+import LoadingScreen from '../components/loading/LoadingScreen';
 
 function ProfileInfo() {
-  const [profile, setProfile] = useState({
-    name: 'User',
-    email: 'user.email@example.com',
-    phone: '123-456-7890'
-  });
+
   const userDetails = useSelector(state => state.userDetails);
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
-
+  const [profile, setProfile] = useState(userDetails);
   const [editable, setEditable] = useState({
     name: false,
     email: false,
@@ -27,10 +25,24 @@ function ProfileInfo() {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = (field) => {
+  const handleSave =async (field) => {
     // Here you would typically save the changes to your backend
     console.log(`Saving ${field}: ${profile[field]}`);
+    console.log('prof ',profile)
     handleEdit(field);
+// 
+
+try {
+  const response = await axiosInstance.patch(`/user`,{
+    [field]: profile[field] 
+  })
+window.location.reload()
+
+
+} catch (error) {
+  console.log(error)
+}
+
   };
 
   const renderField = (field, icon) => (
@@ -42,13 +54,13 @@ function ProfileInfo() {
         <Form.Control
           type="text"
           name={field}
-          value={userDetails[field]}
+          value={profile[field]}
           onChange={handleChange}
           disabled={!editable[field]}
           className={editable[field] ? 'border-primary' : ''}
         />
       </Col>
-      {/* <Col sm={2}>
+      <Col sm={2}>
         <Button
           variant={editable[field] ? "success" : "outline-primary"}
           onClick={() => editable[field] ? handleSave(field) : handleEdit(field)}
@@ -56,7 +68,7 @@ function ProfileInfo() {
         >
           {editable[field] ? <FaSave /> : <FaEdit />}
         </Button>
-      </Col> */}
+      </Col>
     </Form.Group>
   );
 

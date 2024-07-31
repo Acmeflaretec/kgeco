@@ -132,7 +132,7 @@ const handleRemoveFromWishlist = async (itemId) => {
             transition={{ duration: 0.5 }}
           >
             <div className="product-card">
-            <Link to="/product" className="product-link">
+            <Link to={`/product/${item._id}`} className="product-link">
               <div className="product-image">
                 <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item.image[0]}`}
                  alt={item.name} className="img-fluid" />

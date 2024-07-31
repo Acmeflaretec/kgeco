@@ -201,7 +201,7 @@ loadScreenState ? (
         ) : (
           <div className="row g-4">
             <div className="col-lg-8">
-              {cartData?.item?.map((item,index )=> (
+              {cartData?.item?.slice().reverse().map((item,index )=> (
                 <div key={item?._id} className="card mb-3 border-0 shadow-sm">
                   <div className="row g-0">
                     <div className="col-md-3 p-3">

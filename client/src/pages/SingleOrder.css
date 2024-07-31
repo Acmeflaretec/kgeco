@@ -53,6 +53,10 @@ margin-bottom: 100px !important;
 .star-rating {
   font-size: 1.2rem;
 }
+.stepsmob2{
+  display: none;
+  
+  }
 
 @media only screen and (max-width: 767px) {
 
@@ -67,4 +71,16 @@ margin-left: 100px !important;
 margin-top: 100px !important;
 margin-bottom: 100px !important;
 }
+
+.stepsmob{
+display: none;
+
+}
+.stepsmob2{
+  display: flex;
+  padding-top: 50px !important;
+  color: green;
+  font-weight: bold;
+  }
+
 }

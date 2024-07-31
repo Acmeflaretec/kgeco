@@ -45,7 +45,7 @@ function OrderCard({ order }) {
 ))
         }
         <p className="text-muted mb-2">{order?.category}</p>
-        <span bg="info" className="mb-2">{order?.status}</span>
+        <span bg="info" className="mb-2" style={{color:'green',fontWeight:'bold'}} >{order?.status}</span>
         {/* <p className="small mb-0">{order.statusDetails}</p> */}
       </Col>
       <Col md={3} className="text-md-end">

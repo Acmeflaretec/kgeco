@@ -22,6 +22,32 @@ const getUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const { username, email, phone } = req.body;
+  const { _id } = req?.decoded
+  console.log(req.body);
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update the user data
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { $set: { username, email, phone } },
+      { new: true, runValidators: true } // Options to return the updated document and run validators
+    );
+
+  return  res.status(200).json({ data: updatedUser, message: 'User updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: error.message ?? 'Something went wrong' });
+  }
+};
+
+
 const updateQty = async (req, res) => {
   try {
     const { _id } = req?.decoded
@@ -159,5 +185,5 @@ module.exports = {
     removeFromWishlist,
     getWishLists,
     getCartDetailsByUserId,
-
+    updateUser,
   }
