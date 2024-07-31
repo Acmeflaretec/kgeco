@@ -78,7 +78,7 @@ function SingleOrder() {
       case 'Shipped':
         setProgress(33);
         break;
-      case 'Out_of_delivery':
+      case 'Out for delivery':
         setProgress(66);
         break;
       case 'Delivered':
@@ -91,7 +91,7 @@ function SingleOrder() {
   const renderProgressBar = () => {
     const steps = [
       { name: 'Order Confirmed', icon: <FaBox />, completed: progress >= 0 },
-      { name: 'Shipped', icon: <FaShippingFast />, completed: progress >= 33 },
+      { name: 'Shipped', icon: <FaShippingFast />, completed: progress >= 25 },
       { name: 'Out for Delivery', icon: <FaTruck />, completed: progress >= 66 },
       { name: 'Delivered', icon: <FaCheckCircle />, completed: progress >= 100 },
     ];
@@ -106,9 +106,11 @@ function SingleOrder() {
             style={{ left: `${index * 33}%` }}
           >
             <div className="icon-container">{step?.icon}</div>
-            <p>{step?.name}</p>
+            <p className='stepsmob'  >{step?.name}</p>
+           
           </div>
         ))}
+         <p className='stepsmob2 '  >{ordersData.status}</p>
       </div>
     );
   };
@@ -130,6 +132,7 @@ function SingleOrder() {
     <div   >
     <Col md={6} className="mb-3 mb-md-0">
 { renderProgressBar()}
+
 </Col>
     </div>
 

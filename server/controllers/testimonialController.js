@@ -63,7 +63,6 @@ const updateTestimonial = async (req, res) => {
     })
     res.status(200).json({ data, message: 'Blog updated successfully' });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: error?.message ?? 'Something went wrong' })
   }
 };

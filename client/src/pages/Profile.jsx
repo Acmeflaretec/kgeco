@@ -9,7 +9,7 @@ import MiddleNav from '../components/MiddleNav';
 import ManageAddress from './ManageAddress';
 import './Profile.css';
 import ProfileInfo from './ProfileInfo';
-import proImg from '../assets/images/profile.png'
+import proImg from '../assets/images/pro2.png'
 import LoadingScreen from '../components/loading/LoadingScreen';
 
 

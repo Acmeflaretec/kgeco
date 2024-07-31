@@ -92,3 +92,21 @@
   border-color: var(--green);
   box-shadow: 0 0 0 0.2rem rgba(60, 157, 100, 0.25);
 }
+ 
+
+
+/*  */
+.individualbars{
+
+  height: 20px !important;
+
+}
+
+.progress-bar-custom {
+  height: 10px !important;
+  border-radius: 5px !important;
+  /* width: 80% !important; */
+}
+.progress-container {
+  /* width: 80% !important; */
+}
