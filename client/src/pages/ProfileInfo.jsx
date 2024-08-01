@@ -1,12 +1,15 @@
 import React, { useState,useEffect } from 'react'
 import axiosInstance from '../axios'
-import { useSelector } from 'react-redux';import { Form, Button, Card, Row, Col } from 'react-bootstrap';
+import { Form, Button, Card, Row, Col } from 'react-bootstrap';
 import { FaUser, FaEnvelope, FaPhone, FaEdit, FaSave } from 'react-icons/fa';
 import LoadingScreen from '../components/loading/LoadingScreen';
+import { setUserDetails, clearUserDetails } from '../redux/actions/userActions';
+import { useDispatch, useSelector } from 'react-redux';
 
 function ProfileInfo() {
+  const dispatch = useDispatch();
 
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
   const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
   const [profile, setProfile] = useState(userDetails);
@@ -27,8 +30,8 @@ function ProfileInfo() {
 
   const handleSave =async (field) => {
     // Here you would typically save the changes to your backend
-    console.log(`Saving ${field}: ${profile[field]}`);
-    console.log('prof ',profile)
+    // console.log(`Saving ${field}: ${profile[field]}`);
+    // console.log('prof ',profile)
     handleEdit(field);
 // 
 
@@ -36,7 +39,19 @@ try {
   const response = await axiosInstance.patch(`/user`,{
     [field]: profile[field] 
   })
-window.location.reload()
+// window.location.reload()
+
+
+const fetchData = async () => {
+  try {
+    const response = await axiosInstance.get('/auth/user');
+    dispatch(setUserDetails(response?.data?.data));
+  } catch (error) {
+    console.log('errr', error);
+    dispatch(clearUserDetails());
+  }
+};
+fetchData();
 
 
 } catch (error) {

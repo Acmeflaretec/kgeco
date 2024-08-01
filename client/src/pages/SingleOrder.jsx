@@ -129,7 +129,7 @@ function SingleOrder() {
     <h2 className="mb-4">Order Details</h2>
 
 
-    <div   >
+    <div style={{display:'flex',width:'100%',justifyContent:'center'}}  >
     <Col md={6} className="mb-3 mb-md-0">
 { renderProgressBar()}
 

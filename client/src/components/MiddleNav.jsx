@@ -14,7 +14,7 @@ function MiddleNav({notification}) {
   const wishlistItemCount = 2;
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Simulate a logged-in user
   const dispatch = useDispatch();
-  const userDetails = useSelector(state => state.userDetails);
+  const userDetails = useSelector(state => state?.userDetails);
   const navigate = useNavigate();
   const [wishListData,setWishListData] = useState()
   const [cartData,setCartData] = useState([])
@@ -23,7 +23,6 @@ function MiddleNav({notification}) {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get('/auth/user');
-       // console.log(response.data.data)
         dispatch(setUserDetails(response?.data?.data));
       } catch (error) {
         console.log('errr', error);
