@@ -8,7 +8,7 @@ const addProduct = async (data) => request(`/products`, 'POST', data)
 const updateProduct = async (data) => request(`/products`, 'PATCH', data)
 const deleteProduct = async (data) => request(`/products/${data?._id}`, 'DELETE', data)
 const getCategory = async (data) => request(`/category?page=${data?.pageNo}&perpageitems=${data?.pageCount}`, 'GET', data)
-const getProducts = async (data) => request(`/products?page=${data?.pageNo}&perpageitems=${data?.pageCount}`, 'GET', data)
+const getProducts = async (data) => request(`/products/admin?page=${data?.pageNo}&perpageitems=${data?.pageCount}`, 'GET', data)
 const getProductById = async (data) => request(`/products/${data?.id}`, 'GET', data)
 
 export {

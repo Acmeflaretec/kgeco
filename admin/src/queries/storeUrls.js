@@ -8,7 +8,7 @@ const getBlogsById = async (data) => request(`/blogs/${data?.id}`, 'GET', data)
 const addBanners = async (data) => request(`/banners`, 'POST', data)
 const editBanners = async (data) => request(`/banners`, 'PATCH', data)
 const deleteBanners = async (data) => request(`/banners/${data?._id}`, 'DELETE', data)
-const getBanners = async (data) => request(`/banners?page=${data?.pageNo}&perpageitems=${data?.pageCount}`, 'GET', data)
+const getBanners = async (data) => request(`/banners/admin?page=${data?.pageNo}&perpageitems=${data?.pageCount}`, 'GET', data)
 const getBannersById = async (data) => request(`/banners/${data?.id}`, 'GET', data)
 
 export {
