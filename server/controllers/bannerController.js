@@ -3,13 +3,23 @@ const fs = require('fs');
 
 const getBanners = async (req, res) => {
   try {
-    const data = await Banner.find()
+    const data = await Banner.find({ status: true });
     res.status(200).json({ data })
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error?.message ?? 'Something went wrong' })
   }
 };
+const getBannersAdmin = async (req, res) => {
+  try {
+    const data = await Banner.find();
+    res.status(200).json({ data })
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error?.message ?? 'Something went wrong' })
+  }
+};
+
 
 const addBanner = async (req, res) => {
   try {
@@ -97,5 +107,6 @@ module.exports = {
   addBanner,
   getBannerById,
   updateBanner,
-  deleteBanner
+  deleteBanner,
+  getBannersAdmin
 }
