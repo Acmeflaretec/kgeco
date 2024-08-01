@@ -4,10 +4,12 @@ import { motion } from 'framer-motion';
 import './Banner.css';
 import { Link } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
+import LoadingScreen from "../components/loading/LoadingScreen";
 
 function Banner() {
 
   const [banner,setBanner] = useState([])
+  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
 
   
     useEffect(()=>{
@@ -24,6 +26,8 @@ function Banner() {
           
         } catch (error) {
           console.log(error)
+        }finally {
+          setLoadScreenState(false); // Set loading to false after data is fetched
         }
   
       }
@@ -42,7 +46,11 @@ function Banner() {
     };
 
   return (
-    <div className="banner">
+    <>
+    {loadScreenState ? (
+      <LoadingScreen />
+    ) : (
+      <div className="banner">
       <div className="banner-overlay"></div>
       <div className="container">
         <div className="row align-items-center">
@@ -105,6 +113,9 @@ src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`}
         </div>
       </div>
     </div>
+    )}
+    </>
+  
   );
 }
 
