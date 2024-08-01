@@ -189,7 +189,7 @@ const addCart = async (proId) => {
               >
                 <Link to={`/product/${item?._id}`} className="product-link">
                   <div className="product-image">
-                    <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`} alt={item?.name} className="img-fluid" />
+                    <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image[0]}`} alt={item?.name} className="img-fluid" />
                   </div>
                   <div className="product-info">
                     <h3 className="product-title">{item?.name}</h3>

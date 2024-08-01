@@ -42,6 +42,8 @@ const [loadProd,setLoadProd] = useState([])
     try {
       const response = await axiosInstance.get(urlQ);
       setProducts((prevProducts) => [...prevProducts, ...response?.data?.data]);
+
+
       setLoadProd(response?.data?.data)
       const wishlistResponse = await axiosInstance.get('/user/getwishlist');
       setWishlistItems(wishlistResponse?.data?.data);
@@ -241,7 +243,7 @@ const [loadProd,setLoadProd] = useState([])
           >
             <Link to={`/product/${item._id}`} className="product-link">
               <div className="product-image">
-                <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image}`} alt={item?.name} className="img-fluid" />
+                <img src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.image[0]}`} alt={item?.name} className="img-fluid" />
               </div>
               <div className="product-info">
                 <h3 className="product-title">{item?.name}</h3>

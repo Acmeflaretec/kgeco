@@ -35,7 +35,9 @@ function OrderCard({ order }) {
       <Col md={3} className="mb-3 mb-md-0">
         <img
        src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${order?.products?.item[0]?.product_id?.image[0]}`}
-          alt={order?.name} className="img-fluid rounded" />
+          alt={order?.name} className="img-fluid rounded"
+          style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+          />
       </Col>
       <Col md={6}>
 {order?.products?.item?.map((item,index)=>(
@@ -76,7 +78,6 @@ const fetchOrderData  = async()=>{
   try {
     const response = await axiosInstance.get(`/orders/getuserorders`)
     setOrdersData(response?.data?.data)
-    console.log('order datas length',response?.data?.data?.length)
      
   } catch (error) {
     
