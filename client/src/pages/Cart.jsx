@@ -127,7 +127,7 @@ const handleQuantityChange = async (item, operation, index) => {
     const response = await axiosInstance.patch(`/user/updateQty`, { qty: newQty, productId: item?.productId?._id });
 
     // Fetch the updated cart data
-    fetchData();
+   await fetchData();
   } catch (error) {
     console.log(error);
 

@@ -87,8 +87,6 @@ const Checkout = () => {
       const response = await axiosInstance.get(`/user/getcarts`);
       setCartData(response?.data?.data);
 
-     
-      console.log("cart", response?.data?.data);
       const items = response?.data?.data?.item;
 
       const filteredItems = items.filter((obj)=>{
@@ -122,51 +120,119 @@ const Checkout = () => {
     fetchData();
   }, []);
 
-  const handleRemoveItem = async (itemId) => {
-    console.log("cart id ", itemId);
-    let urlQuery = `/user/removeFromCart/${itemId}`;
 
+
+  const handleRemoveItem = async (itemId) => {
+    let urlQuery = `/user/removeFromCart/${itemId}`;
+  
     try {
       const response = await axiosInstance.patch(urlQuery);
-      const updatedCartItems = cartData.item.filter(
+      const updatedFilteredCartItems = filteredCartData.filter(
         (item) => item._id !== itemId
       );
-      const updatedTotalPrice = updatedCartItems.reduce(
-        (acc, item) => acc + item.price * item.qty,
+      const updatedTotalPrice = updatedFilteredCartItems.reduce(
+        (acc, item) => acc + item.productId.price * item.qty,
         0
       );
-
-      setCartData({
-        ...cartData,
-        item: updatedCartItems,
-        totalPrice: updatedTotalPrice,
-      });
-      const filteredItems = updatedCartItems.filter((obj)=>{
-
-        return obj.productId.isAvailable !=false
   
-      })
-
+      setFilteredCartData(updatedFilteredCartItems);
+  
       // Calculate the total sale price
-      const totalSalePrice = calculateTotalSalePrice(filteredItems);
-      console.log(totalSalePrice);
+      const totalSalePrice = calculateTotalSalePrice(updatedFilteredCartItems);
       setSalePriceTotal(totalSalePrice);
-
+  
       // Calculate the total  price
-      const totalProPrice = calculateTotalProPrice(filteredItems);
-      console.log(totalProPrice);
+      const totalProPrice = calculateTotalProPrice(updatedFilteredCartItems);
       setProPriceTotal(totalProPrice);
-
-      if (cartData?.item.length - 1 == 0) {
+  
+      if (updatedFilteredCartItems?.length === 0) {
         navigate("/");
       }
     } catch (error) {
       console.error("Error removing item from wishlist:", error);
     }
   };
+  
+  // const handleRemoveItem = async (itemId) => {
+  //   let urlQuery = `/user/removeFromCart/${itemId}`;
+
+  //   try {
+  //     const response = await axiosInstance.patch(urlQuery);
+  //     const updatedCartItems = cartData.item.filter(
+  //       (item) => item._id !== itemId
+  //     );
+  //     const updatedTotalPrice = updatedCartItems.reduce(
+  //       (acc, item) => acc + item.price * item.qty,
+  //       0
+  //     );
+
+  //     setCartData({
+  //       ...cartData,
+  //       item: updatedCartItems,
+  //       totalPrice: updatedTotalPrice,
+  //     });
+  //     const filteredItems = updatedCartItems.filter((obj)=>{
+
+  //       return obj.productId.isAvailable !=false
+  
+  //     })
+
+  //     // Calculate the total sale price
+  //     const totalSalePrice = calculateTotalSalePrice(filteredItems);
+  //     setSalePriceTotal(totalSalePrice);
+
+  //     // Calculate the total  price
+  //     const totalProPrice = calculateTotalProPrice(filteredItems);
+  //     setProPriceTotal(totalProPrice);
+
+  //     if (cartData?.item.length - 1 == 0) {
+  //       navigate("/");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error removing item from wishlist:", error);
+  //   }
+  // };
 
   //
 
+  // const handleQuantityChange = async (item, operation, index) => {
+  //   let QtyApi = item.qty;
+  //   if (operation === "increment") {
+  //     QtyApi += 1;
+  //   } else if (operation === "decrement") {
+  //     QtyApi -= 1;
+  //   }
+  //   // Optimistically update the UI
+  //   const updatedCartData = { ...cartData };
+  //   updatedCartData.item[index].qty = QtyApi;
+  //   setCartData(updatedCartData);
+
+  //   setLoadingIndex(index); // Set loading state
+
+  //   try {
+  //     if (item?.qty <= item?.productId?.stock && operation === "increment") {
+  //       const response = await axiosInstance.patch(`/user/updateQty`, {
+  //         qty: QtyApi,
+  //         productId: item?.productId?._id,
+  //       });
+  //      await fetchData();
+  //     } else if (item?.qty > 1 && operation === "decrement") {
+  //       const response = await axiosInstance.patch(`/user/updateQty`, {
+  //         qty: QtyApi,
+  //         productId: item?.productId?._id,
+  //       });
+  //     await  fetchData();
+  //     }
+  //   } catch (error) {
+  //     // Revert the state change if the API call fails
+  //     const revertedCartData = { ...cartData };
+  //     revertedCartData.item[index].qty = item.qty;
+  //     setCartData(revertedCartData);
+  //     console.log(error);
+  //   } finally {
+  //     setLoadingIndex(null); // Clear loading state
+  //   }
+  // };
   const handleQuantityChange = async (item, operation, index) => {
     let QtyApi = item.qty;
     if (operation === "increment") {
@@ -174,37 +240,42 @@ const Checkout = () => {
     } else if (operation === "decrement") {
       QtyApi -= 1;
     }
+  
     // Optimistically update the UI
-    const updatedCartData = { ...cartData };
-    updatedCartData.item[index].qty = QtyApi;
-    setCartData(updatedCartData);
-
+    const updatedFilteredCartData = [...filteredCartData];
+    updatedFilteredCartData[index].qty = QtyApi;
+    setFilteredCartData(updatedFilteredCartData);
+  
     setLoadingIndex(index); // Set loading state
-
+  
     try {
-      if (item?.qty <= item?.productId?.stock && operation === "increment") {
-        const response = await axiosInstance.patch(`/user/updateQty`, {
+      if (
+        item?.qty <= item?.productId?.stock &&
+        operation === "increment"
+      ) {
+        const response = await axiosInstance.patch("/user/updateQty", {
           qty: QtyApi,
-          productId: item?.productId?._id,
+          productId: item?.productId._id,
         });
-        fetchData();
+        await fetchData();
       } else if (item?.qty > 1 && operation === "decrement") {
-        const response = await axiosInstance.patch(`/user/updateQty`, {
+        const response = await axiosInstance.patch("/user/updateQty", {
           qty: QtyApi,
-          productId: item?.productId?._id,
+          productId: item?.productId._id,
         });
-        fetchData();
+        await fetchData();
       }
     } catch (error) {
       // Revert the state change if the API call fails
-      const revertedCartData = { ...cartData };
-      revertedCartData.item[index].qty = item.qty;
-      setCartData(revertedCartData);
+      const revertedFilteredCartData = [...filteredCartData];
+      revertedFilteredCartData[index].qty = item.qty;
+      setFilteredCartData(revertedFilteredCartData);
       console.log(error);
     } finally {
       setLoadingIndex(null); // Clear loading state
     }
   };
+  
 
   React.useEffect(() => {
     const script = document.createElement("script");
@@ -328,7 +399,6 @@ const Checkout = () => {
     e.preventDefault();
     try {
       const response = await axiosInstance.post("/address", formData);
-      console.log("Address submitted: ", response.data);
       setFormData("");
       setShowAddressModal(false);
       // handleClose();
@@ -341,79 +411,11 @@ const Checkout = () => {
   };
 
   // static
-  const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [newAddress, setNewAddress] = useState({
-    name: "gfg",
-    street: "ghfgh",
-    city: "fhghfgf",
-    state: "hgfhfgh",
-    pincode: "hfhfgh",
-    phone: "ghfghh",
-  });
-
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "ECO-FRIENDLY COTTON BUDS",
-      image:
-        "https://img.freepik.com/premium-photo/heap-bamboo-cotton-swabs-buds-top-view-beige-surface-copy-space_224798-1095.jpg?w=996",
-      price: 1999,
-      quantity: 1,
-    },
-  ]);
-
-  const calculateSubtotal = () => {
-    return products.reduce(
-      (total, product) => total + product.price * product.quantity,
-      0
-    );
-  };
-
-  const calculateTotalPrice = () => {
-    const subtotal = calculateSubtotal();
-    const deliveryFee = 100;
-    const tax = 0.1 * subtotal;
-    return subtotal + deliveryFee + tax;
-  };
-
-  const removeProduct = (id) => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((product) => product.id !== id)
-    );
-  };
-
-  // const placeOrder = () => {
-  //   Swal.fire({
-  //     title: 'Success',
-  //     text: 'Your order has been placed!',
-  //     icon: 'success',
-  //     showConfirmButton: false,
-  //     timer: 3000
-  //   });
-  //   navigate('/');
-  // };
-
-  const handleAddressChange = (e) => {
-    setNewAddress({ ...newAddress, [e.target.name]: e.target.value });
-  };
-
-  const handleAddressSubmit = (e) => {
-    e.preventDefault();
-    const addressWithId = { ...newAddress, id: Date.now() };
-    setAddresses([...addresses, addressWithId]);
-    setSelectedAddress(addressWithId);
-    setShowAddressModal(false);
-    setNewAddress({
-      name: "",
-      street: "",
-      city: "",
-      state: "",
-      pincode: "",
-      phone: "",
-    });
-  };
+ 
+  
+  
 
   return (
     <>
