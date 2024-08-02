@@ -219,7 +219,7 @@ const Checkout = () => {
   const handlePaymentSuccess = async () => {
     const orderFormat = {};
 
-    const mappedCartItems = await cartData?.item.map((item) => ({
+    const mappedCartItems = await filteredCartData?.map((item) => ({
       product_id: item.productId._id,
       qty: item.qty,
       price: item.productId.sale_rate,
@@ -257,13 +257,17 @@ const Checkout = () => {
   };
 
   const placeOrder = async () => {
-    console.log("payment ", paymentOption);
+
+    const totalAmountToPay = salePriceTotal < 299 
+    ? salePriceTotal + deliveryCharge 
+    : salePriceTotal;
+
     if (paymentOption === "cod") {
       handlePaymentSuccess();
     } else if (paymentOption === "razorpay") {
       const options = {
         key: "rzp_test_wNhVz81BFxrIrL",
-        amount: parseInt(salePriceTotal) * 100, // amount in paisa
+        amount: parseInt(totalAmountToPay) * 100, // amount in paisa
         currency: "INR",
         name: "KGECO",
         description: "Purchase course",
@@ -323,7 +327,6 @@ const Checkout = () => {
   const handleSubmitAddressCheckout = async (e) => {
     e.preventDefault();
     try {
-      console.log(formData);
       const response = await axiosInstance.post("/address", formData);
       console.log("Address submitted: ", response.data);
       setFormData("");
