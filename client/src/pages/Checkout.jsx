@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../axios";
-import { FaRegTrashAlt, FaLock, FaPlus } from "react-icons/fa";
+import { FaRegTrashAlt, FaLock, FaPlus,FaMinus } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { Modal, Button, Form } from "react-bootstrap";
 import logoPng from "../assets/images/logo.png";
 import LoadingScreen from "../components/loading/LoadingScreen";
+
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -235,11 +236,11 @@ const Checkout = () => {
   // };
   const handleQuantityChange = async (item, operation, index) => {
     let QtyApi = item.qty;
-    if (operation === "increment") {
-      QtyApi += 1;
-    } else if (operation === "decrement") {
-      QtyApi -= 1;
-    }
+    // if (operation === "increment") {
+    //   QtyApi += 1;
+    // } else if (operation === "decrement") {
+    //   QtyApi -= 1;
+    // }
   
     // Optimistically update the UI
     const updatedFilteredCartData = [...filteredCartData];
@@ -253,17 +254,19 @@ const Checkout = () => {
         item?.qty <= item?.productId?.stock &&
         operation === "increment"
       ) {
+        QtyApi += 1;
         const response = await axiosInstance.patch("/user/updateQty", {
           qty: QtyApi,
           productId: item?.productId._id,
         });
-        await fetchData();
+      
       } else if (item?.qty > 1 && operation === "decrement") {
+        QtyApi -= 1;
         const response = await axiosInstance.patch("/user/updateQty", {
           qty: QtyApi,
           productId: item?.productId._id,
         });
-        await fetchData();
+       
       }
     } catch (error) {
       // Revert the state change if the API call fails
@@ -273,6 +276,7 @@ const Checkout = () => {
       console.log(error);
     } finally {
       setLoadingIndex(null); // Clear loading state
+      await fetchData();
     }
   };
   
@@ -585,7 +589,8 @@ const Checkout = () => {
                                   product?.qty === 1 || loadingIndex === index
                                 }
                               >
-                                -
+                                    {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaMinus />}
+
                               </button>
                               <input
                                 type="text"
@@ -605,7 +610,7 @@ const Checkout = () => {
                                 }
                                 disabled={loadingIndex === index}
                               >
-                                +
+                              {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaPlus />}
                               </button>
                             </div>
 
