@@ -15,10 +15,9 @@ function Footer() {
               We are committed to providing eco-friendly products that promote sustainability and environmental responsibility.
             </p>
             <div className="social-icons">
-              <a href="#" className="social-icon"><FaFacebookF /></a>
-              <a href="#" className="social-icon"><FaInstagram /></a>
-              <a href="#" className="social-icon"><FaTwitter /></a>
-              <a href="#" className="social-icon"><FaLinkedinIn /></a>
+              <a href="https://www.facebook.com/profile.php?id=61561366147522&mibextid=LQQJ4d" target="_blank" className="social-icon"><FaFacebookF /></a>
+              <a href="https://www.instagram.com/kg.ecoproducts?igsh=ejU0OXp4ZTFrMGVp&utm_source=qr" target="_blank" className="social-icon"><FaInstagram /></a>
+              <a href="https://www.linkedin.com/company/kgecoproducts/" target="_blank" className="social-icon"><FaLinkedinIn /></a>
             </div>
           </Col>
           <Col lg={2} md={6} className="footer-section">
