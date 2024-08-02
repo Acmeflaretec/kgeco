@@ -521,7 +521,7 @@ const EditProduct = () => {
             <Grid item xs={12} sm={12} mt={'auto'}>
               <Grid item xs={12}>
                 <Button onClick={handleSubmit}>UPDATE PRODUCT</Button>
-                <Button color="secondary" onClick={handleDelete}>DELETE PRODUCT</Button>
+                {/* <Button color="secondary" onClick={handleDelete}>DELETE PRODUCT</Button> */}
               </Grid>
             </Grid>
           </Grid>
