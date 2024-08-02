@@ -17,6 +17,8 @@ const Checkout = () => {
   );
   const [paymentOption, setPaymentOption] = useState("razorpay");
   const [cartData, setCartData] = useState([]);
+  const [filteredCartData,setFilteredCartData] = useState([])
+
   const [salePriceTotal, setSalePriceTotal] = useState(0);
   const [proPriceTotal, setProPriceTotal] = useState(0);
   const [discountTotal, setDiscountTotal] = useState(0);
@@ -83,22 +85,32 @@ const Checkout = () => {
   const fetchData = async () => {
     try {
       const response = await axiosInstance.get(`/user/getcarts`);
-      setCartData(response.data.data);
-      console.log("cart", response.data.data);
-      const items = response.data.data.item;
+      setCartData(response?.data?.data);
+
+     
+      console.log("cart", response?.data?.data);
+      const items = response?.data?.data?.item;
+
+      const filteredItems = items.filter((obj)=>{
+
+        return obj.productId.isAvailable !=false
+  
+      })
+      
+      setFilteredCartData(filteredItems)
 
       // Calculate the total sale price
-      const totalSalePrice = calculateTotalSalePrice(items);
+      const totalSalePrice = calculateTotalSalePrice(filteredItems);
       //console.log(totalSalePrice)
       setSalePriceTotal(totalSalePrice);
 
       // Calculate the total  price
-      const totalProPrice = calculateTotalProPrice(items);
+      const totalProPrice = calculateTotalProPrice(filteredItems);
       //console.log(totalProPrice)
       setProPriceTotal(totalProPrice);
 
       // Calculate the total discount
-      const totalDiscount = calculateTotalDiscountPrice(items);
+      const totalDiscount = calculateTotalDiscountPrice(filteredItems);
       //console.log(totalDiscount)
       setDiscountTotal(totalDiscount);
     } catch (error) {
@@ -124,21 +136,24 @@ const Checkout = () => {
         0
       );
 
-      // setProPriceTotal(null)
-      // setSalePriceTotal(null)
       setCartData({
         ...cartData,
         item: updatedCartItems,
         totalPrice: updatedTotalPrice,
       });
+      const filteredItems = updatedCartItems.filter((obj)=>{
+
+        return obj.productId.isAvailable !=false
+  
+      })
 
       // Calculate the total sale price
-      const totalSalePrice = calculateTotalSalePrice(updatedCartItems);
+      const totalSalePrice = calculateTotalSalePrice(filteredItems);
       console.log(totalSalePrice);
       setSalePriceTotal(totalSalePrice);
 
       // Calculate the total  price
-      const totalProPrice = calculateTotalProPrice(updatedCartItems);
+      const totalProPrice = calculateTotalProPrice(filteredItems);
       console.log(totalProPrice);
       setProPriceTotal(totalProPrice);
 
@@ -203,8 +218,6 @@ const Checkout = () => {
 
   const handlePaymentSuccess = async () => {
     const orderFormat = {};
-
-    console.log("success");
 
     const mappedCartItems = await cartData?.item.map((item) => ({
       product_id: item.productId._id,
@@ -521,7 +534,7 @@ const Checkout = () => {
                       <h5 className="mb-0 text-success">2. Review Items</h5>
                     </div>
                     <div className="card-body">
-                      {cartData?.item?.map((product, index) => (
+                      {filteredCartData?.map((product, index) => (
                         <div
                           key={product?._id}
                           className="row mb-4 align-items-center"
@@ -536,7 +549,7 @@ const Checkout = () => {
                             />
                           </div>
                           <div className="col-md-6">
-                            <h6 className="fw-bold mb-1">{product?.name}</h6>
+                            <h6 className="fw-bold mb-1">{product?.productId?.name}</h6>
                             {/* <p className="text-muted small mb-2">Microgreen</p> */}
                             <div className="d-flex align-items-center">
                               <span className="fw-bold me-2">

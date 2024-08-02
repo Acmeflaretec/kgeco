@@ -10,6 +10,7 @@ import LoadingScreen from '../components/loading/LoadingScreen';
 function Cart() {
   const navigate = useNavigate();
   const [cartData,setCartData] = useState([])
+  const [filteredCartData,setFilteredCartData] = useState([])
   const [salePriceTotal,setSalePriceTotal] = useState(0)
   const [proPriceTotal,setProPriceTotal] = useState(0)
   const [discountTotal,setDiscountTotal] = useState(0)
@@ -68,19 +69,26 @@ const fetchData = async()=>{
     const response = await axiosInstance.get(`/user/getcarts`);
     setCartData(response?.data?.data)
 
+    
     const items = response?.data?.data?.item;
+    const filteredItems = items.filter((obj)=>{
+
+      return obj.productId.isAvailable !=false
+
+    })
+    setFilteredCartData(filteredCartData)
 
 // Calculate the total sale price
-const totalSalePrice = calculateTotalSalePrice(items);
+const totalSalePrice = calculateTotalSalePrice(filteredItems);
    setSalePriceTotal(totalSalePrice)
 
   // Calculate the total  price
-const totalProPrice = calculateTotalProPrice(items);
+const totalProPrice = calculateTotalProPrice(filteredItems);
    setProPriceTotal(totalProPrice)
   //  console.log('total pr ',totalProPrice)
 
   // Calculate the total discount
-const totalDiscount = calculateTotalDiscountPrice(items);
+const totalDiscount = calculateTotalDiscountPrice(filteredItems);
    setDiscountTotal(totalDiscount)
 
   } catch (error) {
@@ -152,12 +160,18 @@ const handleQuantityChange = async (item, operation, index) => {
         item: updatedCartItems,
         totalPrice: updatedTotalPrice
     });
+
+    const filteredItems = updatedCartItems.filter((obj)=>{
+
+      return obj.productId.isAvailable !=false
+
+    })
    // Calculate the total sale price
-   const totalSalePrice = calculateTotalSalePrice(updatedCartItems);
+   const totalSalePrice = calculateTotalSalePrice(filteredItems);
        setSalePriceTotal(totalSalePrice)
    
        // Calculate the total  price
-   const totalProPrice = calculateTotalProPrice(updatedCartItems);
+   const totalProPrice = calculateTotalProPrice(filteredItems);
        setProPriceTotal(totalProPrice)
 
        setNotif(prev => !prev);
@@ -221,8 +235,16 @@ loadScreenState ? (
                           <span className="bg-success-subtle">{item?.productId?.discount}% off</span>
                         </div>
                         <div className="d-flex align-items-center">
+
+
+
                           <div className="btn-group me-3" role="group">
-  <button
+                            <div>
+{
+item?.productId?.isAvailable ?(
+
+  <>
+    <button
     className="btn btn-outline-secondary"
     onClick={() => handleQuantityChange(item, 'decrement', index)}
     disabled={item.qty === 1 || loadingIndex === index}
@@ -239,6 +261,18 @@ loadScreenState ? (
   >
     {loadingIndex === index ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : <FaPlus />}
   </button>
+  </>
+) : 
+(
+  <div>
+<p style={{color:'red',fontSize:'18px',fontWeight:'600'}} >unavailable</p>
+    </div>
+)
+
+}
+                            </div>
+
+
 </div>
 
 
@@ -289,6 +323,8 @@ loadScreenState ? (
                   {/* <Link to="/checkout" className="btn btn-success btn-lg w-100 mt-4" >
                     Proceed to Checkout
                   </Link> */}
+
+
                    <button className="btn btn-success btn-lg w-100 mt-4" onClick={() => navigate('/checkout')} 
                      disabled={salePriceTotal<80} >{salePriceTotal<80? 'Add above ₹80 to continue': 'Proceed to Checkout'} 
                      </button>
