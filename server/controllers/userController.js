@@ -1,5 +1,7 @@
 const User = require('../models/user')
 const Product = require('../models/product');
+const nodemailer = require('nodemailer');
+const randomstring = require('randomstring');
 
 const getUsers = async (req, res) => {
   try {
@@ -175,6 +177,80 @@ const getCartDetailsByUserId = async (req, res) => {
 
 }
 
+const checkEmail =async(req,res)=>{
+const email = req?.body.email
+try {
+  
+  const data = await User.findOne({email})
+  if (data) {
+    return res.status(200).json({ message: "Success" });
+  } else {
+    return res.status(404).json({ message: "Use different email" });
+  }
+} catch (error) {
+  
+}
+}
+
+const otpStore = {};
+const sendOtp = async(req,res)=>{
+  const email = req?.body?.email;
+  const otp = generateOTP();
+  delete otpStore[email];
+otpStore[email] = otp;
+
+  // Send email with OTP
+  transporter.sendMail({
+    from: 'shahilmohammed7@gmail.com',
+    to: email,
+    subject: 'Your OTP for verification',
+    text: `Your OTP is: ${otp}`
+  }, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Failed to send OTP' });
+    } else {
+      console.log('Email sent: ' + info.response);
+      res.json({ message: 'OTP sent successfully' });
+    }
+  });
+
+}
+
+const compareOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  // Retrieve the stored OTP from the object based on the email
+  const storedOtp = otpStore[email];
+  console.log('sendotp',otp)
+console.log('storedotp',storedOtp)
+  if (otp === storedOtp) {
+    console.log('OTP verified successfully')
+    return res.status(200).json({ message: 'OTP verified successfully' });
+  } else {
+    console.log('Incorrect OTP')
+
+    return res.status(400).json({ message: 'Incorrect OTP' });
+  }
+};
+
+
+function generateOTP() {
+  return randomstring.generate({
+    length: 6,
+    charset: 'numeric'
+  });
+}
+
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'shahilmohammed7@gmail.com',
+    pass: 'owdy exxj sthq lgyn'
+  }
+});
+
 module.exports = {
     getUser,
     getUsers,
@@ -186,4 +262,8 @@ module.exports = {
     getWishLists,
     getCartDetailsByUserId,
     updateUser,
+    checkEmail,
+    sendOtp,
+    compareOtp,
+
   }
