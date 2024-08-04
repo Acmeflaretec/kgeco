@@ -33,8 +33,10 @@ function EmailPage() {
   const handleSubmit = async (e) => {
 e.preventDefault()
     try {
-      const response = await axiosInstance.post("/user/checkemail", { email: userDetails.email });
+      const response = await axiosInstance.post("/user/checkemail", { email: userDetails?.email });
       if (response.status === 200) {
+
+        sendOtp()
         // User found, navigate to OTP page
         navigate(`/otp?email=${userDetails.email}`);
       }
@@ -48,7 +50,16 @@ e.preventDefault()
     }
   };
 
-
+  const sendOtp= async()=>{
+    
+  try {
+    const response = await axiosInstance.post("/user/sendOtp", { email:userDetails?.email });
+  } catch (error) {
+    console.log(error)
+  }
+  
+  }
+  
 
   return (
     <Container className="my-5 bg-light p-4 rounded">

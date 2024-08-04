@@ -60,6 +60,28 @@ module.exports.signup = async (req, res) => {
   }
 };
 
+
+module.exports.changePassword=async(req,res)=>{
+  const email = req?.body.email
+  const newPassword = req?.body.newPassword
+console.log(email ,'',newPassword)
+
+  const encryptedPassword = await bcrypt.hash(newPassword, 10);
+try {
+  const user = await User.findOne({ email });
+  user.password = encryptedPassword;
+  await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+
+} catch (error) {
+  console.error('Error updating password:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+}
+
+
+}
+
 // module.exports.signin = async (req, res) => {
 //    const { email, password } = req.body;
 //    console.log('req',req.body)

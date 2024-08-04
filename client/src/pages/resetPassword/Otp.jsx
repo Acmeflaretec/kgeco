@@ -18,7 +18,7 @@ function Otp() {
   
 
 
-
+  const [isMounted, setIsMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,7 @@ function Otp() {
 
   useEffect(() => {
 
-    sendOtp()
+   // sendOtp()
 
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
@@ -82,19 +82,16 @@ try {
 
   if (response.status === 200) {
     // User found, navigate to OTP page
-    navigate(`/reset?email=${emailParam}`);
-       // Simulate OTP submission
-       console.log('OTP Submitted:', otpValue);
+    setOpen(false)
+    // Simulate OTP submission
        setSuccess(true);
        setTimeout(() => setSuccess(false), 3000);
   }else if(response.status === 400){
-    console.log(response?.data?.message)
     setError2(response?.data?.message)
 
   }
 
 } catch (error) {
-  console.log(error?.response?.data?.message)
   
   setError2(error?.response?.data?.message)
 }
@@ -133,17 +130,32 @@ try {
     setShowPassword2(!showPassword2);
   };
 
-const handleChangePassword = async()=>{
+const handleChangePassword = async(e)=>{
+  e.preventDefault();
+  const params = new URLSearchParams(location.search);
+  const emailParam = params.get('email');
 
-try {
-  
-} catch (error) {
-  
-}finally{
+if(userDetails.confirmPassword !== userDetails.password){
+  setErrorMessage('both password should be the same')
 
+}else{
 
+  try {
+    const response = await axiosInstance.post("/auth/changepassword", { email: emailParam,newPassword:userDetails.confirmPassword });
   
+  
+    navigate('/login')
+  } catch (error) {
+    setErrorMessage(error?.response?.data?.message)
+  }finally{
+  
+  
+  
+  }
+
 }
+
+
 
 }
 
@@ -153,7 +165,7 @@ try {
 <>
 
 {
-!open ? (
+open ? (
   <Container
   className="d-flex justify-content-center align-items-center"
   style={{ height: '100vh' }}
@@ -210,7 +222,7 @@ try {
         <Row className="justify-content-md-center">
           <Col md={6}>
             <div className="shadow p-4 rounded">
-              <h3 className="text-center mb-4">Login</h3>
+              <h3 className="text-center mb-4">Reset password</h3>
               {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
               <Form onSubmit={handleChangePassword}>
     
@@ -235,11 +247,11 @@ try {
                   </div>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Group className="mb-3" controlId="formBasicPassword2">
                   <Form.Label>Password</Form.Label>
                   <div className="position-relative">
                     <Form.Control
-                      type={showPassword ? "text" : "password"}
+                      type={showPassword2 ? "text" : "password"}
                       placeholder="Confirm password"
                       name="confirmPassword"
                       value={userDetails.confirmPassword}

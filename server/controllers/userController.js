@@ -192,47 +192,130 @@ try {
 }
 }
 
-const otpStore = {};
-const sendOtp = async(req,res)=>{
+
+
+
+// const sendOtp = async(req,res)=>{
+//   const email = req?.body?.email;
+//   const otp = generateOTP();
+
+// try {
+//   const user = await User.findOne({ email });
+//   user.otp = otp;
+//   await user.save();
+//  // Send email with OTP
+//  transporter.sendMail({
+//   from: 'shahilmohammed7@gmail.com',
+//   to: email,
+//   subject: 'Your OTP for verification',
+//   text: `Your OTP is: ${otp}`
+// }, (error, info) => {
+//   if (error) {
+//     console.log(error);
+//     res.status(500).json({ message: 'Failed to send OTP' });
+//   } else {
+//     delete otpStore[email];
+//     console.log('Email sent: ' + info.response);
+//     res.json({ message: 'OTP sent successfully' });
+//   }
+// });
+
+
+// } catch (error) {
+  
+// }
+
+
+ 
+
+// }
+const sendOtp = async (req, res) => {
   const email = req?.body?.email;
   const otp = generateOTP();
-  delete otpStore[email];
-otpStore[email] = otp;
 
-  // Send email with OTP
-  transporter.sendMail({
-    from: 'shahilmohammed7@gmail.com',
-    to: email,
-    subject: 'Your OTP for verification',
-    text: `Your OTP is: ${otp}`
-  }, (error, info) => {
-    if (error) {
-      console.log(error);
-      res.status(500).json({ message: 'Failed to send OTP' });
-    } else {
-      console.log('Email sent: ' + info.response);
-      res.json({ message: 'OTP sent successfully' });
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-  });
 
-}
+    user.otp = otp;
+    await user.save();
 
+    // Send email with OTP
+    transporter.sendMail({
+      from: 'shahilmohammed7@gmail.com',
+      to: email,
+      subject: 'Your OTP for verification',
+      text: `Your OTP is: ${otp}`
+    }, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Failed to send OTP' });
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.json({ message: 'OTP sent successfully' });
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 const compareOtp = async (req, res) => {
   const { email, otp } = req.body;
 
-  // Retrieve the stored OTP from the object based on the email
-  const storedOtp = otpStore[email];
-  console.log('sendotp',otp)
-console.log('storedotp',storedOtp)
-  if (otp === storedOtp) {
-    console.log('OTP verified successfully')
-    return res.status(200).json({ message: 'OTP verified successfully' });
-  } else {
-    console.log('Incorrect OTP')
+  try {
+    const user = await User.findOne({ email });
 
-    return res.status(400).json({ message: 'Incorrect OTP' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('stored OTP:', user.otp);
+    if (otp === user.otp) {
+      console.log('OTP verified successfully');
+      // Clear the OTP from the user's record after verification
+      user.otp = undefined;
+      await user.save();
+      return res.status(200).json({ message: 'OTP verified successfully' });
+    } else {
+      console.log('Incorrect OTP');
+      return res.status(400).json({ message: 'Incorrect OTP' });
+    }
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+// const compareOtp = async (req, res) => {
+//   const { email, otp } = req.body;
+
+//   const storedOtp = otpStore.email;
+
+// try {
+//   const user = await User.findOne({ email });
+
+//   console.log('sendotp',user.otp)
+//   if (otp === user.otp) {
+//     console.log('OTP verified successfully')
+//     return res.status(200).json({ message: 'OTP verified successfully' });
+//   } else {
+//     console.log('Incorrect OTP')
+
+//     return res.status(400).json({ message: 'Incorrect OTP' });
+//   }
+
+// } catch (error) {
+  
+// }
+
+
+// };
 
 
 function generateOTP() {
