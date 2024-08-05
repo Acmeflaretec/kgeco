@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate,useLocation } from 'react-router-dom';
 import axiosInstance from "../../axios";
 import { Link } from "react-router-dom";
+import OtpComponent from '../../components/otpComponent/OtpComponent';
 
 import { FaLock } from "react-icons/fa";
 
@@ -15,7 +16,8 @@ function Otp() {
   const [success, setSuccess] = useState(false);
   const [email, setEmail] = useState('');
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
-  
+  const [open,setOpen]= useState(true)
+
 
 
   const [isMounted, setIsMounted] = useState(false);
@@ -28,7 +30,6 @@ function Otp() {
     confirmPassword: "",
   });
 
-  const [open,setOpen]= useState(true)
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -132,6 +133,8 @@ try {
 
 const handleChangePassword = async(e)=>{
   e.preventDefault();
+  setIsLoading(true); // Start loading
+
   const params = new URLSearchParams(location.search);
   const emailParam = params.get('email');
 
@@ -142,15 +145,11 @@ if(userDetails.confirmPassword !== userDetails.password){
 
   try {
     const response = await axiosInstance.post("/auth/changepassword", { email: emailParam,newPassword:userDetails.confirmPassword });
-  
-  
     navigate('/login')
   } catch (error) {
     setErrorMessage(error?.response?.data?.message)
-  }finally{
-  
-  
-  
+  }finally {
+    setIsLoading(false); // End loading
   }
 
 }
@@ -166,53 +165,55 @@ if(userDetails.confirmPassword !== userDetails.password){
 
 {
 open ? (
-  <Container
-  className="d-flex justify-content-center align-items-center"
-  style={{ height: '100vh' }}
->
-  <Row className="justify-content-md-center">
-    <Col md="6">
-      <div
-        className="p-4"
-        style={{
-          backgroundColor: '#2D6507',
-          borderRadius: '10px',
-          color: 'white',
-        }}
-      >
-        <h2 className="mb-3">Verify your email</h2>
-        <p>We sent you a six-digit confirmation code to email.com. Please enter it below to confirm your email address.</p>
-        <Form>
-          <Form.Group controlId="formOtp">
-            <Form.Label>OTP</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={handleOtpChange}
-              maxLength="6"
-              isInvalid={!!error && otp.length !== 6}
-            />
-            {error && otp.length !== 6 && <Form.Text className="text-danger">{error}</Form.Text>}
-            {error2 && <Form.Text className="text-danger">{error2}</Form.Text>}
+  <OtpComponent emailId={email} setOpen={setOpen}/>
 
-          </Form.Group>
-        </Form>
-        {success && <Alert variant="success">OTP verified successfully!</Alert>}
-        <div className="mt-3">
-          <p>Didn't receive a code? <Button variant="link" onClick={handleResend} disabled={timeLeft !== 0}>Send code again</Button></p>
-          {resent && <Alert variant="success">Code resent successfully!</Alert>}
-        </div>
-        <div className="mt-3">
-          <p>Time left: {formatTime(timeLeft)}</p>
-        </div>
-        <div className="mt-3">
-        <Button variant="link" onClick={()=> navigate('/login')}>Back to login</Button>
-        </div>
-      </div>
-    </Col>
-  </Row>
-</Container>
+//   <Container
+//   className="d-flex justify-content-center align-items-center"
+//   style={{ height: '100vh' }}
+// >
+//   <Row className="justify-content-md-center">
+//     <Col md="6">
+//       <div
+//         className="p-4"
+//         style={{
+//           backgroundColor: '#2D6507',
+//           borderRadius: '10px',
+//           color: 'white',
+//         }}
+//       >
+//         <h2 className="mb-3">Verify your email</h2>
+//         <p>We sent you a six-digit confirmation code to email.com. Please enter it below to confirm your email address.</p>
+//         <Form>
+//           <Form.Group controlId="formOtp">
+//             <Form.Label>OTP</Form.Label>
+//             <Form.Control
+//               type="text"
+//               placeholder="Enter OTP"
+//               value={otp}
+//               onChange={handleOtpChange}
+//               maxLength="6"
+//               isInvalid={!!error && otp.length !== 6}
+//             />
+//             {error && otp.length !== 6 && <Form.Text className="text-danger">{error}</Form.Text>}
+//             {error2 && <Form.Text className="text-danger">{error2}</Form.Text>}
+
+//           </Form.Group>
+//         </Form>
+//         {success && <Alert variant="success">OTP verified successfully!</Alert>}
+//         <div className="mt-3">
+//           <p>Didn't receive a code? <Button variant="link" onClick={handleResend} disabled={timeLeft !== 0}>Send code again</Button></p>
+//           {resent && <Alert variant="success">Code resent successfully!</Alert>}
+//         </div>
+//         <div className="mt-3">
+//           <p>Time left: {formatTime(timeLeft)}</p>
+//         </div>
+//         <div className="mt-3">
+//         <Button variant="link" onClick={()=> navigate('/login')}>Back to login</Button>
+//         </div>
+//       </div>
+//     </Col>
+//   </Row>
+// </Container>
 )  :  
 
 (

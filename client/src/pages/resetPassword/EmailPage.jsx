@@ -32,6 +32,7 @@ function EmailPage() {
 
   const handleSubmit = async (e) => {
 e.preventDefault()
+setIsLoading(true);
     try {
       const response = await axiosInstance.post("/user/checkemail", { email: userDetails?.email });
       if (response.status === 200) {
@@ -47,6 +48,8 @@ e.preventDefault()
       } else {
         // Handle other errors
       }
+    }  finally {
+      setIsLoading(false);
     }
   };
 

@@ -1,65 +1,120 @@
 const User = require("../models/user");
+const Otp = require('../models/otp')
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+// module.exports.signup = async (req, res) => {
+//   const { username, password, email, phone,clientOtp } = req?.body;
+// console.log(req?.body)
+//   let otp = await Otp.findOne({ email });
+//   // console.log(otp.otp)
+//   // console.log(clientOtp)
+//   // console.log(otp.otp===clientOtp)
+//   try {
+//     if(otp.otp === clientOtp){
+//       try {
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//           return res.status(401).json({ message: "Email already in use" });
+//         }
+    
+    
+//         const encryptedPassword = await bcrypt.hash(password, 10);
+    
+//         const newUser = new User({
+//           username,
+//           password: encryptedPassword,
+//           phone,
+//           email,
+//         });
+    
+//         await newUser.save();
+    
+//         const { password: _, ...userWithoutPassword } = newUser.toObject();
+
+
+//         return res.status(200).json({
+//           message: "Registration successfull",
+//           data: { userWithoutPassword, signupStatus: true },
+//         });
+//       } catch (error) {
+//         console.log("err", error);
+//         return res
+//           .status(500)
+//           .json({ message: err?.message ?? "Something went wrong" });
+//       }
+  
+  
+//     }else{
+  
+//       console.log('Incorrect OTP');
+//       return res.status(400).json({ message: 'Incorrect OTP' });
+  
+//     }
+//   } catch (error) {
+    
+//   }
+
+ 
+
+
+ 
+// };
+
 module.exports.signup = async (req, res) => {
-  const { username, password, email, phone } = req.body;
+  const { username, password, email, phone, clientOtp } = req?.body;
+  // console.log(req?.body);
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(401).json({ message: "Email already in use" });
+    let otp = await Otp.findOne({ email });
+
+    if (!otp) {
+      return res.status(404).json({ message: 'OTP not found' });
     }
 
+    if (otp.otp === clientOtp) {
+      try {
+        const existingUser = await User.findOne({ email });
 
-    const encryptedPassword = await bcrypt.hash(password, 10);
-    // await User.create({
-    //    username,
-    //    password: encryptedPassword,
-    //    email,
-    //    phone,
-    // });
-    const newUser = new User({
-      username,
-      password: encryptedPassword,
-      phone,
-      email,
-    });
+        if (existingUser) {
+          return res.status(401).json({ message: 'Email already in use' });
+        }
 
-    await newUser.save();
+        const encryptedPassword = await bcrypt.hash(password, 10);
 
-    // const accessToken = jwt.sign(
-    //    { _id: userExists._id },
-    //    process.env.JWT_ACCESS_SECRET,
-    //    {
-    //       expiresIn: process.env.JWT_ACCESS_EXPIRY,
-    //    }
-    // );
+        const newUser = new User({
+          username,
+          password: encryptedPassword,
+          phone,
+          email,
+        });
 
-    // const refreshToken = jwt.sign(
-    //    { _id: userExists._id },
-    //    process.env.JWT_REFRESH_SECRET,
-    //    {
-    //       expiresIn: process.env.JWT_REFRESH_EXPIRY,
-    //    }
-    // );
+        await newUser.save();
 
-    // console.log({ accessToken, refreshToken });
-    const { password: _, ...userWithoutPassword } = newUser.toObject();
-    return res.status(200).json({
-      message: "Registration successfull",
-      data: { userWithoutPassword, signupStatus: true },
+        // Delete the OTP document after successful registration
+        await Otp.deleteOne({ email });
 
-      // data: { token: { accessToken, refreshToken }, newUser }
-    });
+        const { password: _, ...userWithoutPassword } = newUser.toObject();
+
+        return res.status(200).json({
+          message: 'Registration successful',
+          data: { userWithoutPassword, signupStatus: true },
+        });
+      } catch (error) {
+        console.log('err', error);
+        return res
+          .status(500)
+          .json({ message: error?.message ?? 'Something went wrong' });
+      }
+    } else {
+      // console.log('Incorrect OTP');
+      return res.status(400).json({ message: 'Incorrect OTP' });
+    }
   } catch (error) {
-    console.log("err", error);
-    return res
-      .status(500)
-      .json({ message: err?.message ?? "Something went wrong" });
+    console.error('err', error);
+    return res.status(500).json({ message: error?.message ?? 'Something went wrong' });
   }
 };
-
 
 module.exports.changePassword=async(req,res)=>{
   const email = req?.body.email

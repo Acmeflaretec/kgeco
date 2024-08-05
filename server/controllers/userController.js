@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const Otp = require('../models/otp')
 const Product = require('../models/product');
 const nodemailer = require('nodemailer');
 const randomstring = require('randomstring');
@@ -192,43 +193,67 @@ try {
 }
 }
 
+const checkRegisterEmail =async(req,res)=>{
+  const email = req?.body.email
+  try {
+    
+    const data = await User.findOne({email})
+    if (!data) {
+      return res.status(200).json({ message: "Success" });
+    } else {
+      return res.status(404).json({ message: "Already exists use different email" });
+    }
+  } catch (error) {
+    
+  }
+  }
+
+
+const sendRegistrationOtp = async (req, res) => {
+  const email = req?.body?.email;
+  const otpGen = generateOTP();
+
+  try {
+    let otp = await Otp.findOne({ email });
+
+    if (!otp) {
+      // Create a new OTP document if it doesn't exist
+      otp = new Otp({ email, otp: otpGen });
+    } else {
+      // Update the OTP if it already exists
+      otp.otp = otpGen;
+    }
+
+    await otp.save();
+
+    // Send email with OTP
+    transporter.sendMail(
+      {
+        from: 'shahilmohammed7@gmail.com',
+        to: email,
+        subject: 'Your OTP for verification',
+        text: `Your OTP is: ${otpGen}`, // Use otpGen instead of otp to send the correct OTP
+      },
+      (error, info) => {
+        if (error) {
+          console.log(error);
+          return res.status(500).json({ message: 'Failed to send OTP' });
+        } else {
+          console.log('Email sent: ' + info.response);
+          return res.json({ message: 'OTP sent successfully' });
+        }
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 
-// const sendOtp = async(req,res)=>{
-//   const email = req?.body?.email;
-//   const otp = generateOTP();
-
-// try {
-//   const user = await User.findOne({ email });
-//   user.otp = otp;
-//   await user.save();
-//  // Send email with OTP
-//  transporter.sendMail({
-//   from: 'shahilmohammed7@gmail.com',
-//   to: email,
-//   subject: 'Your OTP for verification',
-//   text: `Your OTP is: ${otp}`
-// }, (error, info) => {
-//   if (error) {
-//     console.log(error);
-//     res.status(500).json({ message: 'Failed to send OTP' });
-//   } else {
-//     delete otpStore[email];
-//     console.log('Email sent: ' + info.response);
-//     res.json({ message: 'OTP sent successfully' });
-//   }
-// });
 
 
-// } catch (error) {
-  
-// }
-
-
- 
-
-// }
 const sendOtp = async (req, res) => {
   const email = req?.body?.email;
   const otp = generateOTP();
@@ -264,19 +289,17 @@ const sendOtp = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+
+
 const compareOtp = async (req, res) => {
   const { email, otp } = req.body;
-
   try {
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    console.log('stored OTP:', user.otp);
     if (otp === user.otp) {
-      console.log('OTP verified successfully');
       // Clear the OTP from the user's record after verification
       user.otp = undefined;
       await user.save();
@@ -292,30 +315,6 @@ const compareOtp = async (req, res) => {
   }
 };
 
-// const compareOtp = async (req, res) => {
-//   const { email, otp } = req.body;
-
-//   const storedOtp = otpStore.email;
-
-// try {
-//   const user = await User.findOne({ email });
-
-//   console.log('sendotp',user.otp)
-//   if (otp === user.otp) {
-//     console.log('OTP verified successfully')
-//     return res.status(200).json({ message: 'OTP verified successfully' });
-//   } else {
-//     console.log('Incorrect OTP')
-
-//     return res.status(400).json({ message: 'Incorrect OTP' });
-//   }
-
-// } catch (error) {
-  
-// }
-
-
-// };
 
 
 function generateOTP() {
@@ -348,5 +347,8 @@ module.exports = {
     checkEmail,
     sendOtp,
     compareOtp,
+    sendRegistrationOtp,
+    checkRegisterEmail,
+
 
   }

@@ -41,11 +41,10 @@ const Login = () => {
       localStorage.setItem(
         "Tokens",
         JSON.stringify({
-          access: response.data.data.token.accessToken,
-          refresh: response.data.data.token.refreshToken,
+          access: response?.data?.data?.token?.accessToken,
+          refresh: response?.data?.data?.token?.refreshToken,
         })
       );
-      console.log("resss ", response.data);
 
       if (response.data.proceed) {
         navigate("/");

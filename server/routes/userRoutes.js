@@ -2,7 +2,7 @@ const { Router } = require('express');
 const router = Router();
 const authorization = require("../middlewares/authorization");
 const { getUser, addToCart, removeFromCart, addToWishlist, removeFromWishlist, updateQty, getUsers,getWishLists,getCartDetailsByUserId
-  ,updateUser,checkEmail,sendOtp,compareOtp
+  ,updateUser,checkEmail,sendOtp,compareOtp,sendRegistrationOtp,checkRegisterEmail,
  } = require('../controllers/userController');
 
 //router.use(authorization)
@@ -19,6 +19,9 @@ router.get('/getcarts', authorization,getCartDetailsByUserId);
 router.post('/checkemail', checkEmail);
 router.post('/sendOtp', sendOtp);
 router.post('/compareOtp', compareOtp);
+router.post('/sendRegistrationOtp', sendRegistrationOtp);
+router.post('/checkRegisterEmail', checkRegisterEmail);
+
 
 module.exports = router;
  

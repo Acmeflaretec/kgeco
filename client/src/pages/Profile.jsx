@@ -11,6 +11,7 @@ import './Profile.css';
 import ProfileInfo from './ProfileInfo';
 import proImg from '../assets/images/pro2.png'
 import LoadingScreen from '../components/loading/LoadingScreen';
+import { Link } from "react-router-dom";
 
 
 function Profile() {
@@ -59,6 +60,9 @@ function Profile() {
                 />
                 <h4 className="mb-0">{userDetails?.username}</h4>
                 <p className="text-muted">{userDetails?.email} </p>
+                <Link to="/email" className="text-primary">
+                  Change password
+                </Link>
               </Card.Body>
               <Nav variant="pills" className="flex-column">
                 <Nav.Item>

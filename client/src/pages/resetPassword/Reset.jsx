@@ -1,13 +1,15 @@
 import React,{useState,useEffect} from 'react';
 import { useNavigate,useLocation } from 'react-router-dom';
+import OtpComponent from '../../components/otpComponent/OtpComponent';
 
 
 function Reset() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [open,setOpen]= useState(true)
+
 
   return (
-    <div>Reset</div>
+  //  <OtpComponent emailId='shahilmohammed7@gmail.com' setOpen={setOpen}/>
+  <>reset</>
   )
 }
 
