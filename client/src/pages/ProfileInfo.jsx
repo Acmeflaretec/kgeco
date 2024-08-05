@@ -219,7 +219,7 @@ function ProfileInfo() {
         <Card.Title className="mb-4">Profile Information</Card.Title>
         <Form>
           {renderField('username', <FaUser className="me-2" />)}
-          {renderField('email', <FaEnvelope className="me-2" />)}
+          {/* {renderField('email', <FaEnvelope className="me-2" />)} */}
           {renderField('phone', <FaPhone className="me-2" />)}
         </Form>
       </Card.Body>
