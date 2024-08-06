@@ -139,20 +139,20 @@ userDetails.clientOtp=otpValue
 
   return (
     <Container
-    className="d-flex justify-content-center align-items-center"
+    className="d-flex justify-content-center align-items-center  bg-light"
     style={{ height: '100vh' }}
   >
     <Row className="justify-content-md-center">
       <Col md="6">
         <div
-          className="p-4"
+          className="p-4 shadow"
           style={{
-            backgroundColor: '#2D6507',
+            // backgroundColor: '#2D6507',
             borderRadius: '10px',
-            color: 'white',
+            color: 'black',
           }}
         >
-          <h2 className="mb-3">Verify your email</h2>
+          <h2 className="mb-3 text-green">Verify your email</h2>
           <p>We sent you a six-digit confirmation code to email.com. Please enter it below to confirm your email address.</p>
           <Form>
             <Form.Group controlId="formOtp">
@@ -176,7 +176,7 @@ userDetails.clientOtp=otpValue
             {resent && <Alert variant="success">Code resent successfully!</Alert>}
           </div>
           <div className="mt-3">
-            <p>Time left: {formatTime(timeLeft)}</p>
+            <p>Time left: <span className='text-danger' >{formatTime(timeLeft)}</span> </p>
           </div>
           <div className="mt-3">
           <Button variant="link" onClick={()=> navigate('/login')}>Back to login</Button>

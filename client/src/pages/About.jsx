@@ -12,7 +12,7 @@ const About = () => {
           <Row className="justify-content-center align-items-center">
             <Col lg={6} className="mb-4 mb-lg-0">
               <Image
-                src="https://img.freepik.com/premium-photo/set-lowcost-ecofriendly-bamboo-bathroom-accessories_929909-225.jpg?w=740"
+                src="who.jpg"
                 alt="About"
                 fluid
                 rounded

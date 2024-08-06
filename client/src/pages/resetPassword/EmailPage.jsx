@@ -95,7 +95,7 @@ setIsLoading(true);
                 {isLoading ? (
                   <Spinner animation="border" size="sm" />
                 ) : (
-                  "Login"
+                  "Submit"
                 )}
               </Button>
             </div>

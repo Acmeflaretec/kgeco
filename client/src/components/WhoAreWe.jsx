@@ -37,7 +37,7 @@ const WhoAreWe = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="image-wrapper">
-              <img src="https://img.freepik.com/free-photo/bamboo-toothbrushes-soap-top-view_23-2148645564.jpg?t=st=1720514293~exp=1720517893~hmac=f3f8a9bbc73ea2a74f448b09941224c7cc0a9bb2eaf8cb2e39420ca37210b8f0&w=996" alt="Eco-friendly products" className="img-fluid rounded" />
+              <img src="who.jpg" alt="Eco-friendly products" className="img-fluid rounded" />
             </div>
           </motion.div>
         </div>

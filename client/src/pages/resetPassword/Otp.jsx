@@ -34,6 +34,8 @@ function Otp() {
   const navigate = useNavigate();
   const location = useLocation();
 
+
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const emailParam = params.get('email');
@@ -278,7 +280,7 @@ open ? (
                     {isLoading ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
-                      "Login"
+                      "Reset password"
                     )}
                   </Button>
                 </div>
