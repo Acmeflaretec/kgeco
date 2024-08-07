@@ -45,7 +45,7 @@ function RoutePage() {
             <Route path="/" element={<Home />} />
             <Route path="/allproducts" element={<Allproducts />} />
             <Route path="/product/:proId" element={<Product />} />
-            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/contact" element={<ContactUs />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
