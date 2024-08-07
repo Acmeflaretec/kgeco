@@ -111,7 +111,7 @@ const TableData = () => {
         value={item?.status}
       onChange={(e) => handleStatusChange(item._id, e.target.value)}
       >
-        {['Pending', 'Placed', 'Shipped', 'Out_of_delivery', 'Delivered', 'Delayed', 'Canceled'].map(status => (
+        {['Pending', 'Placed', 'Shipped', 'Out for delivery', 'Delivered', 'Delayed', 'Canceled'].map(status => (
           <MenuItem key={status} value={status}>
             {status}
           </MenuItem>
