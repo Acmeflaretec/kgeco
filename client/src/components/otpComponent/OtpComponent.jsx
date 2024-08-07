@@ -1,191 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Alert, Button,Spinner, } from 'react-bootstrap';
+import { Container, Row, Col, Form, Alert, Button, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../../axios";
-import { Link } from "react-router-dom";
-function OtpComponent({emailId,setOpen,type,userDetails}) {
+
+function OtpComponent({ emailId, setOpen, type, userDetails }) {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
-  const [error2,setError2] = useState('')
+  const [error2, setError2] = useState('');
   const [resent, setResent] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [email, setEmail] = useState('');
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
 
-    // sendOtp()
- 
-     const timer = setInterval(() => {
-       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-     }, 1000);
- 
-     return () => clearInterval(timer);
-   }, []);
- 
- 
- const sendOtp= async()=>{
+    return () => clearInterval(timer);
+  }, []);
 
- try {
-if(type === 'register'){
-  const response = await axiosInstance.post("/user/sendRegistrationOtp", { email: emailId });
-}else{
-  const response = await axiosInstance.post("/user/sendOtp", { email: emailId });
-}
-
- } catch (error) {
-   console.log(error)
- }
- 
- }
- 
- 
-   const handleOtpChange = (e) => {
-     const value = e.target.value;
-     setOtp(value);
-     if (value.length === 6) {
-       setError('');
-       handleSubmit(e,value);
-     } else {
-       setError('Please enter a valid 6-digit code.');
-     }
-   };
-//  
-   const handleSubmit = async(e,otpValue) => {
-    e.preventDefault();
-
-    setError2('');
-    if(type === 'register'){
-
+  const sendOtp = async () => {
     try {
-userDetails.clientOtp=otpValue
-
-      const response = await axiosInstance.post('/auth/register', userDetails);
-      console.log('Registration successful: ', response?.data?.data?.signupStatus);
-
-      if (response?.data?.data?.signupStatus) {
-        navigate('/login');
+      if (type === 'register') {
+        await axiosInstance.post("/user/sendRegistrationOtp", { email: emailId });
+      } else {
+        await axiosInstance.post("/user/sendOtp", { email: emailId });
       }
     } catch (error) {
-      setError2(error?.response?.data?.message || 'Registration failed');
-      console.error('Error during registration: ', error);
+      console.error(error);
     }
+  };
 
-    }else{
-
-  
- try {
-   const response = await axiosInstance.post("/user/compareOtp", { email: emailId,otp:otpValue });
- 
-   if (response.status === 200) {
-     // User found, navigate to OTP page
-     setOpen(false)
-     // Simulate OTP submission
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 3000);
-   }else if(response.status === 400){
-     setError2(response?.data?.message)
- 
-   }
- 
- } catch (error) {
-   
-   setError2(error?.response?.data?.message)
- }
- 
-
+  const handleOtpChange = (e) => {
+    const value = e.target.value;
+    setOtp(value);
+    if (value.length === 6) {
+      setError('');
+      handleSubmit(value);
+    } else {
+      setError('Please enter a valid 6-digit code.');
     }
+  };
 
- 
-  
-   };
+  const handleSubmit = async (otpValue) => {
+    try {
+      if (type === 'register') {
+        userDetails.clientOtp = otpValue;
+        const response = await axiosInstance.post('/auth/register', userDetails);
+        if (response?.data?.data?.signupStatus) {
+          navigate('/login');
+        }
+      } else {
+        const response = await axiosInstance.post("/user/compareOtp", { email: emailId, otp: otpValue });
+        if (response.status === 200) {
+          setOpen(false);
+          setSuccess(true);
+          setTimeout(() => setSuccess(false), 3000);
+        } else if (response.status === 400) {
+          setError2(response?.data?.message);
+        }
+      }
+    } catch (error) {
+      setError2(error?.response?.data?.message || 'An error occurred');
+    }
+  };
 
-  //  const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsLoading(true);
-  //   setErrorMessage('');
-  //   try {
-  //     const response = await axiosInstance.post('/auth/register', userDetails);
-  //     console.log('Registration successful: ', response?.data?.data?.signupStatus);
+  const handleResend = () => {
+    sendOtp();
+    setResent(true);
+    setTimeLeft(180); // Reset the timer
+    setTimeout(() => setResent(false), 3000);
+  };
 
-  //     if (response.data.data.signupStatus) {
-  //       navigate('/login');
-  //     }
-  //   } catch (error) {
-  //     setErrorMessage(error?.response?.data?.message || 'Registration failed');
-  //     console.error('Error during registration: ', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
- 
-   const handleResend = () => {
-     // Simulate sending OTP again
-     sendOtp()
-     setResent(true);
-     setTimeLeft(180); // Reset the timer
-     setTimeout(() => setResent(false), 3000);
-   };
- 
-   const formatTime = (time) => {
-     const minutes = Math.floor(time / 60);
-     const seconds = time % 60;
-     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-   };
- 
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
 
   return (
-    <Container
-    className="d-flex justify-content-center align-items-center  bg-light"
-    style={{ height: '100vh' }}
-  >
-    <Row className="justify-content-md-center">
-      <Col md="6">
-        <div
-          className="p-4 shadow"
-          style={{
-            // backgroundColor: '#2D6507',
-            borderRadius: '10px',
-            color: 'black',
-          }}
-        >
-          <h2 className="mb-3 text-green">Verify your email</h2>
-          <p>We sent you a six-digit confirmation code to email.com. Please enter it below to confirm your email address.</p>
-          <Form>
-            <Form.Group controlId="formOtp">
-              <Form.Label>OTP</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={handleOtpChange}
-                maxLength="6"
-                isInvalid={!!error && otp.length !== 6}
-              />
-              {error && otp.length !== 6 && <Form.Text className="text-danger">{error}</Form.Text>}
-              {error2 && <Form.Text className="text-danger">{error2}</Form.Text>}
-  
-            </Form.Group>
-          </Form>
-          {success && <Alert variant="success">OTP verified successfully!</Alert>}
-          <div className="mt-3">
-            <p>Didn't receive a code? <Button variant="link" onClick={handleResend} disabled={timeLeft !== 0}>Send code again</Button></p>
-            {resent && <Alert variant="success">Code resent successfully!</Alert>}
+    <Container className="d-flex justify-content-center align-items-center bg-light" style={{ height: '80vh' }}>
+      <Row className="justify-content-center">
+        <Col md="6">
+          <div
+            className="p-4 shadow-sm"
+            style={{
+              borderRadius: '10px',
+              backgroundColor: '#ffffff',
+              color: '#333',
+            }}
+          >
+            <h2 className="mb-4 text-center text-success">Verify Your Email</h2>
+            <p className="text-center mb-4">We sent a six-digit confirmation code to <strong>{emailId}</strong>. Please enter it below to confirm your email address.</p>
+            <Form onSubmit={(e) => { e.preventDefault(); handleSubmit(otp); }}>
+              <Form.Group controlId="formOtp" className="mb-4">
+                <Form.Label>OTP</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={handleOtpChange}
+                  maxLength="6"
+                  isInvalid={!!error && otp.length !== 6}
+                />
+                <Form.Text className="text-danger">{error || error2}</Form.Text>
+              </Form.Group>
+              {success && <Alert variant="success" className="text-center">OTP verified successfully!</Alert>}
+              <div className="text-center mt-3">
+                <p className="mb-1">Didn't receive a code? <Button variant="link" onClick={handleResend} disabled={timeLeft !== 0}>Send code again</Button></p>
+                {resent && <Alert variant="success">Code resent successfully!</Alert>}
+                <p className="mb-0">Time left: <span className="text-danger">{formatTime(timeLeft)}</span></p>
+              </div>
+              <div className="text-center mt-3">
+                <Button variant="link" onClick={() => navigate('/login')}>Back to login</Button>
+              </div>
+            </Form>
           </div>
-          <div className="mt-3">
-            <p>Time left: <span className='text-danger' >{formatTime(timeLeft)}</span> </p>
-          </div>
-          <div className="mt-3">
-          <Button variant="link" onClick={()=> navigate('/login')}>Back to login</Button>
-          </div>
-        </div>
-      </Col>
-    </Row>
-  </Container>
-  )
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
-export default OtpComponent
+export default OtpComponent;

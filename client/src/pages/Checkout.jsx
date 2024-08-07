@@ -738,9 +738,12 @@ const Checkout = () => {
                     <div className="d-flex justify-content-between mb-2">
                       <span>Delivery Fee:</span>
                       {salePriceTotal > 299 ? (
-                        <span className="text-decoration-line-through text-success">
-                          ₹{deliveryCharge} Free Delivery{" "}
-                        </span>
+                       <span>
+                          <span className="text-decoration-line-through">
+                            ₹{deliveryCharge}{" "}
+                          </span>
+                          <span className="text-success ms-2"> Free Delivery</span>
+                       </span>
                       ) : (
                         <span>₹{deliveryCharge}</span>
                       )}

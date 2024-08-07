@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import axiosInstance from '../../axios';
 import { useNavigate } from 'react-router-dom';
 import { Col, Container, Row, Image, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import { FaLock } from 'react-icons/fa';
+import { FaLock, FaUser, FaEnvelope, FaPhone, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import OtpComponent from '../../components/otpComponent/OtpComponent';
 
@@ -18,7 +16,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [open,setOpen] = useState(true)
+  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
 
   const handlePasswordVisibility = () => {
@@ -33,8 +31,6 @@ function Register() {
     }));
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -42,139 +38,148 @@ function Register() {
     try {
       const response = await axiosInstance.post("/user/checkRegisterEmail", { email: userDetails?.email });
       if (response.status === 200) {
-
-        sendOtp()
-        setOpen(false)
-        // User found, open otp component
+        sendOtp();
+        setOpen(false);
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        // User not found
-        setErrorMessage(error?.response?.data?.message)
+        setErrorMessage(error?.response?.data?.message);
       } else {
-        setErrorMessage(error?.response?.data?.message)
+        setErrorMessage(error?.response?.data?.message);
       }
     } finally {
-          setIsLoading(false);
-        }
-  
+      setIsLoading(false);
+    }
   };
 
-
-
-  //sending otp fn
-
-  const sendOtp= async()=>{
-    
+  const sendOtp = async () => {
     try {
-      const response = await axiosInstance.post("/user/sendRegistrationOtp", { email:userDetails?.email });
-      
+      await axiosInstance.post("/user/sendRegistrationOtp", { email: userDetails?.email });
     } catch (error) {
-      console.log(error)
-      setErrorMessage('Something went wrong please try again')
+      console.log(error);
+      setErrorMessage('Something went wrong. Please try again.');
     }
-    
-    }
+  };
 
   return (
-    <>
-      <header className="bg-white shadow-sm">
+    <div style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+      <header style={{ backgroundColor: "#ffffff", boxShadow: "0 2px 4px rgba(0,0,0,.1)" }}>
         <Container className="py-3">
-          <div className="d-flex justify-content-between align-items-center">
-            <Link to="/" className="text-decoration-none">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Link to="/" style={{ textDecoration: "none" }}>
               <Image src="logo.png" fluid alt="Logo" style={{ maxWidth: '120px' }} />
             </Link>
-            <div className="text-success">
-              <FaLock className="me-2" />
-              <span className="fw-bold">Secure Sign Up</span>
+            <div style={{ color: "#28a745" }}>
+              <FaLock style={{ marginRight: "0.5rem" }} />
+              <span style={{ fontWeight: "bold" }}>Secure Sign Up</span>
             </div>
           </div>
         </Container>
       </header>
-<>
-{open ? (
-      <Container className="py-5">
-      <Row className="justify-content-md-center">
-        <Col md={6}>
-          <div className="shadow p-4 rounded">
-            <h3 className="text-center mb-4">Register</h3>
-            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-            <Form onSubmit={handleSubmit}>
-              <FloatingLabel controlId="floatingUsername" label="Username" className="mb-3">
-                <Form.Control
-                  type="text"
-                  placeholder="Username"
-                  name="username"
-                  required
-                  value={userDetails.username}
-                  onChange={handleChange}
-                />
-              </FloatingLabel>
-              <FloatingLabel controlId="floatingInput" label="Email address" className="mb-3">
-                <Form.Control
-                  type="email"
-                  placeholder="name@example.com"
-                  name="email"
-                  required
-                  value={userDetails.email}
-                  onChange={handleChange}
-                />
-              </FloatingLabel>
-              <FloatingLabel controlId="floatingPhone" label="Phone number" className="mb-3">
-                <Form.Control
-                  type="tel"
-                  placeholder="123-456-7890"
-                  required
-                  name="phone"
-                  value={userDetails.phone}
-                  onChange={handleChange}
-                />
-              </FloatingLabel>
-              <FloatingLabel controlId="floatingPassword" label="Password" className="position-relative">
-                <Form.Control
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  required
-                  name="password"
-                  value={userDetails.password}
-                  onChange={handleChange}
-                />
-                <span
-                  className="position-absolute top-50 end-0 translate-middle-y me-3"
-                  onClick={handlePasswordVisibility}
-                  style={{ cursor: "pointer" }}
-                >
-                  {showPassword ? '👁' : '👁‍🗨'}
-                </span>
-              </FloatingLabel>
-              <div className='mt-3 d-flex justify-content-between align-items-center'>
-                <Button variant="outline-success" type="submit" disabled={isLoading}>
-                  {isLoading ? <Spinner animation="border" size="sm" /> : 'Sign Up'}
-                </Button>
-                <span>
-                  Already a user?
-                  <Link to={'/login'} className='text-primary'>
-                    Login
+      
+      {open ? (
+        <Container className="py-5">
+          <Row className="justify-content-center">
+            <Col xs={12} sm={10} md={8} lg={6} xl={5}>
+              <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", boxShadow: "0 4px 6px rgba(0,0,0,.1)", padding: "2rem" }}>
+                <h2 style={{ textAlign: "center", marginBottom: "1.5rem", color: "#333" }}>Create an Account</h2>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-3" controlId="formBasicUsername">
+                    <Form.Label>Username</Form.Label>
+                    <div style={{ position: "relative" }}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter your username"
+                        name="username"
+                        required
+                        value={userDetails.username}
+                        onChange={handleChange}
+                        style={{ paddingLeft: "2.5rem" }}
+                      />
+                      <FaUser style={{ position: "absolute", top: "50%", left: "0.75rem", transform: "translateY(-50%)", color: "#6c757d" }} />
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Email address</Form.Label>
+                    <div style={{ position: "relative" }}>
+                      <Form.Control
+                        type="email"
+                        placeholder="Enter your email"
+                        name="email"
+                        required
+                        value={userDetails.email}
+                        onChange={handleChange}
+                        style={{ paddingLeft: "2.5rem" }}
+                      />
+                      <FaEnvelope style={{ position: "absolute", top: "50%", left: "0.75rem", transform: "translateY(-50%)", color: "#6c757d" }} />
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="formBasicPhone">
+                    <Form.Label>Phone number</Form.Label>
+                    <div style={{ position: "relative" }}>
+                      <Form.Control
+                        type="tel"
+                        placeholder="Enter your phone number"
+                        name="phone"
+                        required
+                        value={userDetails.phone}
+                        onChange={handleChange}
+                        style={{ paddingLeft: "2.5rem" }}
+                      />
+                      <FaPhone style={{ position: "absolute", top: "50%", left: "0.75rem", transform: "translateY(-50%)", color: "#6c757d" }} />
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Password</Form.Label>
+                    <div style={{ position: "relative" }}>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        name="password"
+                        required
+                        value={userDetails.password}
+                        onChange={handleChange}
+                        style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
+                      />
+                      <FaLock style={{ position: "absolute", top: "50%", left: "0.75rem", transform: "translateY(-50%)", color: "#6c757d" }} />
+                      <div
+                        onClick={handlePasswordVisibility}
+                        style={{ position: "absolute", top: "50%", right: "0.75rem", transform: "translateY(-50%)", cursor: "pointer", color: "#6c757d" }}
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </div>
+                    </div>
+                  </Form.Group>
+
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    disabled={isLoading}
+                    style={{ width: "100%", marginTop: "1rem", backgroundColor: "#28a745", borderColor: "#28a745" }}
+                  >
+                    {isLoading ? <Spinner animation="border" size="sm" /> : 'Sign Up'}
+                  </Button>
+                </Form>
+
+                <div style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem" }}>
+                  Already have an account?{" "}
+                  <Link to="/login" style={{ color: "#007bff", textDecoration: "none", fontWeight: "bold" }}>
+                    Sign in
                   </Link>
-                </span>
+                </div>
               </div>
-            </Form>
-          </div>
-        </Col>
-      </Row>
-    </Container>
-):
-
-
-(
-<OtpComponent emailId={userDetails.email} setOpen={setOpen}  type='register' userDetails={userDetails} />
-)
-}
-</>
-
-    </>
+            </Col>
+          </Row>
+        </Container>
+      ) : (
+        <OtpComponent emailId={userDetails.email} setOpen={setOpen} type='register' userDetails={userDetails} />
+      )}
+    </div>
   );
 }
 
 export default Register;
-

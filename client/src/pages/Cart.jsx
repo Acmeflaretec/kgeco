@@ -303,14 +303,17 @@ item?.productId?.isAvailable ?(
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Discount:</span>
-                      <span className="text-success text-decoration-line-through">₹{proPriceTotal-salePriceTotal}</span>
+                      <span className="text-success ">- ₹{proPriceTotal-salePriceTotal}</span>
                     </div>
                     <div className="d-flex justify-content-between mb-2">
                       <span>Delivery Charges:</span>
-{salePriceTotal > 299 ? (
-  <span className='text-decoration-line-through text-success' >₹{deliveryCharge} Free Delivery  </span>
-):(<span>₹{deliveryCharge}</span>
-) }
+                {salePriceTotal > 299 ? (
+                  <span>
+                    <span className='text-decoration-line-through me-2' >₹{deliveryCharge}</span>
+                  <span className='text-success'>Free Delivery </span>
+                  </span>
+                ):(<span>₹{deliveryCharge}</span>
+                ) }
 
                     </div>
                   </div>

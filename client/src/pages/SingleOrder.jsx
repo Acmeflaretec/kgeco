@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../axios'
-import { Card, Col, Container, Row, Table } from 'react-bootstrap';
+import axiosInstance from '../axios';
+import { Card, Col, Container, Row, Table, Badge } from 'react-bootstrap';
 import { FaBox, FaShippingFast, FaTruck, FaCheckCircle } from 'react-icons/fa';
 import Footer from '../components/Footer';
 import MiddleNav from '../components/MiddleNav';
@@ -11,93 +11,49 @@ import LoadingScreen from '../components/loading/LoadingScreen';
 function SingleOrder() {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('order_confirmed');
-
   const { orderId } = useParams();
-  const [ordersData,setOrdersData] = useState({})
-  const [address,setAddress] = useState({})
-  const [productsData,setProductsData] = useState([])
-  const [loadScreenState, setLoadScreenState] = useState(true); // Loading state
+  const [ordersData, setOrdersData] = useState({});
+  const [address, setAddress] = useState({});
+  const [productsData, setProductsData] = useState([]);
+  const [loadScreenState, setLoadScreenState] = useState(true);
 
-
- // console.log('ord id :',orderId)
-  const fetchOrderData  = async()=>{
-
+  const fetchOrderData = async () => {
     try {
-      const response = await axiosInstance.get(`/orders/getorderbyid/${orderId}`)
-      setOrdersData(response?.data?.data)
-      setAddress(response?.data?.data?.address)
-      setProductsData(response?.data?.data?.products?.item)
+      const response = await axiosInstance.get(`/orders/getorderbyid/${orderId}`);
+      setOrdersData(response?.data?.data);
+      setAddress(response?.data?.data?.address);
+      setProductsData(response?.data?.data?.products?.item);
     } catch (error) {
-      
-    }finally {
-      setLoadScreenState(false); // Set loading to false after data is fetched
-  }
-  }
-  
-  
-  useEffect(()=>{
-  fetchOrderData()
-  },[])
-
-
-
-  // Sample data from backend (same as before)
-  const dataFromBackend = {
-    status: 'out_for_delivery',
-    orderDetails: {
-      orderId: '12345678',
-      orderDate: '2023-05-15',
-      items: [
-        {
-          name: 'ECO-FRIENDLY COTTON BUDS',
-          quantity: 1,
-          price: 999,
-          imageUrl: 'https://img.freepik.com/premium-photo/heap-bamboo-cotton-swabs-buds-top-view-beige-surface-copy-space_224798-1095.jpg?w=996',
-          category: 'Seeds',
-        },
-      ],
-      shippingAddress: {
-        name: 'John Doe',
-        address: '123 Main St, Anytown USA',
-        city: 'New York',
-        state: 'NY',
-        zip: '10001',
-      },
-      total: 999,
-    },
+      console.error('Error fetching order data:', error);
+    } finally {
+      setLoadScreenState(false);
+    }
   };
 
   useEffect(() => {
-    // const backendStatus = dataFromBackend.status.toLowerCase().replace(/ /g, '_');
-    // setStatus(backendStatus);
+    fetchOrderData();
+  }, []);
 
+  useEffect(() => {
     switch (ordersData?.status) {
-      case 'Placed':
-        setProgress(0);
-        break;
-      case 'Shipped':
-        setProgress(33);
-        break;
-      case 'Out for delivery':
-        setProgress(66);
-        break;
-      case 'Delivered':
-        setProgress(100);
-        break;
+      case 'Placed': setProgress(0); break;
+      case 'Shipped': setProgress(33); break;
+      case 'Out for delivery': setProgress(66); break;
+      case 'Delivered': setProgress(100); break;
       default: setProgress(0);
     }
-  }, [dataFromBackend]);
+  }, [ordersData]);
 
   const renderProgressBar = () => {
     const steps = [
       { name: 'Order Confirmed', icon: <FaBox />, completed: progress >= 0 },
-      { name: 'Shipped', icon: <FaShippingFast />, completed: progress >= 25 },
+      { name: 'Shipped', icon: <FaShippingFast />, completed: progress >= 33 },
       { name: 'Out for Delivery', icon: <FaTruck />, completed: progress >= 66 },
       { name: 'Delivered', icon: <FaCheckCircle />, completed: progress >= 100 },
     ];
 
     return (
-      <div className="progress-container mb-4">
+      <div className="progress-container my-5">
         <div className="progress-bar" style={{ width: `${progress}%` }}></div>
         {steps.map((step, index) => (
           <div
@@ -106,127 +62,105 @@ function SingleOrder() {
             style={{ left: `${index * 33}%` }}
           >
             <div className="icon-container">{step?.icon}</div>
-            <p className='stepsmob'  >{step?.name}</p>
-           
+            <p className="step-name">{step?.name}</p>
           </div>
         ))}
-         <p className='stepsmob2 '  >{ordersData.status}</p>
+        <p className="current-status mt-5">{ordersData.status}</p>
       </div>
     );
   };
+
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
   return (
-    <>
+    <div className="single-order-page">
       <MiddleNav />
-{
-   loadScreenState ? (
-    <LoadingScreen/>
-  )  : (
-    <Container className="my-5">
-    <h2 className="mb-4">Order Details</h2>
-
-
-    <div className='pbar'  >
-    <Col md={6} className="mb-3 mb-md-0">
-{ renderProgressBar()}
-
-</Col>
-    </div>
-
-
- 
-{ordersData?.products?.item?.map((item,index)=>(
- <Card className="shadow-sm mb-4">
- <Card.Body>
-   <Row className="align-items-center">
-
-<Col md={3} className="mb-3 mb-md-0">
-            <div className="d-flex align-items-center">
-              <img
-               src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.product_id?.image[0]}`}
-                alt=""
-                className="img-fluid rounded me-3"
-                style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-              />
-              <div>
-                <h5 className="mb-1"> {index+1}. {item?.product_id?.name}</h5>
-              </div>
-            </div>
-          </Col>
-{/* {index == 0 &&
-<Col md={6} className="mb-3 mb-md-0">
-{ renderProgressBar()}
-</Col>
-} */}
-</Row>
-</Card.Body>
-</Card>
-
-))
-
+      {loadScreenState ? (
+        <LoadingScreen />
+      ) : (
+        <Container className="py-5">
+          <h2 className="mb-4 text-center">Order Details</h2>
           
-}
+          <Card className="shadow-sm mb-5 p-5">
+            <Card.Body>
+              {renderProgressBar()}
+            </Card.Body>
+          </Card>
 
-         
+          <Row className="g-4">
+            <Col lg={8}>
+              <Card className="shadow-sm mb-4">
+                <Card.Body className="p-4">
+                  <h5 className="mb-4">Order Items</h5>
+                  {ordersData?.products?.item?.map((item, index) => (
+                    <div key={index} className="d-flex align-items-center mb-3 p-3 border rounded">
+                      <img
+                        src={`${import.meta.env.VITE_API_BASE_URL_LOCALHOST}/uploads/${item?.product_id?.image[0]}`}
+                        alt=""
+                        className="img-fluid rounded me-3"
+                        style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                      />
+                      <div>
+                        <h6 className="mb-2">{item?.product_id?.name}</h6>
+                        <p className="mb-1 text-muted">Quantity: {item.quantity}</p>
+                        <p className="mb-0 fw-bold">Price: ₹{item.price}</p>
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
 
-    <Row>
-      <Col md={8}>
-        <Card className="shadow-sm mb-4">
-          <Card.Body>
-            <h5 className="mb-3">Order Summary</h5>
-            <Table responsive borderless className="mb-0">
-              <tbody>
-                <tr>
-                  <td>Order ID</td>
-                  <td className="text-end">{ordersData?._id}</td>
-                </tr>
-                <tr>
-                  <td>Order Date</td>
-                  <td className="text-end">{formatDate(ordersData?.createdAt)}</td>
-                </tr>
-                <tr>
-                  <td>Status</td>
-                  <td className="text-end">
-                    <span className="text-success fw-bold">{ordersData?.status}</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Total</td>
-                  <td className="text-end fw-bold">₹{ordersData?.amount}</td>
-                </tr>
-              </tbody>
-            </Table>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={4}>
-        <Card className="shadow-sm">
-          <Card.Body>
-            <h5 className="mb-3">Delivery Address</h5>
-            <p className="mb-1 fw-bold">{address?.firstname} {address?.lastname}</p>
-            <p className="mb-1">{address?.address_line_1}</p>
-            <p className="mb-1">{address?.address_line_2}</p>
+              <Card className="shadow-sm mb-4">
+                <Card.Body className="p-4">
+                  <h5 className="mb-4">Order Summary</h5>
+                  <Table responsive borderless className="mb-0">
+                    <tbody>
+                      <tr>
+                        <td>Order ID</td>
+                        <td className="text-end"><strong>{ordersData?._id}</strong></td>
+                      </tr>
+                      <tr>
+                        <td>Order Date</td>
+                        <td className="text-end">{formatDate(ordersData?.createdAt)}</td>
+                      </tr>
+                      <tr>
+                        <td>Status</td>
+                        <td className="text-end">
+                          <span bg="success" className="px-3 py-2 bg-success-subtle">{ordersData?.status}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Total</td>
+                        <td className="text-end"><h5 className="mb-0">₹{ordersData?.amount}</h5></td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </Card.Body>
+              </Card>
+            </Col>
 
-            <p className="mb-0">
-              {address?.city},{' '}
-              {address?.state}{' '}
-              {address?.zip}{' '}
-              {address?.Country}
-            </p>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-  </Container>
-  )
-}
-
-    
+            <Col lg={4}>
+              <Card className="shadow-sm">
+                <Card.Body className="p-4">
+                  <h5 className="mb-4">Delivery Address</h5>
+                  <p className="mb-2 fw-bold">{address?.firstname} {address?.lastname}</p>
+                  <p className="mb-1">{address?.address_line_1}</p>
+                  <p className="mb-1">{address?.address_line_2}</p>
+                  <p className="mb-1">
+                    {address?.city}, {address?.state} {address?.zip}
+                  </p>
+                  <p className="mb-0">{address?.Country}</p>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      )}
       <Footer />
-    </>
+    </div>
   );
 }
 

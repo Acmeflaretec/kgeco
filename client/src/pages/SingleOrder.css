@@ -1,41 +1,40 @@
-
+.single-order-page {
+  background-color: #f8f9fa;
+}
 
 .progress-container {
   position: relative;
-  height: 4px;
+  height: 6px;
   background-color: #e9ecef;
-  margin: 2rem 0;
-
-  /* margin-left: 100px !important; */
-margin-top: 100px !important;
-margin-bottom: 100px !important;
-
+  border-radius: 3px;
+  margin: 60px 0;
 }
 
 .progress-bar {
-  position: absolute;
   height: 100%;
   background-color: #28a745;
-  transition: width 0.5s ease;
+  border-radius: 3px;
+  transition: width 0.6s ease;
 }
 
 .round-point {
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: -18px;
+  transform: translateX(-50%);
   text-align: center;
 }
 
 .icon-container {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   background-color: #fff;
   border: 2px solid #e9ecef;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
 }
 
 .round-point.completed .icon-container {
@@ -44,50 +43,47 @@ margin-bottom: 100px !important;
   color: #fff;
 }
 
-.round-point p {
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
-  white-space: nowrap;
+.step-name {
+  font-size: 0.85rem;
+  color: #6c757d;
+  position: absolute;
+  width: 120px;
+  left: -40px;
+  font-weight: 500;
 }
 
-.star-rating {
-  font-size: 1.2rem;
-}
-.stepsmob2{
-  display: none;
-  
-  }
-
-@media only screen and (max-width: 767px) {
-
-  .progress-bar {
-     height: 100%;
-   
-  }
-.progress-container{
-
-width: 65% ;
-/* margin-left: 100px !important; */
-margin-top: 100px !important;
-margin-bottom: 100px !important;
-/* display: flex;
-justify-content: center; */
-
-}
-.pbar{
-padding-left: 50px;
-
-}
-
-.stepsmob{
-display: none;
-
-}
-.stepsmob2{
-  display: flex;
-  padding-top: 50px !important;
-  color: green;
+.current-status {
+  text-align: center;
   font-weight: bold;
+  font-size: 1.1rem;
+  color: #28a745;
+}
+
+.card {
+  border: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+@media (max-width: 768px) {
+  .progress-container {
+    margin: 40px 0;
   }
 
+  .step-name {
+    display: none;
+  }
+  
+  .round-point {
+    top: -14px;
+  }
+  
+  .icon-container {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
 }

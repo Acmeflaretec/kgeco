@@ -1,26 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Alert, Button,Spinner, } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate,useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Alert,
+  Button,
+  Spinner,
+  Image,
+  Card,
+} from "react-bootstrap";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axiosInstance from "../../axios";
-import { Link } from "react-router-dom";
-import OtpComponent from '../../components/otpComponent/OtpComponent';
-
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaEnvelope, FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Otp() {
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
-  const [error2,setError2] = useState('')
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [error2, setError2] = useState("");
   const [resent, setResent] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
-  const [open,setOpen]= useState(true)
-
-
-
-  const [isMounted, setIsMounted] = useState(false);
+  const [open, setOpen] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,22 +32,16 @@ function Otp() {
     confirmPassword: "",
   });
 
-
   const navigate = useNavigate();
   const location = useLocation();
 
-
-
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const emailParam = params.get('email');
+    const emailParam = params.get("email");
     setEmail(emailParam);
   }, [location]);
 
   useEffect(() => {
-
-   // sendOtp()
-
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
     }, 1000);
@@ -53,71 +49,59 @@ function Otp() {
     return () => clearInterval(timer);
   }, []);
 
-
-const sendOtp= async()=>{
-  const params = new URLSearchParams(location.search);
-  const emailParam = params.get('email');
-try {
-  const response = await axiosInstance.post("/user/sendOtp", { email: emailParam });
-} catch (error) {
-  console.log(error)
-}
-
-}
-
+  const sendOtp = async () => {
+    const params = new URLSearchParams(location.search);
+    const emailParam = params.get("email");
+    try {
+      await axiosInstance.post("/user/sendOtp", { email: emailParam });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleOtpChange = (e) => {
     const value = e.target.value;
     setOtp(value);
     if (value.length === 6) {
-      setError('');
+      setError("");
       handleSubmit(value);
     } else {
-      setError('Please enter a valid 6-digit code.');
+      setError("Please enter a valid 6-digit code.");
     }
   };
 
-  const handleSubmit = async(otpValue) => {
+  const handleSubmit = async (otpValue) => {
     const params = new URLSearchParams(location.search);
-    const emailParam = params.get('email');
-try {
-  const response = await axiosInstance.post("/user/compareOtp", { email: emailParam,otp:otpValue });
-
-  if (response.status === 200) {
-    // User found, navigate to OTP page
-    setOpen(false)
-    // Simulate OTP submission
-       setSuccess(true);
-       setTimeout(() => setSuccess(false), 3000);
-  }else if(response.status === 400){
-    setError2(response?.data?.message)
-
-  }
-
-} catch (error) {
-  
-  setError2(error?.response?.data?.message)
-}
-
-
- 
+    const emailParam = params.get("email");
+    try {
+      const response = await axiosInstance.post("/user/compareOtp", {
+        email: emailParam,
+        otp: otpValue,
+      });
+      if (response.status === 200) {
+        setOpen(false);
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else if (response.status === 400) {
+        setError2(response?.data?.message);
+      }
+    } catch (error) {
+      setError2(error?.response?.data?.message);
+    }
   };
 
   const handleResend = () => {
-    // Simulate sending OTP again
-    sendOtp()
+    sendOtp();
     setResent(true);
-    setTimeLeft(180); // Reset the timer
+    setTimeLeft(180);
     setTimeout(() => setResent(false), 3000);
   };
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,187 +110,293 @@ try {
       [name]: value,
     }));
   };
+
   const handlePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
   const handlePasswordVisibility2 = () => {
     setShowPassword2(!showPassword2);
   };
 
-const handleChangePassword = async(e)=>{
-  e.preventDefault();
-  setIsLoading(true); // Start loading
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  const params = new URLSearchParams(location.search);
-  const emailParam = params.get('email');
+    const params = new URLSearchParams(location.search);
+    const emailParam = params.get("email");
 
-if(userDetails.confirmPassword !== userDetails.password){
-  setErrorMessage('both password should be the same')
-
-}else{
-
-  try {
-    const response = await axiosInstance.post("/auth/changepassword", { email: emailParam,newPassword:userDetails.confirmPassword });
-    navigate('/login')
-  } catch (error) {
-    setErrorMessage(error?.response?.data?.message)
-  }finally {
-    setIsLoading(false); // End loading
-  }
-
-}
-
-
-
-}
-
-
+    if (userDetails.confirmPassword !== userDetails.password) {
+      setErrorMessage("Both passwords should be the same");
+      setIsLoading(false); // Stop loading if there's an error
+    } else {
+      try {
+        await axiosInstance.post("/auth/changepassword", {
+          email: emailParam,
+          newPassword: userDetails.confirmPassword,
+        });
+        navigate("/login");
+      } catch (error) {
+        setErrorMessage(error?.response?.data?.message);
+      } finally {
+        setIsLoading(false); // Ensure loading stops in both success and error cases
+      }
+    }
+  };
 
   return (
-<>
-
-{
-open ? (
-  <OtpComponent emailId={email} setOpen={setOpen}/>
-
-//   <Container
-//   className="d-flex justify-content-center align-items-center"
-//   style={{ height: '100vh' }}
-// >
-//   <Row className="justify-content-md-center">
-//     <Col md="6">
-//       <div
-//         className="p-4"
-//         style={{
-//           backgroundColor: '#2D6507',
-//           borderRadius: '10px',
-//           color: 'white',
-//         }}
-//       >
-//         <h2 className="mb-3">Verify your email</h2>
-//         <p>We sent you a six-digit confirmation code to email.com. Please enter it below to confirm your email address.</p>
-//         <Form>
-//           <Form.Group controlId="formOtp">
-//             <Form.Label>OTP</Form.Label>
-//             <Form.Control
-//               type="text"
-//               placeholder="Enter OTP"
-//               value={otp}
-//               onChange={handleOtpChange}
-//               maxLength="6"
-//               isInvalid={!!error && otp.length !== 6}
-//             />
-//             {error && otp.length !== 6 && <Form.Text className="text-danger">{error}</Form.Text>}
-//             {error2 && <Form.Text className="text-danger">{error2}</Form.Text>}
-
-//           </Form.Group>
-//         </Form>
-//         {success && <Alert variant="success">OTP verified successfully!</Alert>}
-//         <div className="mt-3">
-//           <p>Didn't receive a code? <Button variant="link" onClick={handleResend} disabled={timeLeft !== 0}>Send code again</Button></p>
-//           {resent && <Alert variant="success">Code resent successfully!</Alert>}
-//         </div>
-//         <div className="mt-3">
-//           <p>Time left: {formatTime(timeLeft)}</p>
-//         </div>
-//         <div className="mt-3">
-//         <Button variant="link" onClick={()=> navigate('/login')}>Back to login</Button>
-//         </div>
-//       </div>
-//     </Col>
-//   </Row>
-// </Container>
-)  :  
-
-(
-  <>
-  
-  <Container className="my-5 bg-light p-4 rounded">
-        <Row className="justify-content-md-center">
-          <Col md={6}>
-            <div className="shadow p-4 rounded">
-              <h3 className="text-center mb-4">Reset password</h3>
-              {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-              <Form onSubmit={handleChangePassword}>
-    
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label>Password</Form.Label>
-                  <div className="position-relative">
-                    <Form.Control
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      name="password"
-                      value={userDetails.password}
-                      required
-                      onChange={handleChange}
-                    />
-                    <span
-                      className="position-absolute top-50 end-0 translate-middle-y me-3"
-                      onClick={handlePasswordVisibility}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {showPassword ? "👁️" : "👁️‍🗨️"}
-                    </span>
-                  </div>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="formBasicPassword2">
-                  <Form.Label>Password</Form.Label>
-                  <div className="position-relative">
-                    <Form.Control
-                      type={showPassword2 ? "text" : "password"}
-                      placeholder="Confirm password"
-                      name="confirmPassword"
-                      value={userDetails.confirmPassword}
-                      required
-                      onChange={handleChange}
-                    />
-                    <span
-                      className="position-absolute top-50 end-0 translate-middle-y me-3"
-                      onClick={handlePasswordVisibility2}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {showPassword2 ? "👁️" : "👁️‍🗨️"}
-                    </span>
-                  </div>
-                </Form.Group>
-              
-                <div className="d-grid gap-2">
-                  <Button
-                    variant="outline-success"
-                    type="submit"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Spinner animation="border" size="sm" />
-                    ) : (
-                      "Reset password"
-                    )}
-                  </Button>
-                </div>
-              </Form>
-
-             
-              <div className="mt-2 mb-2 text-center">
-                  <Link to="/login" className="text-primary">
-                   Go back to login
-                  </Link>
-                </div>
+    <div style={{ backgroundColor: "#f4f6f8", minHeight: "100vh" }}>
+      <header
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 2px 4px rgba(0,0,0,.1)",
+          padding: "1rem 0",
+        }}
+      >
+        <Container>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <Image
+                src="logo.png"
+                fluid
+                alt="Logo"
+                style={{ maxWidth: "120px" }}
+              />
+            </Link>
+            <div style={{ color: "#28a745", display: "flex", alignItems: "center" }}>
+              <FaLock style={{ marginRight: "0.5rem" }} />
+              <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+                Secure Verification
+              </span>
             </div>
+          </div>
+        </Container>
+      </header>
+
+      <Container className="py-5">
+        <Row className="justify-content-center">
+          <Col xs={12} sm={10} md={8} lg={6} xl={5}>
+            <Card
+              style={{
+                borderRadius: "10px",
+                boxShadow: "0 6px 8px rgba(0,0,0,.15)",
+                padding: "2.5rem",
+                marginBottom: "1.5rem",
+              }}
+            >
+              <Card.Body>
+                {open ? (
+                  <>
+                    <h2
+                      style={{
+                        textAlign: "center",
+                        marginBottom: "1.5rem",
+                        color: "#333",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Verify Your Email
+                    </h2>
+                    <p
+                      style={{
+                        textAlign: "center",
+                        marginBottom: "2rem",
+                        fontSize: "1rem",
+                        color: "#555",
+                      }}
+                    >
+                      We sent a six-digit confirmation code to <strong>{email}</strong>.
+                      Please enter it below to confirm your email address.
+                    </p>
+                    <Form>
+                      <Form.Group controlId="formOtp" className="mb-4">
+                        <Form.Label className="fw-bold">OTP</Form.Label>
+                        <div style={{ position: "relative" }}>
+                          <Form.Control
+                            type="text"
+                            placeholder="Enter OTP"
+                            value={otp}
+                            onChange={handleOtpChange}
+                            maxLength="6"
+                            isInvalid={!!error && otp.length !== 6}
+                            style={{ paddingLeft: "2.5rem" }}
+                          />
+                          <FaEnvelope
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "0.75rem",
+                              transform: "translateY(-50%)",
+                              color: "#6c757d",
+                            }}
+                          />
+                        </div>
+                        {error && otp.length !== 6 && (
+                          <Form.Text className="text-danger">{error}</Form.Text>
+                        )}
+                        {error2 && (
+                          <Form.Text className="text-danger">{error2}</Form.Text>
+                        )}
+                      </Form.Group>
+                    </Form>
+                    {success && (
+                      <Alert variant="success" className="text-center">
+                        OTP verified successfully!
+                      </Alert>
+                    )}
+                    <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                      <p>
+                        Didn't receive a code?{" "}
+                        <Button
+                          variant="link"
+                          onClick={handleResend}
+                          disabled={timeLeft !== 0}
+                          style={{ fontWeight: "600", padding: 0 }}
+                        >
+                          Send code again
+                        </Button>
+                      </p>
+                      {resent && (
+                        <Alert variant="success" className="text-center">
+                          Code resent successfully!
+                        </Alert>
+                      )}
+                      <p>
+                        Time left: <span className="fw-bold">{formatTime(timeLeft)}</span>
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h2
+                      style={{
+                        textAlign: "center",
+                        marginBottom: "1.5rem",
+                        color: "#333",
+                        fontWeight: "600",
+                      }}
+                    >
+                      Reset Password
+                    </h2>
+                    {errorMessage && (
+                      <Alert variant="danger" className="text-center">
+                        {errorMessage}
+                      </Alert>
+                    )}
+                    <Form onSubmit={handleChangePassword}>
+                      <Form.Group className="mb-4" controlId="formBasicPassword">
+                        <Form.Label className="fw-bold">New Password</Form.Label>
+                        <div style={{ position: "relative" }}>
+                          <Form.Control
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter new password"
+                            name="password"
+                            value={userDetails.password}
+                            onChange={handleChange}
+                            required
+                            style={{ paddingLeft: "2.5rem" }}
+                          />
+                          <FaLock
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "0.75rem",
+                              transform: "translateY(-50%)",
+                              color: "#6c757d",
+                            }}
+                          />
+                          <Button
+                            variant="link"
+                            onClick={handlePasswordVisibility}
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              right: "0.75rem",
+                              transform: "translateY(-50%)",
+                              color: "#6c757d",
+                              padding: 0,
+                            }}
+                          >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          </Button>
+                        </div>
+                      </Form.Group>
+
+                      <Form.Group className="mb-4" controlId="formBasicConfirmPassword">
+                        <Form.Label className="fw-bold">Confirm New Password</Form.Label>
+                        <div style={{ position: "relative" }}>
+                          <Form.Control
+                            type={showPassword2 ? "text" : "password"}
+                            placeholder="Confirm new password"
+                            name="confirmPassword"
+                            value={userDetails.confirmPassword}
+                            onChange={handleChange}
+                            required
+                            style={{ paddingLeft: "2.5rem" }}
+                          />
+                          <FaLock
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              left: "0.75rem",
+                              transform: "translateY(-50%)",
+                              color: "#6c757d",
+                            }}
+                          />
+                          <Button
+                            variant="link"
+                            onClick={handlePasswordVisibility2}
+                            style={{
+                              position: "absolute",
+                              top: "50%",
+                              right: "0.75rem",
+                              transform: "translateY(-50%)",
+                              color: "#6c757d",
+                              padding: 0,
+                            }}
+                          >
+                            {showPassword2 ? <FaEyeSlash /> : <FaEye />}
+                          </Button>
+                        </div>
+                      </Form.Group>
+
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        style={{
+                          width: "100%",
+                          padding: "0.75rem",
+                          fontSize: "1.1rem",
+                          fontWeight: "600",
+                        }}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? <Spinner as="span" animation="border" size="sm" /> : "Reset Password"}
+                      </Button>
+                    </Form>
+                  </>
+                )}
+              </Card.Body>
+            </Card>
+
+            <Link
+              to="/login"
+              className="d-flex justify-content-center align-items-center text-decoration-none"
+              style={{ color: "#007bff", fontWeight: "600" }}
+            >
+              <FaArrowLeft className="me-2" />
+              Back to Login
+            </Link>
           </Col>
         </Row>
       </Container>
-  
-  </>
-
-)
-
-
-}
-
-</>
-
-
+    </div>
   );
 }
 
