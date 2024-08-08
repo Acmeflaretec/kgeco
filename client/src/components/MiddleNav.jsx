@@ -127,7 +127,7 @@ useEffect(()=>{
               <Link className="nav-link" to="/about">About Us</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/contactus">Contact</Link>
+              <Link className="nav-link" to="/contact">Contact</Link>
             </li>
             <li><Link className=" nav-link mobile-action" to={userDetails? '/profile' :'/login'}> {userDetails ? 'Profile': 'Login'} </Link></li>
 {
