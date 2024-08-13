@@ -10,7 +10,7 @@ function HomeContact() {
         <p className="mb-4">
           Have questions about our products or need assistance? We're here to help! Reach out to us for any inquiries or support.
         </p>
-        <Link to="/contactus" className="btn btn-primary">
+        <Link to="/contact" className="btn btn-primary">
           Contact Us
         </Link>
       </div>
