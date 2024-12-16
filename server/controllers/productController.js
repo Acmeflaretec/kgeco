@@ -10,12 +10,12 @@ const getProducts = async (req, res) => {
     // Convert page and limit to integers
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
-// console.log('lim',limit)
+    // console.log('lim',limit)
 
     // Construct the base query
     const query = {};
 
-    query.isAvailable=true
+    query.isAvailable = true
 
     // Search functionality
     if (search) {
@@ -66,84 +66,105 @@ const getProducts = async (req, res) => {
     const totalProducts = await Product.countDocuments(query);
     const products = await Product.find(query)
       .collation({ locale: 'en' }) // Enable case-insensitive search
-      .sort(sortOptions)
+      // .sort(sortOptions)
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber);
     //const data = await Product.find()
-    res.status(200).json({ data:products })
+    res.status(200).json({ data: products })
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: error?.message ?? "Something went wrong !" });
   }
 };
 
-const getProductsAdmin = async (req, res) => {
+// const getProductsAdmin = async (req, res) => {
+//   try {
+//     const { page = 1, limit, sortField, sortOrder, search, category,
+//       priceGreaterThan, priceLessThan, priceMin, priceMax, sortDiscount, sortDiscountGreaterThan } = req.query;
+
+//     // Convert page and limit to integers
+//     const pageNumber = parseInt(page, 10) || 1;
+//     const limitNumber = parseInt(limit, 10) || 10;
+//     // console.log('lim',limit)
+
+//     // Construct the base query
+//     const query = {};
+
+//     // Search functionality
+//     if (search) {
+//       const searchRegex = new RegExp(search, 'i');
+//       query.$or = [
+//         { name: searchRegex },
+//         { brand: searchRegex }
+//         // Add additional fields for search as needed
+//       ];
+//     }
+
+//     // Category filter
+//     if (category) {
+//       query.category = category;
+//     }
+
+//     // Sorting
+//     const sortOptions = {};
+//     if (sortField && sortOrder) {
+//       sortOptions[sortField] = sortOrder === 'asc' ? 1 : -1;
+//     }
+
+//     // Price greater than functionality
+//     if (priceGreaterThan) {
+//       query.sale_rate = { $gt: parseInt(priceGreaterThan) };
+//     }
+
+//     // Price less than functionality
+//     if (priceLessThan) {
+//       query.sale_rate = { $lt: parseInt(priceLessThan) };
+//     }
+
+//     // Price range functionality
+//     if (priceMin && priceMax) {
+//       query.sale_rate = { $gte: parseInt(priceMin), $lte: parseInt(priceMax) };
+//     }
+
+//     if (sortDiscount) {
+//       query.discount = parseInt(sortDiscount);
+//     }
+
+//     // Sort by discount greater than functionality
+//     if (sortDiscountGreaterThan) {
+//       query.discount = { $gt: parseInt(sortDiscountGreaterThan) };
+//     }
+
+//     // Find products based on the constructed query
+//     const totalProducts = await Product.countDocuments(query);
+//     const products = await Product.find(query)
+//       .collation({ locale: 'en' }) // Enable case-insensitive search
+//       .sort(sortOptions)
+//       .skip((pageNumber - 1) * limitNumber)
+//       .limit(limitNumber);
+//     //const data = await Product.find()
+//     res.status(200).json({ data: products })
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).json({ message: error?.message ?? "Something went wrong !" });
+//   }
+// };
+
+const getAdminProducts = async (req, res) => {
   try {
-    const { page = 1, limit, sortField, sortOrder, search, category,
-      priceGreaterThan, priceLessThan, priceMin, priceMax, sortDiscount, sortDiscountGreaterThan } = req.query;
+    const { page = 1, perPage = 10, sortBy = 'createdAt', order = 'desc', search = '' } = req.query;
+    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
 
-    // Convert page and limit to integers
-    const pageNumber = parseInt(page, 10) || 1;
-    const limitNumber = parseInt(limit, 10) || 10;
-// console.log('lim',limit)
+    const options = {
+      page: parseInt(page, 10),
+      limit: parseInt(perPage, 10),
+      sort: { [sortBy]: order === 'desc' ? -1 : 1 }
+    };
 
-    // Construct the base query
-    const query = {};
+    const products = await Product.paginate(query, options);
 
-    // Search functionality
-    if (search) {
-      const searchRegex = new RegExp(search, 'i');
-      query.$or = [
-        { name: searchRegex },
-        { brand: searchRegex }
-        // Add additional fields for search as needed
-      ];
-    }
 
-    // Category filter
-    if (category) {
-      query.category = category;
-    }
-
-    // Sorting
-    const sortOptions = {};
-    if (sortField && sortOrder) {
-      sortOptions[sortField] = sortOrder === 'asc' ? 1 : -1;
-    }
-
-    // Price greater than functionality
-    if (priceGreaterThan) {
-      query.sale_rate = { $gt: parseInt(priceGreaterThan) };
-    }
-
-    // Price less than functionality
-    if (priceLessThan) {
-      query.sale_rate = { $lt: parseInt(priceLessThan) };
-    }
-
-    // Price range functionality
-    if (priceMin && priceMax) {
-      query.sale_rate = { $gte: parseInt(priceMin), $lte: parseInt(priceMax) };
-    }
-
-    if (sortDiscount) {
-      query.discount = parseInt(sortDiscount);
-    }
-
-    // Sort by discount greater than functionality
-    if (sortDiscountGreaterThan) {
-      query.discount = { $gt: parseInt(sortDiscountGreaterThan) };
-    }
-
-    // Find products based on the constructed query
-    const totalProducts = await Product.countDocuments(query);
-    const products = await Product.find(query)
-      .collation({ locale: 'en' }) // Enable case-insensitive search
-      .sort(sortOptions)
-      .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber);
-    //const data = await Product.find()
-    res.status(200).json({ data:products })
+    res.status(200).json(products);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: error?.message ?? "Something went wrong !" });
@@ -152,14 +173,14 @@ const getProductsAdmin = async (req, res) => {
 
 const getProductsHome = async (req, res) => {
   try {
-    const { page = 1, limit, sortField, sortOrder, search, category,tags,
+    const { page = 1, limit, sortField, sortOrder, search, category, tags,
       priceGreaterThan, priceLessThan, priceMin, priceMax, sortDiscount, sortDiscountGreaterThan } = req.query;
 
     // Convert page and limit to integers
     const pageNumber = parseInt(page, 10) || 1;
     const limitNumber = parseInt(limit, 10) || 10;
-// console.log('lim',limit)
-console.log('lim n',limitNumber)
+    // console.log('lim',limit)
+    console.log('lim n', limitNumber)
 
     // Construct the base query
     const query = {};
@@ -179,7 +200,7 @@ console.log('lim n',limitNumber)
       query.category = category;
     }
 
-    if(tags) {
+    if (tags) {
       query.tags = tags
     }
 
@@ -215,14 +236,14 @@ console.log('lim n',limitNumber)
 
     // Find products based on the constructed query
     const totalProducts = await Product.countDocuments(query);
-    console.log('tpro',totalProducts)
+    console.log('tpro', totalProducts)
     const products = await Product.find(query)
       .collation({ locale: 'en' }) // Enable case-insensitive search
       .sort(sortOptions)
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber);
     //const data = await Product.find()
-    res.status(200).json({ data:products })
+    res.status(200).json({ data: products })
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: error?.message ?? "Something went wrong !" });
@@ -241,17 +262,17 @@ const getProductById = async (req, res) => {
 
 const addProduct = async (req, res) => {
 
- 
-  
+
+
   try {
     console.log(req.files);
-    const { name, subheading, category, brand, price, stock, discount, sale_rate, description,benefits } = req?.body
+    const { name, subheading, category, brand, price, stock, discount, sale_rate, description, benefits } = req?.body
 
-    console.log('bene',benefits)
-  
+    console.log('bene', benefits)
+
     if (req.files.length != 0) {
       const product = new Product({
-        name, subheading, category, brand, price, stock, discount, sale_rate, description,benefits:benefits ,
+        name, subheading, category, brand, price, stock, discount, sale_rate, description, benefits: benefits,
         image: req.files.map((x) => x.filename)
       });
       console.log(product);
@@ -274,15 +295,15 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { _id, name, subheading, brand, price, stock, discount, sale_rate, description, image,isAvailable,benefits } = req?.body
-    console.log('ben',benefits)
-    
+    const { _id, name, subheading, brand, price, stock, discount, sale_rate, description, image, isAvailable, benefits } = req?.body
+    console.log('ben', benefits)
+
     const images = JSON.parse(image) ?? []
     if (req?.files?.length != 0) {
       req?.files?.map((x) => images.push(x.filename))
     }
     await Product.updateOne({ _id }, {
-      $set: { name, subheading, brand, price, stock, discount, sale_rate, description,isAvailable:isAvailable,benefits:benefits, image: images }
+      $set: { name, subheading, brand, price, stock, discount, sale_rate, description, isAvailable: isAvailable, benefits: benefits, image: images }
     })
     res.status(200).json({ message: "Product updated successfully !" });
   } catch (error) {
@@ -295,7 +316,7 @@ const deleteProduct = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    const data = await Product.findByIdAndDelete(id);  
+    const data = await Product.findByIdAndDelete(id);
     if (!data) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -319,5 +340,6 @@ module.exports = {
   updateProduct,
   addProduct,
   deleteProduct,
-  getProductsAdmin,
+  // getProductsAdmin,
+  getAdminProducts,
 }

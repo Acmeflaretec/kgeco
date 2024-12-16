@@ -95,10 +95,36 @@ const deleteCategory = async (req, res) => {
   }
 }
 
+const  getadminCategory = async (req, res) => {
+  console.log('getadminCategory');    
+  
+  try {
+    const { page = 1, perPage = 10, sortBy = 'createdAt', order = 'desc', search = '' } = req.query;
+    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    const options = {
+      page: parseInt(page, 10),     
+      limit: parseInt(perPage, 10),
+      sort: { [sortBy]: order === 'desc' ? -1 : 1 }
+    };
+
+    const data = await Category.paginate(query, options);
+    // console.log('data1-',data);
+    
+    
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error?.message ?? "Something went wrong !" });
+  }
+};
+
 module.exports = {
     getCategory,
     addCategory,
     deleteCategory,
     updateCategory,
-    getCategoryById
+    getCategoryById,
+    getadminCategory
   }
