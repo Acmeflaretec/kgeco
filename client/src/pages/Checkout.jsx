@@ -342,7 +342,8 @@ const Checkout = () => {
     } else if (paymentOption === "razorpay") {
       const options = {
         key: import.meta.env.VITE_API_RAZORPAY,
-        amount: parseInt(totalAmountToPay) * 100, // amount in paisa
+        // amount: parseInt(totalAmountToPay) * 100, 
+        amount: 1 * 100, 
         currency: "INR",
         name: "KGECO",
         description: "Purchase course",
