@@ -1,11 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getBulkOrders, getOrderById, getOrders,editOrder} from "./orderUrls";
 
-const useGetOrders = (data) => {
-  return useQuery(["get_orders", data], () => getOrders(data), {
-    staleTime: 3000,
+const useGetOrders = (params) => {
+  return useQuery(["get_orders", params], () => getOrders(params), {
     keepPreviousData: true,
-    // refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false,
   });
 };
 const useUpdateOrderStatus = () => {

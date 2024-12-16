@@ -10,10 +10,18 @@ import {
   getProductById,
   getProducts,
   updateProduct,
+  getFilterCategory,
 } from "./productUrls";
 
 const useGetCategory = (data) => {
   return useQuery(["get_category", data], () => getCategory(data), {
+    staleTime: 3000,
+    keepPreviousData: true,
+    // refetchOnWindowFocus: false,
+  });
+};
+const useGetFilterCategory = (params) => {
+  return useQuery(["get_category", params], () => getFilterCategory(params), {
     staleTime: 3000,
     keepPreviousData: true,
     // refetchOnWindowFocus: false,
@@ -57,9 +65,8 @@ const useDeleteCategorys = () => {
   });
 };
 
-const useGetProducts = (data) => {
-  return useQuery(["get_products", data], () => getProducts(data), {
-    // staleTime: 30000,
+const useGetProducts = (params) => {
+  return useQuery(["get_products", params], () => getProducts(params), {
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -138,5 +145,6 @@ export {
   useAddCategory,
   useAddProduct,
   useUpdateProduct,
-  useDeleteProduct
+  useDeleteProduct,
+  useGetFilterCategory
 };
